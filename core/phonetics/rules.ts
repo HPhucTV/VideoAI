@@ -74,13 +74,16 @@ export function normalizeVietnameseText(text: string): string {
   if (!text) return "";
   let out = text;
 
-  // 1. Phân biệt dấu chấm ngăn hàng nghìn VN: 1.000.000 hoặc 50.000 hoặc 50.000đ
-  out = out.replace(/\b(\d{1,3}(?:\.\d{3})+)(?:đ| đồng)?\b/gi, (match, numGroup) => {
+  // 1. Phân biệt dấu chấm ngăn hàng nghìn VN kèm tiền tệ: 50.000đ, 50.000 đồng, 50.000 VNĐ
+  out = out.replace(/(\d{1,3}(?:\.\d{3})+)\s*(?:đ|đồng|vnđ|vnd)(?=\s|$|[.,;!?])/gi, (_, numGroup) => {
     const cleanNum = numGroup.replace(/\./g, "");
-    const read = readIntegerVN(cleanNum);
-    return match.toLowerCase().includes("đ") || match.toLowerCase().includes("đồng")
-      ? `${read} đồng`
-      : read;
+    return `${readIntegerVN(cleanNum)} đồng`;
+  });
+
+  // 1b. Dấu chấm ngăn hàng nghìn số thường: 1.000.000
+  out = out.replace(/\b(\d{1,3}(?:\.\d{3})+)\b/g, (_, numGroup) => {
+    const cleanNum = numGroup.replace(/\./g, "");
+    return readIntegerVN(cleanNum);
   });
 
   // 2. Số phiên bản (Version numbers): Đứng sau GPT, iOS, Android, Version, Bản, v.v.

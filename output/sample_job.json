@@ -1,0 +1,93 @@
+{
+  "jobId": "job-sample-docker-24",
+  "title": "Docker 24.0 ra mắt có gì đột phá?",
+  "workshop": "explainer",
+  "targetPlatform": "tiktok",
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 1.0,
+    "rate": "+5%",
+    "pitch": "+0Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "channel": "CƯỜNG IT & OMNIVIDEO",
+    "tags": ["docker", "devops", "laptrinh", "congnghe"],
+    "sourceUrl": "https://github.com/moby/moby"
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "hook",
+      "rawText": "Bạn có biết Docker 24.0 vừa ra mắt với cải tiến hiệu năng gấp đôi?",
+      "visual": {
+        "headline": "Docker 24.0 Ra Mắt",
+        "subhead": "Tăng Tốc Gấp Đôi",
+        "kenBurns": "zoom-in"
+      }
+    },
+    {
+      "id": "beat_02",
+      "role": "problem",
+      "rawText": "Trước đây, việc build image container tốn hàng chục phút và ngốn 100% CPU.",
+      "visual": {
+        "statement": "Build container tốn hàng chục phút và ngốn 100% CPU",
+        "tag": "Nỗi đau thực tế"
+      }
+    },
+    {
+      "id": "beat_03",
+      "role": "solution",
+      "rawText": "Bản cập nhật mới tối ưu hóa bộ nhớ đệm Buildx, giúp giảm 82.7% thời gian đóng gói.",
+      "visual": {
+        "value": "-82.7%",
+        "label": "Thời gian build",
+        "context": "Nhờ cache Buildx thế hệ mới"
+      }
+    },
+    {
+      "id": "beat_04",
+      "role": "workflow",
+      "rawText": "Chỉ cần 3 bước: viết Dockerfile, chạy lệnh build song song, và deploy tức thì.",
+      "visual": {
+        "title": "Quy trình 3 bước",
+        "bullets": [
+          "1. Viết Dockerfile tối giản",
+          "2. Build song song đa luồng",
+          "3. Deploy lên Cloud tức thì"
+        ]
+      }
+    },
+    {
+      "id": "beat_05",
+      "role": "benefits",
+      "rawText": "Dung lượng bộ nhớ tiết kiệm hơn 500MB, khởi động nhanh hơn 2x và bảo mật tối đa.",
+      "visual": {
+        "value": "500MB",
+        "label": "Tiết kiệm RAM",
+        "context": "Bảo mật nâng cao"
+      }
+    },
+    {
+      "id": "beat_06",
+      "role": "outro",
+      "rawText": "Follow kênh OmniVideo để đón xem các tin tức công nghệ mới nhất mỗi ngày nhé!",
+      "visual": {
+        "ctaTop": "Follow để đón xem tin tức mới",
+        "channelName": "CƯỜNG IT",
+        "source": "OmniVideo Studio Local"
+      }
+    }
+  ],
+  "output": {
+    "dir": "output/explainer/job-sample-docker-24",
+    "videoPath": "output/explainer/job-sample-docker-24/video.mp4",
+    "captionPath": "output/explainer/job-sample-docker-24/caption.txt"
+  }
+}

@@ -1,117 +1,123 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="vi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SRT 白板动画 · 区域编辑器（无需服务器）</title>
+<title>OmniVideo Whiteboard · Trình Biên Tập Vùng Vẽ Bảng Trắng</title>
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; background: #14161a; color: #e6e8ec; }
+  html, body { margin: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #0f172a; color: #f1f5f9; }
   body { display: flex; flex-direction: column; height: 100vh; }
-  .muted { color: #8b929c; font-size: 12px; }
-  .topbar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #1c1f26; border-bottom: 1px solid #2a2e37; flex-wrap: wrap; }
-  .brand { font-weight: 700; letter-spacing: .5px; }
-  button { background: #262a33; color: #e6e8ec; border: 1px solid #3a3f4a; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
-  button:hover { background: #313641; }
-  button.primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
-  button.primary:hover { background: #2f6fe0; }
+  .muted { color: #94a3b8; font-size: 12px; }
+  .topbar { display: flex; align-items: center; gap: 12px; padding: 10px 18px; background: #1e293b; border-bottom: 1px solid #334155; flex-wrap: wrap; }
+  .brand { font-weight: 800; font-size: 15px; letter-spacing: .5px; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+  .brand span { color: #f8fafc; }
+  button { background: #334155; color: #f8fafc; border: 1px solid #475569; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s ease; }
+  button:hover { background: #475569; }
+  button.primary { background: #0284c7; border-color: #0284c7; color: #fff; font-weight: 600; }
+  button.primary:hover { background: #0369a1; }
   button:disabled { opacity: .45; cursor: not-allowed; }
-  select { background: #262a33; color: #e6e8ec; border: 1px solid #3a3f4a; border-radius: 6px; padding: 5px 10px; font-size: 14px; max-width: 320px; }
+  select { background: #1e293b; color: #f8fafc; border: 1px solid #475569; border-radius: 6px; padding: 6px 10px; font-size: 13px; max-width: 320px; outline: none; }
   .spacer { flex: 1; }
-  .dirty { color: #f5a623; font-weight: 600; font-size: 13px; }
+  .dirty { color: #fbbf24; font-weight: 700; font-size: 13px; }
   .body { flex: 1; display: flex; min-height: 0; }
   .stage-wrap { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 20px; }
-  canvas { display: block; max-width: 100%; max-height: calc(100vh - 190px); box-shadow: 0 8px 40px rgba(0,0,0,.5); background: #fdf0d0; border-radius: 6px; touch-action: none; }
-  .hint { padding: 40px; color: #9aa1ab; font-size: 14px; line-height: 1.8; max-width: 680px; }
-  .hint b { color: #e6e8ec; }
-  .hint code { background: #262a33; padding: 1px 6px; border-radius: 4px; color: #7fb0ff; }
-  .side { width: 310px; flex: 0 0 310px; background: #1c1f26; border-left: 1px solid #2a2e37; overflow: auto; padding: 12px 14px; }
-  .side h3 { margin: 12px 0 6px; font-size: 13px; color: #cfd4dc; }
+  canvas { display: block; max-width: 100%; max-height: calc(100vh - 190px); box-shadow: 0 10px 50px rgba(0,0,0,.6); background: #fdf0d0; border-radius: 8px; touch-action: none; }
+  .hint { padding: 40px; color: #94a3b8; font-size: 14.5px; line-height: 1.8; max-width: 720px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+  .hint b { color: #f8fafc; }
+  .hint code { background: #0f172a; padding: 2px 6px; border-radius: 4px; color: #38bdf8; font-family: monospace; }
+  .side { width: 330px; flex: 0 0 330px; background: #1e293b; border-left: 1px solid #334155; overflow: auto; padding: 14px 16px; }
+  .side h3 { margin: 14px 0 6px; font-size: 13px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
   .side h3:first-child { margin-top: 4px; }
-  .tip { margin: 0 0 6px; }
-  .elist, .sublist { list-style: none; margin: 0 0 6px; padding: 0; font-size: 12.5px; }
-  .elist li { padding: 7px 9px; border-radius: 5px; margin-bottom: 3px; background: #22262e; cursor: grab; display: flex; gap: 8px; align-items: baseline; }
-  .elist li.sel { background: #4a3a14; outline: 1px solid #f5a623; }
+  .tip { margin: 0 0 8px; }
+  .elist, .sublist { list-style: none; margin: 0 0 8px; padding: 0; font-size: 13px; }
+  .elist li { padding: 8px 10px; border-radius: 6px; margin-bottom: 4px; background: #0f172a; cursor: grab; display: flex; gap: 8px; align-items: baseline; border: 1px solid #334155; }
+  .elist li.sel { background: #1e3a8a; border-color: #38bdf8; outline: 1px solid #38bdf8; }
   .elist li.dragging { opacity: .4; }
-  .elist li.over { outline: 1px dashed #3b82f6; }
-  .elist li .grip { color: #5b6270; cursor: grab; }
-  .elist li .o { color: #f5a623; font-weight: 700; }
-  .elist li .t { color: #7fb0ff; font-variant-numeric: tabular-nums; }
+  .elist li.over { outline: 1px dashed #38bdf8; }
+  .elist li .grip { color: #64748b; cursor: grab; }
+  .elist li .o { color: #fbbf24; font-weight: 700; }
+  .elist li .t { color: #38bdf8; font-variant-numeric: tabular-nums; }
   .elist li .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .sublist li { padding: 6px 9px; border-radius: 5px; margin-bottom: 3px; background: #20242c; cursor: pointer; display: flex; gap: 8px; align-items: baseline; color: #c3c9d2; }
-  .sublist li.sel { background: #123; outline: 1px solid #3b82f6; color: #dbe6ff; }
-  .sublist li .o { color: #7fb0ff; font-weight: 700; }
+  .sublist li { padding: 6px 10px; border-radius: 6px; margin-bottom: 4px; background: #0f172a; cursor: pointer; display: flex; gap: 8px; align-items: baseline; color: #cbd5e1; border: 1px solid #1e293b; }
+  .sublist li.sel { background: #0369a1; border-color: #38bdf8; color: #f0f9ff; }
+  .sublist li .o { color: #38bdf8; font-weight: 700; }
   .sublist li .s { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .sublist li.empty .s { color: #6b7280; font-style: italic; }
-  .fields { display: grid; grid-template-columns: auto 1fr; gap: 7px 8px; align-items: center; font-size: 12.5px; }
-  .fields label { color: #b8bec8; }
-  .fields input, .fields select { background: #262a33; color: #e6e8ec; border: 1px solid #3a3f4a; border-radius: 5px; padding: 5px 6px; width: 100%; font-size: 12.5px; }
+  .sublist li.empty .s { color: #64748b; font-style: italic; }
+  .fields { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; font-size: 13px; }
+  .fields label { color: #94a3b8; font-weight: 500; }
+  .fields input, .fields select { background: #0f172a; color: #f8fafc; border: 1px solid #475569; border-radius: 6px; padding: 6px 8px; width: 100%; font-size: 13px; outline: none; }
+  .fields input:focus, .fields select:focus, textarea#f_sub:focus { border-color: #38bdf8; }
   .fields input:disabled { opacity: .55; }
-  textarea#f_sub { width: 100%; background: #262a33; color: #e6e8ec; border: 1px solid #3a3f4a; border-radius: 5px; padding: 6px 7px; font-size: 12.5px; resize: vertical; font-family: inherit; }
+  textarea#f_sub { width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid #475569; border-radius: 6px; padding: 8px; font-size: 13px; resize: vertical; font-family: inherit; outline: none; }
   textarea#f_sub:disabled { opacity: .55; }
   .row-btns { display: flex; gap: 8px; margin: 10px 0; }
-  .controls { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #1c1f26; border-top: 1px solid #2a2e37; }
-  .play { flex: 0 0 auto; width: 38px; height: 38px; font-size: 15px; }
-  #timeline { flex: 1; accent-color: #3b82f6; }
-  .tlabel { font-variant-numeric: tabular-nums; color: #b8bec8; font-size: 13px; min-width: 130px; text-align: right; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #22c55e; color: #062; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 9; }
+  .controls { display: flex; align-items: center; gap: 14px; padding: 10px 20px; background: #1e293b; border-top: 1px solid #334155; }
+  .play { flex: 0 0 auto; width: 40px; height: 40px; font-size: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  #timeline { flex: 1; accent-color: #38bdf8; cursor: pointer; }
+  .tlabel { font-variant-numeric: tabular-nums; color: #94a3b8; font-size: 13px; min-width: 140px; text-align: right; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #10b981; color: #022c22; padding: 10px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 99; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
   .toast.show { opacity: 1; }
   .toast.err { background: #ef4444; color: #fff; }
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div class="brand">SRT 白板 · 区域编辑器</div>
-  <button id="openBtn" class="primary">打开文件夹…</button>
-  <button id="prevBtn" disabled>‹</button>
+  <div class="brand">🎨 <span>OMNIVIDEO</span> WHITEBOARD</div>
+  <button id="openBtn" class="primary">📂 Mở Thư Mục Cảnh...</button>
+  <button id="prevBtn" disabled>‹ Trước</button>
   <select id="sceneSel" disabled></select>
-  <button id="nextBtn" disabled>›</button>
+  <button id="nextBtn" disabled>Sau ›</button>
   <span id="sceneCount" class="muted"></span>
-  <label class="muted" style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="overlayToggle" checked> 区域框</label>
+  <label class="muted" style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="overlayToggle" checked> Khung vùng vẽ</label>
   <span class="spacer"></span>
   <span id="dirtyFlag" class="dirty"></span>
-  <button id="saveBtn" disabled>保存本场景</button>
-  <button id="saveAllBtn" class="primary" disabled>全部保存</button>
+  <button id="saveBtn" disabled>💾 Lưu Cảnh Này</button>
+  <button id="saveAllBtn" class="primary" disabled>💾 Lưu Tất Cả</button>
 </div>
 
 <div class="body">
   <div class="stage-wrap">
     <div id="hint" class="hint">
-      点 <b>打开文件夹…</b> 选择存放线稿的目录（内含成对的 <code>&lt;名称&gt;.png</code> + <code>&lt;名称&gt;.annotation.json</code>）。<br><br>
-      载入后：默认显示完整图片和区域框；拖动方框整体移动、拖四角/四边缩放调 <code>region</code>；右侧精确改数值、方向、<b>开始/结束时间</b>与<b>字幕</b>；拖动模块列表可<b>调整顺序</b>。拖时间轴或按播放看<b>矩形代理揭示</b>（未开始区域不显示）。<br><br>
-      改完点 <b>保存本场景</b> / <b>全部保存</b> 写回原 <code>.annotation.json</code>（含每个区域的字幕）。<br>
-      <span class="muted">写回原文件需 Chrome / Edge（File System Access API）；其它浏览器将改为下载，请手动覆盖原文件。矩形代理只用于布局/时序；真实连续笔迹请用命令行 <code>render_stream_whiteboard.py</code> 渲染。</span>
+      Nhấn <b>Mở Thư Mục Cảnh...</b> và chọn thư mục chứa các phân cảnh (gồm các cặp file <code>&lt;tên&gt;.png</code> + <code>&lt;tên&gt;.annotation.json</code>).<br><br>
+      <b>Hướng dẫn thao tác:</b><br>
+      • Kéo trực tiếp hình chữ nhật trên bảng trắng để di chuyển vị trí nét vẽ.<br>
+      • Kéo 4 góc hoặc 4 cạnh để phóng to / thu nhỏ vùng bao phủ nét vẽ <code>region</code>.<br>
+      • Thanh công cụ bên phải cho phép sửa chính xác tọa độ, hướng vẽ (Trên xuống, Dưới lên, Trái qua, Phải qua), <b>thời gian bắt đầu/kết thúc (ms)</b> và <b>phụ đề</b>.<br>
+      • Kéo thả các dòng trong danh sách để <b>đổi thứ tự vẽ</b> của các nhân vật/chi tiết.<br>
+      • Kéo thanh thời gian hoặc bấm <b>▶ Xem trước</b> để quan sát bàn tay vẽ hoạt họa chạy thử nghiệm.<br><br>
+      Sau khi hoàn tất, nhấn <b>Lưu Cảnh Này</b> hoặc <b>Lưu Tất Cả</b> để ghi đè cập nhật vào <code>.annotation.json</code>.
     </div>
     <canvas id="canvas" hidden></canvas>
   </div>
   <aside class="side" id="side" hidden>
-    <h3>绘制模块 <span id="elemCount" class="muted"></span></h3>
-    <p class="tip muted">拖动列表项可调整绘制顺序</p>
+    <h3>Danh Sách Vùng Vẽ <span id="elemCount" class="muted"></span></h3>
+    <p class="tip muted">Kéo thả để sắp xếp thứ tự vẽ tay</p>
     <ul id="elist" class="elist"></ul>
     <div class="row-btns">
-      <button id="addBtn">＋ 新增模块</button>
-      <button id="delBtn" disabled>删除选中</button>
+      <button id="addBtn">＋ Thêm Vùng</button>
+      <button id="delBtn" disabled>✕ Xóa Chọn</button>
     </div>
-    <h3>选中模块</h3>
+    <h3>Thuộc Tính Vùng Đang Chọn</h3>
     <div class="fields" id="fields">
-      <label>名称</label><input type="text" id="f_label" disabled>
-      <label>x</label><input type="number" id="f_x" min="0" disabled>
-      <label>y</label><input type="number" id="f_y" min="0" disabled>
-      <label>宽</label><input type="number" id="f_w" min="1" disabled>
-      <label>高</label><input type="number" id="f_h" min="1" disabled>
-      <label>方向</label>
+      <label>Tên gọi</label><input type="text" id="f_label" disabled>
+      <label>Tọa độ X</label><input type="number" id="f_x" min="0" disabled>
+      <label>Tọa độ Y</label><input type="number" id="f_y" min="0" disabled>
+      <label>Bề rộng</label><input type="number" id="f_w" min="1" disabled>
+      <label>Chiều cao</label><input type="number" id="f_h" min="1" disabled>
+      <label>Hướng vẽ</label>
       <select id="f_dir" disabled>
-        <option value="top_to_bottom">从上至下</option>
-        <option value="bottom_to_top">从下至上</option>
-        <option value="left_to_right">从左至右</option>
-        <option value="right_to_left">从右至左</option>
+        <option value="top_to_bottom">Từ trên xuống dưới</option>
+        <option value="bottom_to_top">Từ dưới lên trên</option>
+        <option value="left_to_right">Từ trái sang phải</option>
+        <option value="right_to_left">Từ phải sang trái</option>
       </select>
-      <label>开始(ms)</label><input type="number" id="f_start" min="0" step="100" disabled>
-      <label>结束(ms)</label><input type="number" id="f_end" min="0" step="100" disabled>
-      <label>时长(ms)</label><input type="number" id="f_dur" disabled>
+      <label>Bắt đầu (ms)</label><input type="number" id="f_start" min="0" step="100" disabled>
+      <label>Kết thúc (ms)</label><input type="number" id="f_end" min="0" step="100" disabled>
+      <label>Thời lượng</label><input type="number" id="f_dur" disabled>
     </div>
-    <h3>字幕</h3>
-    <textarea id="f_sub" rows="3" placeholder="该区域对应的字幕（保存进 annotation.json）" disabled></textarea>
+    <h3>Lời Thoại / Phụ Đề</h3>
+    <textarea id="f_sub" rows="3" placeholder="Lời thoại hoặc phụ đề của vùng vẽ này..." disabled></textarea>
     <ul id="sublist" class="sublist"></ul>
   </aside>
 </div>
@@ -145,7 +151,7 @@ function totalMs() {
   return Math.max(S.cfg && S.cfg.sceneDurationMs || 0, maxEnd + 500, 1000);
 }
 
-// ---------- 打开文件夹 ----------
+// ---------- Mở Thư Mục ----------
 $('openBtn').addEventListener('click', openDir);
 async function openDir() {
   try {
@@ -156,7 +162,7 @@ async function openDir() {
       for await (const [name, h] of dir.entries()) if (h.kind === 'file') handles[name] = h;
       await loadPairs(Object.keys(handles), n => handles[n].getFile(), n => handles[n]);
     } else { fi.click(); }
-  } catch (e) { if (e && e.name !== 'AbortError') toast('打开失败：' + e.message, true); }
+  } catch (e) { if (e && e.name !== 'AbortError') toast('Không thể mở thư mục: ' + e.message, true); }
 }
 const fi = document.createElement('input');
 fi.type = 'file'; fi.webkitdirectory = true; fi.multiple = true; fi.hidden = true;
@@ -177,25 +183,25 @@ async function loadPairs(names, getFile, getHandle) {
     let cfg = null, cfgHandle = null;
     if (names.includes(cfgName)) {
       try { cfg = JSON.parse(await (await getFile(cfgName)).text()); }
-      catch (e) { toast(`跳过 ${cfgName}：JSON 解析失败`, true); }
+      catch (e) { toast(`Bỏ qua ${cfgName}: Lỗi đọc định dạng JSON`, true); }
       cfgHandle = getHandle(cfgName);
     }
     const url = URL.createObjectURL(await getFile(inm));
     scenes.push({ name: base, imgName: inm, cfgName, cfg, cfgHandle, imgUrl: url, hasConfig: !!cfg });
   }
-  if (!scenes.length) { toast('目录里没有图片', true); return; }
+  if (!scenes.length) { toast('Thư mục không có hình ảnh hoặc file annotation phù hợp', true); return; }
   S.scenes = scenes; S.dirty.clear();
   const sel = $('sceneSel');
-  sel.innerHTML = scenes.map((s, i) => `<option value="${i}">${i+1}. ${s.name}${s.hasConfig ? '' : '（未标注）'}</option>`).join('');
+  sel.innerHTML = scenes.map((s, i) => `<option value="${i}">${i+1}. ${s.name}${s.hasConfig ? '' : ' (Chưa có vùng vẽ)'}</option>`).join('');
   sel.disabled = $('prevBtn').disabled = $('nextBtn').disabled = false;
-  $('sceneCount').textContent = `共 ${scenes.length} 张（${scenes.filter(s=>s.hasConfig).length} 张带标注）`;
+  $('sceneCount').textContent = `Tổng: ${scenes.length} cảnh (${scenes.filter(s=>s.hasConfig).length} có cấu hình)`;
   $('hint').hidden = true; canvas.hidden = false; $('side').hidden = false;
   $('playBtn').disabled = $('timeline').disabled = false;
-  if (!canFS) toast('当前浏览器不支持直接写回，保存将改为下载', false);
+  if (!canFS) toast('Trình duyệt hiện tại không hỗ trợ ghi trực tiếp, file sẽ được tải về', false);
   loadScene(0);
 }
 
-// ---------- 载入单场景 ----------
+// ---------- Nạp Phân Cảnh ----------
 $('sceneSel').addEventListener('change', e => loadScene(+e.target.value));
 $('prevBtn').addEventListener('click', () => loadScene(S.idx - 1));
 $('nextBtn').addEventListener('click', () => loadScene(S.idx + 1));
@@ -212,9 +218,9 @@ function loadScene(i) {
     if (!Array.isArray(sc.cfg.elements)) sc.cfg.elements = [];
     S.cfg = sc.cfg; S.cfgHandle = sc.cfgHandle;
     samplePaper();
-    updateSaveBtns(); syncEditor(); renderList(); renderSubs(); setTime(0); // 默认停在 0（未播放）→ 显示完整图片
+    updateSaveBtns(); syncEditor(); renderList(); renderSubs(); setTime(0);
   };
-  img.onerror = () => toast('图片加载失败：' + sc.imgName, true);
+  img.onerror = () => toast('Không thể tải hình ảnh: ' + sc.imgName, true);
   img.src = sc.imgUrl;
 }
 function samplePaper() {
@@ -227,7 +233,7 @@ function samplePaper() {
   } catch (e) { S.paper = '#fdf0d0'; }
 }
 
-// ---------- reveal 代理渲染 ----------
+// ---------- Reveal Animation Render ----------
 const getProgress = (t, e) => clamp((t - e.reveal.startMs) / e.reveal.durationMs, 0, 1);
 function wobble(a, s) { const env = Math.sin(a*Math.PI); return (Math.sin(a*Math.PI*2*3+s)*1.8 + Math.sin(a*Math.PI*2*7.3+s*1.7)*0.7) * env; }
 function tipPos(e, p) {
@@ -250,7 +256,6 @@ function render() {
   ctx.fillStyle = S.paper; ctx.fillRect(0, 0, w, h);
   const arr = els();
   const done = arr.length ? Math.max(...arr.map(endMs)) : 0;
-  // 未播放且在起点（或无模块、或已全部揭示完）→ 显示完整图片
   const showFull = !arr.length || (!S.playing && S.time <= 0) || S.time >= done + 500;
   if (showFull) {
     ctx.drawImage(S.source, 0, 0, w, h);
@@ -286,27 +291,27 @@ function drawOverlay() {
   els().forEach((e, i) => {
     const r = e.region, focus = i === S.sel;
     ctx.save();
-    ctx.strokeStyle = focus ? '#3b82f6' : '#e97036';
-    ctx.fillStyle = focus ? 'rgba(59,130,246,.12)' : 'rgba(233,112,54,.07)';
+    ctx.strokeStyle = focus ? '#38bdf8' : '#f97316';
+    ctx.fillStyle = focus ? 'rgba(56,189,248,.15)' : 'rgba(249,115,22,.08)';
     ctx.lineWidth = focus ? 5 : 3; ctx.setLineDash(focus ? [] : [10, 7]);
     ctx.fillRect(r.x, r.y, r.width, r.height); ctx.strokeRect(r.x, r.y, r.width, r.height); ctx.setLineDash([]);
-    ctx.fillStyle = focus ? '#3b82f6' : '#e97036';
+    ctx.fillStyle = focus ? '#38bdf8' : '#f97316';
     ctx.beginPath(); ctx.arc(r.x+18, r.y+18, 15, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 18px "Microsoft YaHei"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 16px -apple-system, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(i+1, r.x+18, r.y+18);
     if (focus) {
-      ctx.fillStyle = '#fff'; ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3;
       Object.values(handlesOf(r)).forEach(([x, y]) => { ctx.fillRect(x-10, y-10, 20, 20); ctx.strokeRect(x-10, y-10, 20, 20); });
     }
     ctx.restore();
   });
 }
 
-// ---------- 模块列表（可拖拽排序）----------
+// ---------- Danh Sách Vùng Vẽ ----------
 function selectElem(i) { S.sel = i; syncEditor(); renderList(); renderSubs(); render(); }
 function renderList() {
   const arr = els();
-  $('elemCount').textContent = `共 ${arr.length} 个`;
+  $('elemCount').textContent = `(${arr.length} vùng)`;
   $('elist').innerHTML = arr.map((e, i) =>
     `<li draggable="true" data-i="${i}" class="${i===S.sel?'sel':''}"><span class="grip">⋮⋮</span><span class="o">#${i+1}</span><span class="t">${(e.reveal.startMs/1000).toFixed(1)}s</span><span class="nm">${escapeHtml(e.label || '')}</span></li>`
   ).join('');
@@ -323,21 +328,21 @@ function renderList() {
 function reorder(from, to) {
   const arr = els(); if (from < 0 || to < 0 || from === to) return;
   const [m] = arr.splice(from, 1); arr.splice(to, 0, m);
-  arr.forEach((e, i) => e.sequence = i + 1);       // 顺序即 sequence
+  arr.forEach((e, i) => e.sequence = i + 1);
   S.sel = to; markDirty(); syncEditor(); renderList(); renderSubs(); render();
 }
 
-// ---------- 字幕列表（选中模块自动高亮）----------
+// ---------- Danh Sách Phụ Đề ----------
 function renderSubs() {
   const arr = els();
   $('sublist').innerHTML = arr.map((e, i) => {
     const txt = (e.subtitle || '').trim();
-    return `<li data-i="${i}" class="${i===S.sel?'sel':''} ${txt?'':'empty'}"><span class="o">#${i+1}</span><span class="s">${txt ? escapeHtml(txt) : '（无字幕）'}</span></li>`;
+    return `<li data-i="${i}" class="${i===S.sel?'sel':''} ${txt?'':'empty'}"><span class="o">#${i+1}</span><span class="s">${txt ? escapeHtml(txt) : '(Chưa có lời thoại)'}</span></li>`;
   }).join('');
   $('sublist').querySelectorAll('li').forEach(li => li.addEventListener('click', () => selectElem(+li.dataset.i)));
 }
 
-// ---------- 选中模块字段 ----------
+// ---------- Sửa Thuộc Tính Vùng ----------
 const F = ['f_label','f_x','f_y','f_w','f_h','f_dir','f_start','f_end','f_dur'];
 function syncEditor() {
   const e = els()[S.sel], on = !!e;
@@ -375,13 +380,13 @@ function applyEditor() {
 F.forEach(id => { if (id !== 'f_dur') $(id).addEventListener('input', applyEditor); });
 $('f_sub').addEventListener('input', () => { const e = els()[S.sel]; if (!e) return; e.subtitle = $('f_sub').value; markDirty(); renderSubs(); });
 
-// ---------- 增删 ----------
+// ---------- Thêm / Xóa Vùng ----------
 $('addBtn').addEventListener('click', () => {
   if (!S.cfg) return;
   const arr = els(), W = S.cfg.canvas.width, H = S.cfg.canvas.height;
   const seq = arr.length + 1;
   const lastEnd = arr.length ? Math.max(...arr.map(endMs)) : 300;
-  const e = { id: `region_${seq}`, label: '新模块', sequence: seq, narrativeRole: '', type: 'object', subtitle: '',
+  const e = { id: `region_${seq}`, label: `Vùng ${seq}`, sequence: seq, narrativeRole: '', type: 'object', subtitle: '',
     region: { x: Math.round(W*0.1), y: Math.round(H*0.1), width: Math.round(W*0.25), height: Math.round(H*0.3) },
     reveal: { direction: 'top_to_bottom', startMs: lastEnd + 200, durationMs: 2000, maskPaddingPx: 22, protectedRegions: [] },
     handPath: {} };
@@ -393,7 +398,7 @@ $('delBtn').addEventListener('click', () => {
   S.sel = Math.max(0, S.sel - 1); markDirty(); syncEditor(); renderList(); renderSubs(); render();
 });
 
-// ---------- 画布拖动 / 缩放 ----------
+// ---------- Thao Tác Chuột Trên Canvas ----------
 function canvasPoint(evt) { const b = canvas.getBoundingClientRect(); return { x: (evt.clientX-b.left) * canvas.width/b.width, y: (evt.clientY-b.top) * canvas.height/b.height }; }
 function handleAt(pt, r) { for (const [name, [x, y]] of Object.entries(handlesOf(r))) if (Math.abs(pt.x-x) <= 16 && Math.abs(pt.y-y) <= 16) return name; return null; }
 canvas.addEventListener('pointerdown', evt => {
@@ -423,7 +428,7 @@ canvas.addEventListener('pointermove', evt => {
 });
 canvas.addEventListener('pointerup', () => { S.drag = null; });
 
-// ---------- 时间轴 ----------
+// ---------- Thanh Thời Gian & Xem Trước ----------
 function setTime(v) {
   const dur = totalMs();
   S.time = clamp(v, 0, dur);
@@ -437,31 +442,30 @@ function play() { if (!S.cfg) return; if (S.time >= totalMs()) S.time = 0; S.pla
 function pause() { S.playing = false; $('playBtn').textContent = '▶'; }
 function tick(ts) { if (!S.playing) return; setTime(S.time + (ts - S.last)); S.last = ts; if (S.time >= totalMs()) { pause(); return; } requestAnimationFrame(tick); }
 
-// ---------- 保存 ----------
-function markDirty() { S.dirty.add(S.idx); $('dirtyFlag').textContent = '● 未保存'; updateSaveBtns(); }
+// ---------- Lưu Dữ Liệu ----------
+function markDirty() { S.dirty.add(S.idx); $('dirtyFlag').textContent = '● Có thay đổi chưa lưu'; updateSaveBtns(); }
 function updateSaveBtns() { $('saveBtn').disabled = !S.dirty.has(S.idx); $('saveAllBtn').disabled = S.dirty.size === 0; }
 $('saveBtn').addEventListener('click', () => saveScene(S.idx));
 $('saveAllBtn').addEventListener('click', async () => { for (const i of [...S.dirty]) await saveScene(i); });
 async function saveScene(i) {
   const sc = S.scenes[i];
-  // 保存前把总时长对齐到当前编排（最后一个区域结束 + 0.5s 凝视），供渲染器使用
   if (i === S.idx && sc.cfg.elements && sc.cfg.elements.length) sc.cfg.sceneDurationMs = totalMs();
   const text = JSON.stringify(sc.cfg, null, 2);
   try {
     let handle = sc.cfgHandle;
     if (!handle && S.dirHandle && S.dirHandle.getFileHandle) handle = await S.dirHandle.getFileHandle(sc.cfgName, { create: true });
     if (handle && handle.createWritable) {
-      if (handle.requestPermission) { const perm = await handle.requestPermission({ mode: 'readwrite' }); if (perm !== 'granted') throw new Error('未授权写入'); }
+      if (handle.requestPermission) { const perm = await handle.requestPermission({ mode: 'readwrite' }); if (perm !== 'granted') throw new Error('Chưa cấp quyền ghi'); }
       const w = await handle.createWritable(); await w.write(text); await w.close();
       sc.cfgHandle = handle; sc.hasConfig = true;
     } else { downloadText(sc.cfgName, text); }
     S.dirty.delete(i); if (i === S.idx) $('dirtyFlag').textContent = '';
-    updateSaveBtns(); toast(`已保存：${sc.name}`);
-  } catch (e) { toast(`保存失败：${e.message}`, true); }
+    updateSaveBtns(); toast(`Đã lưu thành công: ${sc.name}`);
+  } catch (e) { toast(`Lỗi khi lưu: ${e.message}`, true); }
 }
 function downloadText(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' })); a.download = name; a.click(); URL.revokeObjectURL(a.href); }
 
-// ---------- 杂项 ----------
+// ---------- Phím Tắt ----------
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Space') { e.preventDefault(); S.playing ? pause() : play(); }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { normalizeVietnameseText } from "../phonetics/rules.js";
+import { normalizeVietnameseText } from "../phonetics/rules.ts";
 
 function getArg(flag) {
   const idx = process.argv.indexOf(flag);
@@ -9,7 +9,7 @@ function getArg(flag) {
 const textArg = getArg("--text") || process.argv.slice(2).join(" ");
 
 if (!textArg) {
-  console.error("Usage: node phonetics.js --text \"văn bản cần đọc\"");
+  console.error("Usage: node --experimental-strip-types core/bin/phonetics.js --text \"văn bản cần đọc\"");
   process.exit(1);
 }
 

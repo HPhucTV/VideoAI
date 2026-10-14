@@ -1,6 +1,7 @@
 import { EdgeTTS, createSRT } from "edge-tts-universal";
-import { writeFile } from "node:fs/promises";
+import { writeFile, copyFile } from "node:fs/promises";
 import type { TtsClient } from "./tts-client.js";
+import { synthesizeVoice } from "../../../../core/tts/index.ts";
 
 export interface EdgeTtsOpts {
   voice: string;         // e.g. "vi-VN-HoaiMyNeural" or "vi-VN-NamMinhNeural"
@@ -12,16 +13,30 @@ export interface EdgeTtsOpts {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Edge TTS client using Microsoft Edge online text-to-speech service (Free).
- * Powered by `edge-tts-universal`.
- *
- * Supports subtitle generation (SRT) via word boundary cues.
+ * Edge TTS client using unified Core TTS Hub with SHA-256 caching and Vietnamese phonetics.
+ * Falls back to edge-tts-universal if needed.
  */
 export class EdgeTtsClient implements TtsClient {
   constructor(private cfg: EdgeTtsOpts) {}
 
   async generate(text: string, audioOutPath: string, srtOutPath?: string): Promise<void> {
-    await this.synthesizeWithRetry(text, audioOutPath, srtOutPath);
+    try {
+      const res = await synthesizeVoice({
+        text,
+        voice: this.cfg.voice,
+        rate: this.cfg.rate,
+        pitch: this.cfg.pitch,
+        volume: this.cfg.volume,
+      });
+
+      await copyFile(res.filePath, audioOutPath);
+      if (srtOutPath && res.srtPath) {
+        await copyFile(res.srtPath, srtOutPath);
+      }
+      return;
+    } catch {
+      await this.synthesizeWithRetry(text, audioOutPath, srtOutPath);
+    }
   }
 
   private async synthesizeWithRetry(

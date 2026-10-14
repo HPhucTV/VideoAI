@@ -59,9 +59,13 @@ export async function runPipeline(scriptPath: string): Promise<void> {
   const script: Script = ScriptSchema.parse(raw);
 
   // STEP 2
-  log.step(2, TOTAL_STEPS, "Write script.txt for CapCut");
+  log.step(2, TOTAL_STEPS, "Write script.txt & caption.txt for TikTok/Shorts");
   const fullText = script.scenes.map((s) => s.voiceText).join("\n\n");
-  await writeFile(join(outputDir, "script.txt"), fullText);
+  await writeFile(join(outputDir, "script.txt"), fullText, "utf8");
+
+  const cleanChannel = script.metadata.channel.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const captionContent = `${script.metadata.title}\n\nNguồn: ${script.metadata.source.domain || script.metadata.channel}\n#news #congnghe #xuhuong #shorts #tiktok #${cleanChannel}\n\n👉 Nhấn Theo dõi để cập nhật tin tức công nghệ mới nhất!`;
+  await writeFile(join(outputDir, "caption.txt"), captionContent, "utf8");
 
   // STEP 3 + 4 in parallel
   log.step(3, TOTAL_STEPS, "Fetch og:image (parallel) + Step 4 TTS");
@@ -245,8 +249,9 @@ export async function runPipeline(scriptPath: string): Promise<void> {
   // STEP 8
   log.step(8, TOTAL_STEPS, "Done");
   console.log("\n=== Result ===");
-  console.log(`Video:  ${videoPath}`);
-  console.log(`Audio:  ${voiceMp3}  (cho CapCut)`);
-  console.log(`Script: ${join(outputDir, "script.txt")}  (cho CapCut auto-caption)`);
+  console.log(`Video:   ${videoPath}`);
+  console.log(`Audio:   ${voiceMp3}  (cho CapCut)`);
+  console.log(`Script:  ${join(outputDir, "script.txt")}  (cho CapCut auto-caption)`);
+  console.log(`Caption: ${join(outputDir, "caption.txt")}  (cho TikTok/Shorts)`);
   console.log(`Tong thoi luong: ${totalAudioSec.toFixed(2)}s`);
 }

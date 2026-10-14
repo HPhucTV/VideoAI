@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { getAudioDuration } from "../audio/probe.js";
+import { getAudioDuration } from "../audio/probe.ts";
 
 function getArg(flag) {
   const idx = process.argv.indexOf(flag);

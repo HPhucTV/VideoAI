@@ -1,0 +1,87 @@
+# ==========================================
+# OmniVideo Studio - Git Ignore Rules
+# ==========================================
+
+# Dependencies
+node_modules/
+*/node_modules/
+core/node_modules/
+workshops/*/node_modules/
+package-lock.json
+
+# Python Virtual Environments & Bytecode
+.venv/
+*/.venv/
+workshops/*/.venv/
+venv/
+env/
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Core & TTS Caches
+core/cache/
+tts-cache/
+*/tts-cache/
+*/*/tts-cache/
+*/*/*/tts-cache/
+.cache/
+*.cache
+
+# Ephemeral Render Outputs & Media Files
+output/**/*.mp4
+output/**/*.mp3
+output/**/*.wav
+output/**/*.m4a
+output/**/*.aac
+output/**/*.png
+output/**/*.jpg
+output/**/*.jpeg
+output/**/*.gif
+output/**/*.webp
+output/news/*
+output/explainer/*
+output/whiteboard/*
+!output/news/.gitkeep
+!output/explainer/.gitkeep
+!output/whiteboard/.gitkeep
+!output/jobs/
+!output/jobs/*.json
+!output/jobs/.gitkeep
+
+# Workshop Ephemeral Files
+workshops/workshop-explainer/output/
+workshops/workshop-explainer/public/audio/
+workshops/workshop-explainer/public/props.json
+workshops/workshop-explainer/test-still.png
+workshops/workshop-explainer/dist/
+workshops/workshop-explainer/.remotion/
+workshops/workshop-whiteboard/preview.html
+
+# Local Environment Variables & Secrets
+.env
+.env.local
+*.env
+!*.env.example
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs & Diagnostics
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
