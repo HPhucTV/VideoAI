@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export const visualCueSchema = z.object({
+  camera: z.string().optional(),
+  sfx: z.string().optional(),
+  hapticText: z.string().optional(),
+  sticker: z.string().optional(),
+  isRehook: z.boolean().optional(),
+  bgmDucking: z.string().optional(),
+});
+
 export const omniBeatSchema = z.object({
   id: z.string(),
   name: z.string().default("beat"),
@@ -16,15 +25,13 @@ export const omniBeatSchema = z.object({
     label: z.string(),
   }).optional(),
   comparison: z.object({
-    left: z.object({ label: string(), value: string() }),
-    right: z.object({ label: string(), value: string() }),
+    left: z.object({ label: z.string(), value: z.string() }),
+    right: z.object({ label: z.string(), value: z.string() }),
   }).optional(),
   cta: z.string().optional(),
+  cues: visualCueSchema.optional(),
+  speaker: z.string().optional(),
 });
-
-function string() {
-  return z.string();
-}
 
 export const omniExplainerSchema = z.object({
   jobId: z.string().default("omni-sample"),

@@ -32,7 +32,7 @@ def get_node_env():
     env["PATH"] = current_path
     return env
 
-def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", fps: int = 30) -> dict:
+def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0%", pitch: str = "+0Hz", volume: str = "+0%", fps: int = 30) -> dict:
     root_dir = Path(__file__).resolve().parent.parent.parent
     tts_cli = root_dir / "core" / "bin" / "tts.js"
     cmd = [
@@ -41,6 +41,9 @@ def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", fps: int = 30) 
         str(tts_cli),
         "--text", text,
         "--voice", voice,
+        "--rate", rate,
+        "--pitch", pitch,
+        "--volume", volume,
         "--fps", str(fps),
     ]
     res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=True, env=get_node_env())
@@ -116,7 +119,12 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
 
     for idx, beat in enumerate(job.get("beats", []), start=1):
         raw_text = beat.get("rawText", "")
-        tts_res = call_core_tts(raw_text, voice=voice_id, fps=fps)
+        beat_voice = beat.get("voice", {})
+        b_voice = beat_voice.get("voiceId", voice_id)
+        b_rate = beat_voice.get("rate", voice_config.get("rate", "+0%"))
+        b_pitch = beat_voice.get("pitch", voice_config.get("pitch", "+0Hz"))
+        b_volume = beat_voice.get("volume", voice_config.get("volume", "+0%"))
+        tts_res = call_core_tts(raw_text, voice=b_voice, rate=b_rate, pitch=b_pitch, volume=b_volume, fps=fps)
         
         cached_mp3 = tts_res["filePath"]
         beat_mp3 = voice_dir / f"beat-{idx:02d}.mp3"
@@ -155,7 +163,8 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
             }
         })
 
-        current_ms = end_ms + 250  # 250ms gap giữa các câu
+        pause_gap = beat.get("voice", {}).get("pauseAfterMs", 250)
+        current_ms = end_ms + pause_gap  # Khoang lang sau cau
 
     # 1. Gộp audio thành input.mp3
     input_mp3_path = out_p / "input.mp3"

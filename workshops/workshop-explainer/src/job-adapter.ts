@@ -36,7 +36,11 @@ export async function convertJobToRemotionProps(options: AdapterOptions): Promis
     if (synthesizeMissingAudio) {
       const voiceRes = await synthesizeVoice({
         text: beat.rawText,
-        voice: job.voice.voiceId || "vi-VN-NamMinhNeural",
+        voice: beat.voice?.voiceId || job.voice.voiceId || "vi-VN-NamMinhNeural",
+        rate: beat.voice?.rate || job.voice.rate || "+0%",
+        pitch: beat.voice?.pitch || job.voice.pitch || "+0Hz",
+        volume: beat.voice?.volume || job.voice.volume || "+0%",
+        speed: beat.voice?.speed || job.voice.speed || 1.0,
         fps,
       });
 
@@ -63,6 +67,8 @@ export async function convertJobToRemotionProps(options: AdapterOptions): Promis
       stats: visual.value ? { value: String(visual.value), label: String(visual.label || "") } : undefined,
       comparison: visual.comparison,
       cta: visual.ctaTop || (beat.role === "outro" ? "THEO DÕI NGAY" : undefined),
+      cues: beat.cues,
+      speaker: beat.voice?.speaker,
     };
 
     beats.push(omniBeat);

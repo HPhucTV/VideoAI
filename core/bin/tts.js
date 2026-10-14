@@ -9,6 +9,8 @@ function getArg(flag) {
 const textArg = getArg("--text");
 const voiceArg = getArg("--voice") || "vi-VN-NamMinhNeural";
 const rateArg = getArg("--rate") || "+0%";
+const pitchArg = getArg("--pitch") || "+0Hz";
+const volumeArg = getArg("--volume") || "+0%";
 const fpsArg = parseInt(getArg("--fps") || "30", 10);
 
 if (!textArg) {
@@ -21,6 +23,8 @@ try {
     text: textArg,
     voice: voiceArg,
     rate: rateArg,
+    pitch: pitchArg,
+    volume: volumeArg,
     fps: fpsArg,
   });
   console.log(JSON.stringify(result));
