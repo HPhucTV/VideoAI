@@ -159,7 +159,7 @@ function openPlayer(jobId) {
     btnDownloadMp4.style.display = "none";
   }
 
-  btnDownloadJson.href = `/api/videos/${jobId}`;
+  btnDownloadJson.href = `/api/videos/${encodeURIComponent(jobId)}`;
   btnDownloadJson.setAttribute("download", `${jobId}.json`);
 
   if (video.srtUrl) {
@@ -265,7 +265,7 @@ createForm.onsubmit = async (e) => {
 
 // ── EDIT JOB MODAL ──
 async function openEditor(jobId) {
-  const res = await fetch(`/api/videos/${jobId}`);
+  const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`);
   const data = await res.json();
   if (!data.success) {
     alert("Không tìm thấy kịch bản!");
@@ -306,7 +306,7 @@ document.getElementById("btn-save-and-render").onclick = async () => {
 
 async function saveEditJob(andRender = false) {
   const jobId = document.getElementById("edit-job-id").value;
-  const res = await fetch(`/api/videos/${jobId}`);
+  const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`);
   const data = await res.json();
   const job = data.job;
 
@@ -322,7 +322,7 @@ async function saveEditJob(andRender = false) {
     }
   });
 
-  const saveRes = await fetch(`/api/videos/${jobId}`, {
+  const saveRes = await fetch(`/api/videos/${encodeURIComponent(jobId)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(job)
@@ -343,7 +343,7 @@ async function saveEditJob(andRender = false) {
 async function deleteVideo(jobId) {
   if (confirm(`Bạn có chắc chắn muốn xóa video '${jobId}' và kịch bản không?`)) {
     try {
-      const res = await fetch(`/api/videos/${jobId}`, { method: "DELETE" });
+      const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`, { method: "DELETE" });
       if (res.ok) {
         await loadVideos();
       } else {
@@ -366,28 +366,61 @@ function triggerRender(jobId) {
   btnCloseRender.disabled = true;
   renderModal.classList.add("active");
 
-  activeEventSource = new EventSource(`/api/render/${jobId}`);
+  const encId = encodeURIComponent(jobId);
+  activeEventSource = new EventSource(`/api/render/${encId}`);
 
   activeEventSource.addEventListener("log", (e) => {
-    const data = JSON.parse(e.data);
-    appendLog(data.text);
+    try {
+      const data = JSON.parse(e.data);
+      appendLog(data.text);
+    } catch (_) {
+      appendLog(e.data);
+    }
   });
 
   activeEventSource.addEventListener("progress", (e) => {
-    const data = JSON.parse(e.data);
-    appendLog(data.text);
+    try {
+      const data = JSON.parse(e.data);
+      appendLog(data.text);
+    } catch (_) {
+      appendLog(e.data);
+    }
   });
 
   activeEventSource.addEventListener("error", (e) => {
-    const data = e.data ? JSON.parse(e.data) : { text: "Lỗi kết nối render" };
-    appendLog(`[ERROR] ${data.text}`, "error");
-    btnCloseRender.disabled = false;
-    activeEventSource.close();
+    let msg = "";
+    if (e.data) {
+      try {
+        const data = JSON.parse(e.data);
+        msg = data.text || e.data;
+      } catch (_) {
+        msg = e.data;
+      }
+    }
+    if (msg) {
+      appendLog(`[ERROR] ${msg}`, "error");
+      btnCloseRender.disabled = false;
+      activeEventSource.close();
+    }
   });
 
+  activeEventSource.onerror = () => {
+    if (activeEventSource.readyState === EventSource.CLOSED) {
+      btnCloseRender.disabled = false;
+    } else if (activeEventSource.readyState === EventSource.CONNECTING) {
+      appendLog("[ERROR] Mất kết nối tới máy chủ render.", "error");
+      btnCloseRender.disabled = false;
+      activeEventSource.close();
+    }
+  };
+
   activeEventSource.addEventListener("done", (e) => {
-    const data = JSON.parse(e.data);
-    appendLog(`[SUCCESS] ${data.message}`, "done");
+    try {
+      const data = JSON.parse(e.data);
+      appendLog(`[SUCCESS] ${data.message}`, "done");
+    } catch (_) {
+      appendLog(`[SUCCESS] Hoàn thành!`, "done");
+    }
     btnCloseRender.disabled = false;
     activeEventSource.close();
     loadVideos();

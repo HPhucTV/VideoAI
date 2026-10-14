@@ -1,0 +1,67 @@
+{
+  "jobId": "job 1",
+  "title": "React vs Vue: lựa chọn nào cho năm 2026?",
+  "workshop": "explainer",
+  "archetype": "versus",
+  "targetPlatform": "tiktok",
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "voice": {
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 1,
+    "rate": "+0%"
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "hook",
+      "rawText": "Câu 1 (Hook): Bước sang năm 2026, cuộc đối đầu giữa React và Vue vẫn khiến nhiều lập trình viên đau đầu khi chọn hướng đi.",
+      "visual": {
+        "headline": "Câu 1 (Hook): Bước sang năm 2026, cuộc đ"
+      }
+    },
+    {
+      "id": "beat_02",
+      "role": "story",
+      "rawText": "Câu 2 (Problem): Vấn đề lớn nhất là chọn sai công cụ sẽ khiến bạn tốn hàng tháng trời học lại hoặc hạn chế cơ hội việc làm.",
+      "visual": {
+        "headline": "Câu 2 (Problem): Vấn đề lớn nhất là chọn"
+      }
+    },
+    {
+      "id": "beat_03",
+      "role": "story",
+      "rawText": "Câu 3 (Solution): Giải pháp ở đây là hãy chọn React nếu mục tiêu của bạn là các tập đoàn lớn, và chọn Vue nếu cần tốc độ phát triển sản phẩm nhanh gọn.",
+      "visual": {
+        "headline": "Câu 3 (Solution): Giải pháp ở đây là hãy"
+      }
+    },
+    {
+      "id": "beat_04",
+      "role": "story",
+      "rawText": "Câu 4 (Deep Dive): Cơ chế hoạt động của React mạnh về hệ sinh thái mở rộng linh hoạt, trong khi Vue tối ưu hóa sẵn hiệu năng với cú pháp cực kỳ trực quan.",
+      "visual": {
+        "headline": "Câu 4 (Deep Dive): Cơ chế hoạt động của "
+      }
+    },
+    {
+      "id": "beat_05",
+      "role": "story",
+      "rawText": "Câu 5 (Proof): Thực tế cho thấy React vẫn áp đảo về số lượng tin tuyển dụng, nhưng Vue lại giúp các đội ngũ nhỏ tăng gấp đôi tốc độ hoàn thiện giao diện.",
+      "visual": {
+        "headline": "Câu 5 (Proof): Thực tế cho thấy React vẫ"
+      }
+    },
+    {
+      "id": "beat_06",
+      "role": "cta",
+      "rawText": "Câu 6 (CTA): Bạn chọn React hay Vue cho năm 2026, hãy để lại bình luận và theo dõi kênh để đón xem video tiếp theo!",
+      "visual": {
+        "headline": "Câu 6 (CTA): Bạn chọn React hay Vue cho "
+      }
+    }
+  ]
+}

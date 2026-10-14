@@ -119,6 +119,7 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.
         [
           "remotion",
           "render",
+          "src/index.ts",
           compositionId,
           outMp4,
           `--props=${propsPath}`,
@@ -127,6 +128,7 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.
         {
           cwd: join(process.cwd(), "workshops", "workshop-explainer"),
           stdio: "inherit",
+          shell: true,
         }
       );
       console.log(`Render complete: ${outMp4}`);

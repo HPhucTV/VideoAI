@@ -185,9 +185,9 @@ async function scanVideoLibrary() {
         beats: job.beats || [],
         metadata: job.metadata || {},
         hasVideo: Boolean(videoFile),
-        videoUrl: videoFile ? `/media/${workshop}/${basename(videoFile)}` : null,
-        thumbUrl: thumbFile ? `/media/${workshop}/${basename(thumbFile)}` : null,
-        srtUrl: srtFile ? `/media/${workshop}/${id}/input.srt` : null,
+        videoUrl: videoFile ? `/media/${workshop}/${encodeURIComponent(basename(videoFile))}` : null,
+        thumbUrl: thumbFile ? `/media/${workshop}/${encodeURIComponent(basename(thumbFile))}` : null,
+        srtUrl: srtFile ? `/media/${workshop}/${encodeURIComponent(id)}/input.srt` : null,
         sizeBytes,
         lastModified: mtime.toISOString(),
       });
@@ -203,7 +203,12 @@ async function scanVideoLibrary() {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url || "/", `http://${req.headers.host}`);
-  const pathname = url.pathname;
+  let pathname = url.pathname;
+  try {
+    pathname = decodeURIComponent(url.pathname);
+  } catch {
+    // Keep raw pathname if decoding fails
+  }
 
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
@@ -217,7 +222,7 @@ const server = createServer(async (req, res) => {
 
   // 1. Phục vụ Media từ thư mục output/
   if (pathname.startsWith("/media/")) {
-    const relPath = decodeURIComponent(pathname.replace("/media/", ""));
+    const relPath = pathname.replace("/media/", "");
     const filePath = join(OUTPUT_DIR, relPath);
     streamFileWithRanges(filePath, req, res);
     return;
@@ -238,7 +243,7 @@ const server = createServer(async (req, res) => {
     const id = pathname.replace("/api/videos/", "");
     const jobPath = join(JOBS_DIR, `${id}.json`);
     if (!existsSync(jobPath)) {
-      sendJson(res, 404, { success: false, error: "Khong tim thay job" });
+      sendJson(res, 404, { success: false, error: `Không tìm thấy job ${id}` });
       return;
     }
     try {
@@ -254,7 +259,7 @@ const server = createServer(async (req, res) => {
     try {
       const job = await parseBody(req);
       if (!job.jobId || !job.title) {
-        sendJson(res, 400, { success: false, error: "Thieu jobId hoac title" });
+        sendJson(res, 400, { success: false, error: "Thiếu jobId hoặc title" });
         return;
       }
       const jobPath = join(JOBS_DIR, `${job.jobId}.json`);
@@ -299,7 +304,7 @@ const server = createServer(async (req, res) => {
       for (const p of possibleOutputs) {
         if (existsSync(p)) await unlink(p).catch(() => {});
       }
-      sendJson(res, 200, { success: true, message: `Da xoa thanh cong ${id}` });
+      sendJson(res, 200, { success: true, message: `Đã xóa thành công ${id}` });
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }
@@ -311,13 +316,9 @@ const server = createServer(async (req, res) => {
     const id = pathname.replace("/api/render/", "");
     const jobPath = join(JOBS_DIR, `${id}.json`);
 
-    if (!existsSync(jobPath)) {
-      sendJson(res, 404, { success: false, error: "Khong tim thay job de render" });
-      return;
-    }
-
+    // Thiết lập SSE Headers trước để trình duyệt nhận stream ngay cả khi gặp lỗi
     res.writeHead(200, {
-      "Content-Type": "text/event-stream",
+      "Content-Type": "text/event-stream; charset=utf-8",
       "Cache-Control": "no-cache",
       "Connection": "keep-alive",
       "Access-Control-Allow-Origin": "*",
@@ -327,85 +328,124 @@ const server = createServer(async (req, res) => {
       res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
     };
 
+    if (!existsSync(jobPath)) {
+      sendEvent("error", { text: `Không tìm thấy file kịch bản cho Job: "${id}" tại ${jobPath}` });
+      res.end();
+      return;
+    }
+
     try {
       const job = JSON.parse(await readFile(jobPath, "utf-8"));
       const workshop = job.workshop || "explainer";
 
-      sendEvent("log", { text: `[1/3] Bat dau render cho Job: ${id} (Xuong: ${workshop})...` });
-
-      let cmd = "";
-      let args: string[] = [];
+      sendEvent("log", { text: `[1/3] Khởi động render cho Job "${id}" (Phân xưởng: ${workshop})...` });
 
       if (workshop === "explainer") {
-        sendEvent("log", { text: "[2/3] Chuyen doi Job sang Remotion Props & Tong hop Audio TTS..." });
+        sendEvent("log", { text: "[2/3] Chuyển đổi kịch bản sang Remotion Props & Tạo giọng đọc TTS..." });
+
         const adapter = spawn("node", [
           "--experimental-strip-types",
           "workshops/workshop-explainer/src/job-adapter.ts",
+          "--job",
           jobPath,
-          "workshops/workshop-explainer/public/props.json",
-        ], { cwd: ROOT_DIR, shell: true });
+        ], { cwd: ROOT_DIR });
 
-        adapter.stdout.on("data", d => sendEvent("log", { text: d.toString().trim() }));
-        adapter.stderr.on("data", d => sendEvent("log", { text: d.toString().trim() }));
+        adapter.stdout.on("data", d => {
+          const lines = d.toString().split("\n").map((l: string) => l.trim()).filter(Boolean);
+          for (const l of lines) sendEvent("log", { text: l });
+        });
+        adapter.stderr.on("data", d => {
+          const lines = d.toString().split("\n").map((l: string) => l.trim()).filter(Boolean);
+          for (const l of lines) sendEvent("log", { text: `[Adapter] ${l}` });
+        });
 
-        adapter.on("close", (code) => {
+        adapter.on("close", async (code) => {
           if (code !== 0) {
-            sendEvent("error", { text: `Adapter that bai voi exit code ${code}` });
+            sendEvent("error", { text: `Adapter thất bại với mã lỗi ${code}` });
             res.end();
             return;
           }
 
-          sendEvent("log", { text: "[3/3] Dang render video voi Remotion engine..." });
-          const outVideo = join(OUTPUT_DIR, "explainer", `${id}.mp4`);
+          const isLandscape = job.targetPlatform === "youtube_long" || (job.canvas && job.canvas.width > job.canvas.height);
+          const compositionId = isLandscape ? "OmniExplainer-Landscape" : "OmniExplainer-Portrait";
+
+          sendEvent("log", { text: `[3/3] Đang render video với Remotion Engine (${compositionId})...` });
+
+          const outDir = join(OUTPUT_DIR, "explainer");
+          await mkdir(outDir, { recursive: true });
+          const outVideo = join(outDir, `${id}.mp4`);
+
           const remotionRender = spawn("npx.cmd", [
             "remotion",
             "render",
-            "OmniExplainer-Portrait",
-            outVideo,
+            "src/index.ts",
+            compositionId,
+            `"${outVideo}"`,
             "--props=public/props.json",
             "--gl=angle",
-          ], { cwd: join(ROOT_DIR, "workshops", "workshop-explainer"), shell: true });
+          ], {
+            cwd: join(ROOT_DIR, "workshops", "workshop-explainer"),
+            shell: true,
+          });
 
-          remotionRender.stdout.on("data", d => sendEvent("progress", { text: d.toString().trim() }));
-          remotionRender.stderr.on("data", d => sendEvent("progress", { text: d.toString().trim() }));
+          remotionRender.stdout.on("data", d => {
+            const lines = d.toString().split("\n").map((l: string) => l.trim()).filter(Boolean);
+            for (const l of lines) sendEvent("progress", { text: l });
+          });
+          remotionRender.stderr.on("data", d => {
+            const lines = d.toString().split("\n").map((l: string) => l.trim()).filter(Boolean);
+            for (const l of lines) sendEvent("progress", { text: l });
+          });
 
           remotionRender.on("close", (rCode) => {
             if (rCode === 0) {
               sendEvent("done", {
                 success: true,
-                videoUrl: `/media/explainer/${id}.mp4`,
-                message: "Render hoan tat 100%!",
+                videoUrl: `/media/explainer/${encodeURIComponent(id)}.mp4`,
+                message: "Render video Remotion hoàn tất 100%!",
               });
             } else {
-              sendEvent("error", { text: `Remotion render that bai (exit code: ${rCode})` });
+              sendEvent("error", { text: `Remotion render thất bại (mã lỗi: ${rCode})` });
             }
             res.end();
           });
         });
       } else if (workshop === "whiteboard") {
-        sendEvent("log", { text: "[2/3] Tong hop am thanh & tao skeleton phan canh Whiteboard..." });
+        sendEvent("log", { text: "[2/3] Tổng hợp âm thanh & tạo skeleton phân cảnh Whiteboard..." });
         const outDir = join(OUTPUT_DIR, "whiteboard", id);
+        await mkdir(outDir, { recursive: true });
         const pyExe = join(ROOT_DIR, "workshops", "workshop-whiteboard", ".venv", "Scripts", "python.exe");
+        const actualPy = existsSync(pyExe) ? pyExe : "python";
 
-        const wbAdapter = spawn(pyExe, [
+        const wbAdapter = spawn(actualPy, [
           "workshops/workshop-whiteboard/job_adapter.py",
           jobPath,
           outDir,
-        ], { cwd: ROOT_DIR, shell: true });
+        ], { cwd: ROOT_DIR });
 
-        wbAdapter.stdout.on("data", d => sendEvent("log", { text: d.toString().trim() }));
-        wbAdapter.stderr.on("data", d => sendEvent("log", { text: d.toString().trim() }));
+        wbAdapter.stdout.on("data", d => {
+          const lines = d.toString().split("\n").map((l: string) => l.trim()).filter(Boolean);
+          for (const l of lines) sendEvent("log", { text: l });
+        });
+        wbAdapter.stderr.on("data", d => {
+          const lines = d.toString().split("\n").map((l: string) => l.trim()).filter(Boolean);
+          for (const l of lines) sendEvent("log", { text: `[Whiteboard] ${l}` });
+        });
 
         wbAdapter.on("close", (wCode) => {
-          sendEvent("done", {
-            success: true,
-            videoUrl: `/media/whiteboard/${id}.mp4`,
-            message: "Da cap nhat am thanh & kịch bản Whiteboard!",
-          });
+          if (wCode === 0) {
+            sendEvent("done", {
+              success: true,
+              videoUrl: `/media/whiteboard/${encodeURIComponent(id)}.mp4`,
+              message: "Đã cập nhật âm thanh & kịch bản Whiteboard!",
+            });
+          } else {
+            sendEvent("error", { text: `Whiteboard adapter thất bại (mã lỗi: ${wCode})` });
+          }
           res.end();
         });
       } else {
-        sendEvent("done", { success: true, message: "Kich hoat xuong thanh cong" });
+        sendEvent("done", { success: true, message: "Kích hoạt phân xưởng thành công!" });
         res.end();
       }
     } catch (err: any) {
