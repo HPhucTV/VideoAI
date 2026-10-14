@@ -1,0 +1,34 @@
+{
+  "name": "omnivideo-studio",
+  "version": "1.0.0",
+  "description": "Hệ thống sản xuất video AI đa phân xưởng chạy 100% Local (Fast-News, Tech Explainer, Whiteboard)",
+  "private": true,
+  "workspaces": [
+    "core",
+    "workshops/workshop-news",
+    "workshops/workshop-explainer"
+  ],
+  "scripts": {
+    "studio": "powershell -ExecutionPolicy Bypass -NoProfile -File studio.ps1",
+    "phonetics": "node core/bin/phonetics.js",
+    "audio:probe": "node core/bin/audio-probe.js",
+    "test": "npm --workspace=core test && npm --workspace=workshops/workshop-news test",
+    "dev:explainer": "npm --workspace=workshops/workshop-explainer run dev",
+    "build:explainer": "npm --workspace=workshops/workshop-explainer run build",
+    "pipeline:news": "npm --workspace=workshops/workshop-news run pipeline",
+    "sync:skills": "powershell -ExecutionPolicy Bypass -NoProfile -File scripts/sync-skills.ps1"
+  },
+  "keywords": [
+    "video",
+    "ai",
+    "youtube",
+    "tiktok",
+    "remotion",
+    "hyperframes",
+    "whiteboard",
+    "edge-tts",
+    "local-first"
+  ],
+  "author": "OmniVideo Studio",
+  "license": "MIT"
+}

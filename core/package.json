@@ -1,0 +1,26 @@
+{
+  "name": "@omnivideo/core",
+  "version": "1.0.0",
+  "description": "Lõi dùng chung cho OmniVideo Studio (Phonetics, Audio Probe, Schema job.json, TTS)",
+  "type": "module",
+  "main": "index.ts",
+  "bin": {
+    "omni-phonetics": "bin/phonetics.js",
+    "omni-audio-probe": "bin/audio-probe.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "edge-tts-universal": "^1.4.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

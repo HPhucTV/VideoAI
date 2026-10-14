@@ -1,0 +1,26 @@
+[
+  {
+    "input": "Dự án đạt 1.000.000 lượt tải",
+    "expected": "Dự án đạt một triệu lượt tải"
+  },
+  {
+    "input": "Giá vé là 50.000đ mỗi người",
+    "expected": "Giá vé là năm mươi nghìn đồng mỗi người"
+  },
+  {
+    "input": "OpenAI vừa công bố bản GPT 5.5",
+    "expected": "OpenAI vừa công bố bản GPT 5 chấm 5"
+  },
+  {
+    "input": "Thị phần tăng 82.7% trong năm qua",
+    "expected": "Thị phần tăng tám mươi hai phẩy bảy phần trăm trong năm qua"
+  },
+  {
+    "input": "Ứng dụng AI và API giúp cải thiện UI/UX",
+    "expected": "Ứng dụng ây ai và ây pi ai giúp cải thiện u ai u ích"
+  },
+  {
+    "input": "File nặng 500MB và máy có 16GB RAM",
+    "expected": "File nặng năm trăm mê ga bai và máy có mười sáu ghi ga bai ram"
+  }
+]
