@@ -1,0 +1,249 @@
+{
+  "jobId": "job-chiec-ao-mua-vang-20m",
+  "title": "Chiếc Áo Mưa Vàng Và Bát Phở Lúc 2 Giờ Sáng: Câu Chuyện Nhân Văn 20 Năm Đẫm Nước Mắt",
+  "workshop": "explainer",
+  "archetype": "storytelling",
+  "targetPlatform": "youtube_long",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 0.95,
+    "rate": "-3%",
+    "pitch": "+0Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "channel": "QUÀ TẶNG CUỘC SỐNG",
+    "durationExpectedMinutes": 20,
+    "genre": "Humanitarian Story / Audio Drama",
+    "tags": ["nhan van", "long tot", "tinh nguoi", "qua tang cuoc song", "tam su", "truyen ngan"]
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "intro_atmosphere",
+      "rawText": "Mùa đông năm ấy, Hà Nội đón đợt gió mùa đông bắc mạnh nhất trong vòng mười năm. Cơn mưa rào xối xả lúc nửa đêm cuốn theo cái rét cắt da cắt thịt, làm những con phố cổ vốn nhộn nhịp bỗng chốc trở nên vắng lặng đến rợn ngợp. Dưới ánh đèn vàng vọt hắt ra từ góc phố Hàng Bông, chỉ còn le lói một quán phở nhỏ của bác Nam, người cựu chiến binh già với chiếc chân khập khiễng, vẫn đang đỏ lửa bên nồi nước dùng bốc khói nghi ngút.",
+      "visual": {
+        "headline": "Đêm Mưa Hà Nội 20 Năm Trước",
+        "subhead": "Khi giá lạnh phủ kín những phận đời lang bạt",
+        "badge": "CHƯƠNG I: MÁI HIÊN MÙA GIÔNG"
+      }
+    },
+    {
+      "id": "beat_02",
+      "role": "character_intro",
+      "rawText": "Khoảng hai giờ sáng, cánh cửa liếp khẽ lay động bởi tiếng gió giật. Bác Nam ngẩng đầu nhìn ra mái hiên, bắt gặp bóng dáng hai con người đang co ro run rẩy. Người đàn ông trạc bốn mươi tuổi, quần áo lao động lấm lem bùn đất, đôi bàn tay nứt nẻ vì vôi vữa, đang ôm chặt trong lòng một bé gái chừng sáu tuổi. Đứa bé tái nhợt vì lạnh, đầu quấn chiếc khăn len rách bươm, nép sát vào ngực cha như tìm chút hơi ấm mong manh giữa đêm đông buốt giá.",
+      "visual": {
+        "headline": "Hai Phận Đời Cơ Cực",
+        "subhead": "Bị lừa hết tiền công, không chốn dung thân",
+        "badge": "CHƯƠNG I: MÁI HIÊN MÙA GIÔNG"
+      }
+    },
+    {
+      "id": "beat_03",
+      "role": "dialogue_conflict",
+      "rawText": "Thấy bác Nam nhìn ra, người đàn ông hoảng sợ lùi lại, sợ mình làm phiền vị khách hay người chủ quán khó tính. Bác Nam bước lại gần, cất giọng trầm ấm: Chú em và cháu vào trong nhà cho đỡ rét. Người đàn ông ấp úng, mắt đỏ hoe: Bác ơi, con xin lỗi. Con đưa cháu từ quê lên làm phụ hồ, nhưng chủ thầu quỵt nợ bỏ trốn, đồ đạc cũng bị cướp sạch. Con chỉ dám xin bác một ca nước sôi để bẻ nửa gói mì tôm sống cho cháu nó lót dạ, cháu đói lả từ trưa đến giờ rồi.",
+      "visual": {
+        "headline": "Lời Cầu Xin Ngập Ngừng",
+        "subhead": "Chỉ xin một ngụm nước sôi để cứu đói cho con",
+        "badge": "CHƯƠNG I: MÁI HIÊN MÙA GIÔNG"
+      }
+    },
+    {
+      "id": "beat_04",
+      "role": "empathy_turning",
+      "rawText": "Nhìn đôi mắt đầy vẻ tự trọng nhưng cùng quẫn của người cha, lòng bác Nam thắt lại. Bác hiểu cái cảm giác của người trụ cột gia đình khi bất lực trước sự đói khát của đứa con máu mủ. Nếu đưa tiền, người đàn ông chất phác này chắc chắn sẽ cảm thấy bị tổn thương lòng tự trọng. Bác Nam mỉm cười, chỉ tay vào bao bột mì nặng năm mươi cân nằm ở góc sân: Chú khỏe tay, vào khiêng giúp tôi bao bột này vào kho với, chân tôi đau quá không mang nổi. Xong việc, tôi đãi hai bố con một bữa no.",
+      "visual": {
+        "headline": "Phẩm Giá Của Người Lao Động",
+        "subhead": "Không ngửa tay xin tiền bố thí",
+        "badge": "CHƯƠNG I: MÁI HIÊN MÙA GIÔNG"
+      }
+    },
+    {
+      "id": "beat_05",
+      "role": "scene_warmth",
+      "rawText": "Người đàn ông mừng rỡ như vớ được chiếc phao cứu sinh, vội vàng xốc bao bột lên vai mà không quản ngại mệt nhọc. Khi anh vừa quay ra phủi sạch bụi bẩn trên áo, trước mắt hai cha con đã là hai bát phở bò bốc khói ngùn ngụt, thịt bò tái lăn mềm mại phủ đầy trên lớp bánh phở trắng phau, nước dùng trong vắt tỏa hương quế hồi thơm phức. Đứa bé nuốt nước bọt, đôi mắt tròn xoe ngước nhìn cha, chờ đợi sự đồng ý.",
+      "visual": {
+        "headline": "Bát Phở Không Tính Tiền",
+        "subhead": "Hương vị tình người xua tan giá buốt",
+        "badge": "CHƯƠNG II: BÁT PHỞ ẤM TÌNH NGƯỜI"
+      }
+    },
+    {
+      "id": "beat_06",
+      "role": "emotional_climax",
+      "rawText": "Ăn đi cháu, ăn cho thật ấm bụng, bác Nam nhẹ nhàng xoa đầu cô bé. Đứa trẻ cầm chiếc thìa nhôm vụng về húp một ngụm nước dùng nóng hổi, khuôn mặt ửng hồng dần lên. Người cha cắm cúi ăn, nhưng bác Nam nhận ra từng giọt nước mắt lăn dài qua gò má gầy guộc rớt vào bát nước dùng. Đó không chỉ là sự thỏa mãn cơn đói cồn cào, mà là giọt nước mắt biết ơn vì được đối đãi như một con người tử tế giữa chốn đô thị phồn hoa xa lạ.",
+      "visual": {
+        "headline": "Giọt Nước Mắt Rơi Vào Nước Dùng",
+        "subhead": "Bữa ăn ngon nhất trong cuộc đời một đứa trẻ",
+        "badge": "CHƯƠNG II: BÁT PHỞ ẤM TÌNH NGƯỜI"
+      }
+    },
+    {
+      "id": "beat_07",
+      "role": "symbol_gift",
+      "rawText": "Khi hai cha con chuẩn bị bước ra ga tàu để tìm đường về quê, trời mưa càng lúc càng nặng hạt. Bác Nam vào buồng trong, lấy ra chiếc áo mưa cánh dơi màu vàng dày dặn, còn rất mới, choàng cẩn thận lên người hai cha con. Người cha ngập ngừng, móc trong túi ra mẩu bút chì cùn, run rẩy xin bác Nam một mẩu giấy báo: Bác cho con ghi lại tên và địa chỉ quán. Con tên là Hùng, con gái con tên là Mai. Ơn cứu mạng đêm nay của bác, cả đời cha con con không bao giờ dám quên. Nhất định con sẽ trở lại tạ ơn bác.",
+      "visual": {
+        "headline": "Chiếc Áo Mưa Màu Vàng",
+        "subhead": "Kỷ vật của sự bao bọc chở che",
+        "badge": "CHƯƠNG II: BÁT PHỞ ẤM TÌNH NGƯỜI"
+      }
+    },
+    {
+      "id": "beat_08",
+      "role": "chapter_conclusion",
+      "rawText": "Bác Nam chỉ cười đôn hậu: Cứ đưa cháu về quê an toàn là quý rồi chú em à. Đường đời dài lắm, giúp được nhau chút nào thì giúp. Bóng hai cha con trong chiếc áo mưa vàng khuất dần sau màn mưa trắng xóa. Bác Nam quay vào dọn dẹp quán, mẩu giấy ghi địa chỉ có lẽ cũng đã theo gió mưa cuốn đi đâu mất, và bác cũng chẳng bao giờ nghĩ ngợi đến chuyện người ta sẽ quay lại đền đáp ơn nghĩa một bát phở cỏn con.",
+      "visual": {
+        "headline": "Lời Thề Dưới Màn Mưa",
+        "subhead": "Chiếc áo mưa vàng hòa vào bóng đêm hun hút",
+        "badge": "CHƯƠNG II: BÁT PHỞ ẤM TÌNH NGƯỜI"
+      }
+    },
+    {
+      "id": "beat_09",
+      "role": "time_passage",
+      "rawText": "Mười lăm năm trôi qua như một cái chớp mắt. Ở một vùng quê nghèo miền Trung, người cha tên Hùng tiếp tục cày cuốc ngày đêm, gồng gánh nuôi con gái ăn học. Chiếc áo mưa vàng năm ấy được anh giặt sạch sẽ, gấp phẳng phiu cất dưới đáy rương gỗ. Mỗi mùa mưa bão tới, người cha lại lấy chiếc áo mưa ra che cho Mai đến trường. Anh dặn con: Chiếc áo mưa này chứa đựng hơi ấm của một người tốt phương xa. Con phải học thật giỏi, sống thật nhân hậu để không phụ lòng người đã cưu mang cha con mình.",
+      "visual": {
+        "headline": "15 Năm Bươn Chải Giữa Nghịch Cảnh",
+        "subhead": "Tình phụ tử nuôi dưỡng ước mơ",
+        "badge": "CHƯƠNG III: 15 NĂM BƯƠN CHẢI"
+      }
+    },
+    {
+      "id": "beat_10",
+      "role": "growth_milestone",
+      "rawText": "Thấu hiểu nỗi cơ cực của cha và vết sẹo bỏng rát trên lưng cha sau những tai nạn công trường, Mai nỗ lực phi thường trong học tập. Năm mười tám tuổi, cô bé nghèo ngày nào đã đỗ thủ khoa Đại học Y Hà Nội với số điểm tuyệt đối. Ngày Mai lên đường ra thủ đô nhập học, gia tài mang theo chỉ là chiếc ba lô sờn chỉ và chiếc áo mưa vàng đã ngả màu thời gian mà người cha nâng niu trao lại như một tín vật thiêng liêng về đạo lý làm người.",
+      "visual": {
+        "headline": "Cô Bé Năm Ấy Đã Lớn Khôn",
+        "subhead": "Thủ khoa Đại học Y và lời hứa danh dự",
+        "badge": "CHƯƠNG III: 15 NĂM BƯƠN CHẢI"
+      }
+    },
+    {
+      "id": "beat_11",
+      "role": "quest_search",
+      "rawText": "Vừa đi học vừa đi làm thêm ở bệnh viện, Mai nhiều lần quay lại góc phố Hàng Bông năm xưa để tìm quán phở của bác Nam theo lời cha dặn. Thế nhưng phố phường đã thay đổi quá nhiều, những tòa nhà cao tầng mọc lên, biển hiệu san sát, người dân cũ cũng chuyển đi nơi khác. Mảnh giấy ghi địa chỉ năm xưa đã thất lạc, Mai chỉ còn biết lưu giữ hình ảnh người cựu chiến binh khập khiễng với nồi nước dùng bốc khói trong ký ức tuổi thơ.",
+      "visual": {
+        "headline": "Cuộc Tìm Kiếm Trong Vô Vọng",
+        "subhead": "Góc phố xưa đã đổi thay theo năm tháng",
+        "badge": "CHƯƠNG III: 15 NĂM BƯƠN CHẢI"
+      }
+    },
+    {
+      "id": "beat_12",
+      "role": "destiny_preparation",
+      "rawText": "Thời gian thoi đưa, Mai tốt nghiệp xuất sắc và trở thành bác sĩ ngoại khoa tim mạch tại một bệnh viện trung ương lớn nhất thủ đô. Trong suốt những năm tháng khoác áo blouse trắng, đứng trước bao ca mổ thập tử nhất sinh, cô luôn nhớ lời cha: Cứu người là cái duyên, tử tế là cái nghiệp. Mai luôn dành sự quan tâm đặc biệt cho những bệnh nhân nghèo, những phận đời cơ nhỡ, như thể muốn trả lại món nợ ân tình mà cuộc đời từng ban tặng cho cha con cô.",
+      "visual": {
+        "headline": "Trái Tim Của Người Thầy Thuốc",
+        "subhead": "Gieo mầm nhân ái nơi lằn ranh sinh tử",
+        "badge": "CHƯƠNG III: 15 NĂM BƯƠN CHẢI"
+      }
+    },
+    {
+      "id": "beat_13",
+      "role": "crisis_onset",
+      "rawText": "Ở phía bên kia thành phố, bác Nam lúc này đã ngoài bảy mươi tuổi. Quán phở cổ truyền ngày càng vắng khách vì bác không còn đủ sức thức khuya dậy sớm. Nghiệt ngã hơn, một ngày nọ, bác Nam bất ngờ ngã quỵ bên hiên quán. Bác được đưa vào viện cấp cứu trong tình trạng nhồi máu cơ tim cấp kèm suy đa tạng. Ca phẫu thuật đặt stent và can thiệp mạch vành khẩn cấp đòi hỏi số tiền lên tới hơn hai trăm triệu đồng, một con số khổng lồ vượt quá khả năng của gia đình bác.",
+      "visual": {
+        "headline": "Biến Cố Tuổi Xế Chiều",
+        "subhead": "Căn bệnh hiểm nghèo và gánh nặng viện phí",
+        "badge": "CHƯƠNG IV: BIẾN CỐ TUỔI XẾ CHIỀU"
+      }
+    },
+    {
+      "id": "beat_14",
+      "role": "family_struggle",
+      "rawText": "Ngồi bên hành lang bệnh viện ngập mùi thuốc sát trùng, bà Lan, vợ bác Nam, khóc cạn nước mắt. Con cái làm ăn xa cũng lao đao khó khăn, bà dự tính phải bán đi căn nhà và quán phở gắn bó nửa đời người để cứu lấy mạng sống của chồng. Nhìn người bạn đời nằm bất tỉnh trên giường bệnh với đủ thứ dây nhợ máy móc chằng chịt, bà nắm chặt bàn tay chai sần của bác mà lòng quặn thắt, cầu xin một phép màu từ trời cao.",
+      "visual": {
+        "headline": "Nước Mắt Người Vợ Già",
+        "subhead": "Quyết định bán đi căn nhà cả đời gắn bó",
+        "badge": "CHƯƠNG IV: BIẾN CỐ TUỔI XẾ CHIỀU"
+      }
+    },
+    {
+      "id": "beat_15",
+      "role": "fateful_encounter",
+      "rawText": "Buổi sáng hôm đó, bác sĩ Mai chủ trì cuộc hội chẩn các ca bệnh nặng cần can thiệp tim mạch trong ngày. Khi lật mở tập hồ sơ bệnh án số 402 mang tên Nguyễn Văn Nam, bảy mươi hai tuổi, quê gốc Nam Định, ánh mắt Mai khựng lại ở phần tiền sử: Thương binh hạng hai, có mảnh đạn ở đùi phải gây tật khập khiễng. Một linh cảm mãnh liệt thôi thúc Mai rời phòng làm việc, vội vã chạy thẳng xuống khoa Hồi sức tích cực.",
+      "visual": {
+        "headline": "Hồ Sơ Bệnh Án Số 402",
+        "subhead": "Vết sẹo chiến trường và dòng tên quen thuộc",
+        "badge": "CHƯƠNG IV: BIẾN CỐ TUỔI XẾ CHIỀU"
+      }
+    },
+    {
+      "id": "beat_16",
+      "role": "revelation_moment",
+      "rawText": "Đứng trước giường bệnh, nhìn gương mặt gầy gò, vầng trán cao và nụ cười hiền hậu dù đang thiếp đi trong cơn đau co thắt, Mai bàng hoàng nhận ra vết sẹo dài trên bàn tay phải, vết sẹo mà hai mươi năm trước từng thoăn thoắt bưng hai bát phở nóng hổi trao cho cha con cô. Mai run rẩy bước lại gần bà Lan, cất giọng xúc động nghẹn ngào: Thưa bác, bác trai có phải là chủ quán phở ở góc phố Hàng Bông năm xưa không ạ?",
+      "visual": {
+        "headline": "Người Cựu Binh Đêm Mưa Năm Ấy",
+        "subhead": "Ký ức ùa về trong sự bàng hoàng",
+        "badge": "CHƯƠNG IV: BIẾN CỐ TUỔI XẾ CHIỀU"
+      }
+    },
+    {
+      "id": "beat_17",
+      "role": "climax_battle",
+      "rawText": "Nhận được cái gật đầu trong nước mắt của bà Lan, Mai nén xúc động, lập tức kích hoạt quy trình can thiệp khẩn cấp mức độ cao nhất. Dưới ánh đèn phòng mổ sáng lạnh suốt bốn tiếng đồng hồ căng thẳng, từng đường kim mũi chỉ, từng thao tác luồn ống thông tim mạch của bác sĩ Mai chuẩn xác đến tuyệt đối. Cô tự nhủ với chính mình: Bác Nam ơi, năm xưa bác đã cứu sống tương lai của cha con cháu, hôm nay bằng mọi giá cháu phải giữ bác ở lại với cuộc đời này!",
+      "visual": {
+        "headline": "Trận Chiến Dưới Ánh Đèn Mổ",
+        "subhead": "Dốc hết tâm lực đền đáp ân tình",
+        "badge": "CHƯƠNG V: VÒNG XOAY CỦA SỰ TỬ TẾ"
+      }
+    },
+    {
+      "id": "beat_18",
+      "role": "awakening_gratitude",
+      "rawText": "Ba ngày sau, bác Nam từ từ mở mắt, ánh nắng ban mai ấm áp rọi qua khung cửa sổ phòng bệnh đặc biệt. Khi bà Lan run run cầm tờ hóa đơn viện phí với dòng chữ đỏ: Đã thanh toán toàn bộ viện phí và chi phí phẫu thuật không đồng, cả gia đình bác Nam ngơ ngác không hiểu chuyện gì đang xảy ra. Cửa phòng khẽ mở, một người đàn ông già chống gậy bước vào cùng nữ bác sĩ trưởng khoa với nụ cười dịu dàng.",
+      "visual": {
+        "headline": "Tỉnh Lại Sau Cơn Mê Dài",
+        "subhead": "Sự ngỡ ngàng trước tờ hóa đơn viện phí",
+        "badge": "CHƯƠNG V: VÒNG XOAY CỦA SỰ TỬ TẾ"
+      }
+    },
+    {
+      "id": "beat_19",
+      "role": "emotional_resolution",
+      "rawText": "Người đàn ông chống gậy chính là ông Hùng, mái tóc đã hoa râm nhưng ánh mắt vẫn vẹn nguyên sự chân chất năm nào. Trên tay ông là chiếc áo mưa màu vàng đã cũ, được giặt sạch sẽ và xếp ngay ngắn, bên trên đặt một chiếc phong bì ghi nốt số tiền viện phí. Ông Hùng run rẩy nắm lấy bàn tay bác Nam, giọng nghẹn lại: Bác Nam ơi, hai mươi năm trước bác đã cho con gái tôi một bát phở và sự tự trọng để sống tiếp. Hôm nay, con bé đã là bác sĩ, và nó đã thực hiện trọn vẹn lời thề đưa tôi trở lại tạ ơn bác!",
+      "visual": {
+        "headline": "Chiếc Áo Mưa Vàng Trở Về",
+        "subhead": "Bát phở ân tình đã đơm hoa kết trái",
+        "badge": "CHƯƠNG V: VÒNG XOAY CỦA SỰ TỬ TẾ"
+      }
+    },
+    {
+      "id": "beat_20",
+      "role": "catharsis",
+      "rawText": "Bác Nam nhìn chiếc áo mưa vàng, nhìn đôi mắt rạng ngời của nữ bác sĩ trẻ, rồi hai người lính già ôm chầm lấy nhau trong dòng nước mắt lăn dài. Không có món nợ nào ở đây cả, chỉ có tình yêu thương thuần khiết giữa con người với con người đã vượt qua hai thập kỷ thử thách của thời gian. Căn phòng bệnh ngập tràn ánh nắng ấm áp, xua tan hoàn toàn cái lạnh lẽo của những máy móc và âu lo.",
+      "visual": {
+        "headline": "Khoảnh Khắc Vỡ Òa",
+        "subhead": "Khi người gieo mầm đón nhận quả ngọt",
+        "badge": "CHƯƠNG V: VÒNG XOAY CỦA SỰ TỬ TẾ"
+      }
+    },
+    {
+      "id": "beat_21",
+      "role": "philosophical_summary",
+      "rawText": "Cuộc đời này có thể đầy rẫy những bất trắc và toan tính, nhưng sự tử tế chân thành thì không bao giờ mất đi. Giống như một hạt giống vùi sâu dưới tuyết đông lạnh giá, lòng tốt mà bạn gieo cho một người lạ ngày hôm nay, một ngày nào đó sẽ quay trở lại che chở cho bạn đúng vào lúc bạn cảm thấy kiệt cùng và tuyệt vọng nhất. Hãy sống bao dung và tử tế, bởi vì cho đi là còn mãi.",
+      "visual": {
+        "headline": "Luật Nhân Quả Của Lòng Nhân Ái",
+        "subhead": "Mỗi điều thiện trao đi đều tìm đường trở lại",
+        "badge": "CHƯƠNG V: VÒNG XOAY CỦA SỰ TỬ TẾ"
+      }
+    },
+    {
+      "id": "beat_22",
+      "role": "outro_cta",
+      "rawText": "Cảm ơn bạn đã đồng hành trọn vẹn hai mươi phút cùng câu chuyện nhân văn hôm nay. Nếu câu chuyện này chạm tới trái tim bạn, hãy nhấn nút Thích, Đăng ký kênh và chia sẻ video này tới những người thân yêu như một lời nhắc nhở về vẻ đẹp của tình người giữa cuộc sống bộn bề. Chúc bạn và gia đình luôn an yên và ấm áp trên mọi nẻo đường đời!",
+      "visual": {
+        "headline": "Lan Tỏa Hơi Ấm Tình Người",
+        "subhead": "Cảm ơn bạn đã lắng nghe câu chuyện hôm nay",
+        "badge": "LỜI KẾT",
+        "cta": "ĐĂNG KÝ KÊNH ĐỂ ĐÓN XEM VIDEO MỚI"
+      }
+    }
+  ]
+}

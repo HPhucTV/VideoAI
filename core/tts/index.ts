@@ -87,13 +87,13 @@ export async function synthesizeVoice(req: TTSRequest): Promise<TTSResponse> {
       "--write-subtitles", cachedSrtPath,
     ];
     if (rate && rate !== "+0%") {
-      args.push("--rate", rate);
+      args.push(`--rate=${rate}`);
     }
     if (pitch && pitch !== "+0Hz") {
-      args.push("--pitch", pitch);
+      args.push(`--pitch=${pitch}`);
     }
     if (volume && volume !== "+0%") {
-      args.push("--volume", volume);
+      args.push(`--volume=${volume}`);
     }
 
     try {
