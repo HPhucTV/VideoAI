@@ -70,6 +70,14 @@ function Open-WhiteboardEditor {
     Start-Sleep -Seconds 2
 }
 
+function Open-VideoDashboard {
+    Write-Host ""
+    Write-Host "Đang khởi chạy Video Library Dashboard (cổng 3333)..." -ForegroundColor Green
+    Write-Host "Mở trình duyệt tại: http://localhost:3333" -ForegroundColor Cyan
+    Start-Process "http://localhost:3333"
+    npm.cmd run dashboard
+}
+
 function Run-RemotionStudio {
     Write-Host ""
     Write-Host "Đang khởi chạy Remotion Studio Live Preview (cổng 3000)..." -ForegroundColor Green
@@ -86,10 +94,11 @@ function Main-Loop {
         Write-Host " [4] 🖥️ Mở Remotion Studio Live Preview (Xem trước từng frame trên web)" -ForegroundColor White
         Write-Host " [5] 🎨 Mở Whiteboard Region Editor (Kéo thả vùng vẽ không cần server)" -ForegroundColor White
         Write-Host " [6] 🛠️ Kiểm tra môi trường hệ thống (Node, Python, FFmpeg, FFprobe)" -ForegroundColor White
+        Write-Host " [7] 🌐 Mở Video Library Dashboard (Web UI quản lý kho video)" -ForegroundColor White
         Write-Host " [0] 🚪 Thoát" -ForegroundColor Gray
         Write-Host ""
         
-        $choice = Read-Host "Nhập lựa chọn của bạn (0-6)"
+        $choice = Read-Host "Nhập lựa chọn của bạn (0-7)"
         switch ($choice) {
             "1" {
                 Write-Host ""
@@ -109,6 +118,7 @@ function Main-Loop {
             "4" { Run-RemotionStudio }
             "5" { Open-WhiteboardEditor }
             "6" { Check-Environment }
+            "7" { Open-VideoDashboard }
             "0" { Write-Host "Tạm biệt!"; return }
             default { Write-Host "Lựa chọn không hợp lệ!" -ForegroundColor Red; Start-Sleep -Seconds 1 }
         }

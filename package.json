@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Hệ thống sản xuất video AI đa phân xưởng chạy 100% Local (Fast-News, Tech Explainer, Whiteboard)",
   "private": true,
+  "type": "module",
   "workspaces": [
     "core",
     "workshops/workshop-news",
@@ -10,6 +11,7 @@
   ],
   "scripts": {
     "studio": "powershell -ExecutionPolicy Bypass -NoProfile -File studio.ps1",
+    "dashboard": "node --experimental-strip-types dashboard/server.ts",
     "phonetics": "node core/bin/phonetics.js",
     "audio:probe": "node core/bin/audio-probe.js",
     "test": "npm --workspace=core test && npm --workspace=workshops/workshop-news test",

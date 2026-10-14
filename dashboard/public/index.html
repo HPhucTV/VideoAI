@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniVideo Studio - Video Library & Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="logo-box">🎬</div>
+        <div class="brand-text">
+          <h1>OmniVideo Studio</h1>
+          <span class="badge-status">● 100% Local · Chi Phí 0đ</span>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-label">Tổng video</span>
+          <span class="stat-value" id="stat-total-videos">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Dung lượng</span>
+          <span class="stat-value" id="stat-total-size">0 MB</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btn-open-create">
+          <span class="icon">＋</span> Tạo Video Mới
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar & Filters -->
+    <section class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Tìm kiếm theo tiêu đề, hashtag hoặc nội dung beat...">
+      </div>
+
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-workshop="all">Tất Cả</button>
+        <button class="tab-btn" data-workshop="explainer">Xưởng 2 (Explainer)</button>
+        <button class="tab-btn" data-workshop="whiteboard">Xưởng 3 (Bảng Trắng)</button>
+        <button class="tab-btn" data-workshop="news">Xưởng 1 (Tin Tức)</button>
+      </div>
+    </section>
+
+    <!-- Video Grid -->
+    <main class="content-area">
+      <div class="video-grid" id="video-grid">
+        <!-- Rendered by app.js -->
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Đang tải danh sách kho video...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: Video Player & Beat Inspector -->
+  <div class="modal" id="player-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content player-modal-content">
+      <div class="modal-header">
+        <div class="header-info">
+          <span class="badge" id="modal-workshop-badge">XƯỞNG</span>
+          <h2 id="modal-video-title">Tiêu đề video</h2>
+        </div>
+        <button class="btn-close" id="btn-close-player">✕</button>
+      </div>
+
+      <div class="modal-body player-layout">
+        <div class="player-left">
+          <div class="video-wrapper">
+            <video id="main-video" controls playsinline preload="metadata">
+              Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+          </div>
+          <div class="player-toolbar">
+            <button class="btn btn-sm btn-outline" id="btn-copy-link">📋 Sao chép link video</button>
+            <a class="btn btn-sm btn-outline" id="btn-download-mp4" download>⬇ Tải MP4</a>
+            <a class="btn btn-sm btn-outline" id="btn-download-srt" download>⬇ Tải SRT</a>
+            <a class="btn btn-sm btn-outline" id="btn-download-json" download>⬇ Tải JSON</a>
+          </div>
+        </div>
+
+        <div class="player-right">
+          <div class="section-title">
+            <span>Dòng Thời Gian Các Beat (Phân Cảnh)</span>
+            <span class="count-badge" id="beats-count-badge">6 beats</span>
+          </div>
+          <div class="beats-timeline" id="beats-timeline">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Create New Video Job -->
+  <div class="modal" id="create-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content form-modal-content">
+      <div class="modal-header">
+        <h2>Tạo Kịch Bản Video Mới</h2>
+        <button class="btn-close" id="btn-close-create">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="create-job-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="new-job-id">Mã Job (ID duy nhất, không dấu, viết liền)</label>
+              <input type="text" id="new-job-id" placeholder="vd: job-react-vs-vue-60s" required>
+            </div>
+            <div class="form-group">
+              <label for="new-title">Tiêu Đề Video</label>
+              <input type="text" id="new-title" placeholder="vd: React vs Vue: Lựa Chọn Nào Cho Năm 2026?" required>
+            </div>
+            <div class="form-group">
+              <label for="new-workshop">Chọn Xưởng Sản Xuất</label>
+              <select id="new-workshop">
+                <option value="explainer">Xưởng 2: Explainer Kiến Thức (Remotion 9:16)</option>
+                <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (OpenCV/Python 16:9)</option>
+                <option value="news">Xưởng 1: Tin Tức Đồ Họa Nhanh (HyperFrames 9:16)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-archetype">Archetype Kịch Bản</label>
+              <select id="new-archetype">
+                <option value="explainer">Tech Explainer (PAS: Problem - Agitate - Solve)</option>
+                <option value="versus">Versus Battle (So sánh đối đầu A vs B)</option>
+                <option value="storytelling">Storytelling (Cổ tích, Tự sự, Drama)</option>
+                <option value="mythbuster">Mythbuster (Lật tẩy sai lầm phổ biến)</option>
+                <option value="news">Breaking News (Thời sự kim tự tháp ngược)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-voice">Giọng Đọc Mặc Định</label>
+              <select id="new-voice">
+                <option value="vi-VN-NamMinhNeural">Nam Minh (Giọng nam chuẩn công nghệ, dứt khoát)</option>
+                <option value="vi-VN-HoaiMyNeural">Hoài My (Giọng nữ ngọt ngào, truyền cảm, cổ tích)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-platform">Định Dạng Canvas</label>
+              <select id="new-platform">
+                <option value="tiktok">TikTok / Shorts / Reels (Dọc 1080x1920)</option>
+                <option value="youtube">YouTube (Ngang 1920x1080 hoặc 1376x768)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label>Nội Dung Các Beat (Mỗi dòng một câu, hệ thống sẽ tự phân nhịp 6 Beat):</label>
+            <textarea id="new-raw-script" rows="6" placeholder="Câu 1 (Hook): Bạn có biết...&#10;Câu 2 (Problem): Vấn đề lớn nhất là...&#10;Câu 3 (Solution): Giải pháp ở đây là...&#10;Câu 4 (Deep Dive): Cơ chế hoạt động...&#10;Câu 5 (Proof): Kết quả tăng gấp 10 lần...&#10;Câu 6 (CTA): Theo dõi kênh để đón xem video tiếp theo!"></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btn-cancel-create">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu Kịch Bản & Sẵn Sàng Render</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Script & Beat Tuning -->
+  <div class="modal" id="edit-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content form-modal-content">
+      <div class="modal-header">
+        <h2>Chỉnh Sửa Kịch Bản Video</h2>
+        <button class="btn-close" id="btn-close-edit">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-job-form">
+          <input type="hidden" id="edit-job-id">
+          <div class="form-group">
+            <label for="edit-title">Tiêu Đề Video</label>
+            <input type="text" id="edit-title" required>
+          </div>
+
+          <div class="section-title" style="margin-top: 20px;">
+            <span>Chỉnh Sửa Từng Beat (Lời thoại, Giọng đọc & Hiệu ứng)</span>
+          </div>
+
+          <div class="edit-beats-container" id="edit-beats-container">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <div class="modal-footer" style="margin-top: 24px;">
+            <button type="button" class="btn btn-outline" id="btn-cancel-edit">Hủy</button>
+            <button type="button" class="btn btn-success" id="btn-save-and-render">⚡ Lưu & Re-render Ngay</button>
+            <button type="submit" class="btn btn-primary">Lưu Kịch Bản</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Real-time Render Log / Console -->
+  <div class="modal" id="render-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content console-modal-content">
+      <div class="modal-header">
+        <div class="header-info">
+          <span class="badge badge-pulse">● ĐANG RENDER</span>
+          <h2 id="render-modal-title">Tiến trình Render Video</h2>
+        </div>
+        <button class="btn-close" id="btn-close-render" disabled>✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="render-progress-bar-wrap">
+          <div class="render-progress-bar" id="render-progress-bar"></div>
+        </div>
+        <div class="render-terminal" id="render-terminal">
+          <div class="terminal-line">[SYSTEM] Ket noi Server-Sent Events de stream log truc tiep...</div>
+        </div>
+      </div>
+      <div class="modal-footer" id="render-modal-footer">
+        <span class="render-hint">Quá trình render chạy 100% cục bộ trên CPU/GPU của bạn...</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
