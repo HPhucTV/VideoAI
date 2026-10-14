@@ -1,4 +1,4 @@
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+﻿[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 if ($env:PATH -notmatch "nodejs") { $env:PATH = "C:\Program Files\nodejs;" + $env:PATH }
 if ($env:PATH -notmatch "chocolatey") { $env:PATH = "C:\ProgramData\chocolatey\bin;" + $env:PATH }
 
