@@ -32,6 +32,10 @@ tts-cache/
 *.cache
 
 # Ephemeral Render Outputs & Media Files
+*.mp4
+*.mkv
+*.mov
+*.avi
 output/**/*.mp4
 output/**/*.mp3
 output/**/*.wav
