@@ -32,7 +32,7 @@ def get_node_env():
     env["PATH"] = current_path
     return env
 
-def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0%", pitch: str = "+0Hz", volume: str = "+0%", fps: int = 60) -> dict:
+def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0%", pitch: str = "+0Hz", volume: str = "+0%", fps: int = 90) -> dict:
     root_dir = Path(__file__).resolve().parent.parent.parent
     tts_cli = root_dir / "core" / "bin" / "tts.js"
     cmd = [
@@ -108,7 +108,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
 
     voice_config = job.get("voice", {})
     voice_id = voice_config.get("voiceId", "vi-VN-NamMinhNeural")
-    fps = job.get("canvas", {}).get("fps", 60)
+    fps = job.get("canvas", {}).get("fps", 90)
 
     srt_lines = []
     current_ms = 0

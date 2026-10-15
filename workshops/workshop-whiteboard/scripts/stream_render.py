@@ -57,7 +57,7 @@ def _imread_any(path: str | Path, flags: int = cv2.IMREAD_COLOR) -> np.ndarray |
 # ──────────────────────────────────────────────────────────────
 @dataclass(frozen=True)
 class Config:
-    fps: int = 60                  # 高频输出让笔尖移动更接近连续书写
+    fps: int = 90                  # 90 FPS siêu mượt cho chuyển động vẽ tay và ngòi bút (Ultra-smooth handwriting stream)
     grid_edge: int = 10            # 更小的网格减少线稿揭示的块状感
     sample_step: int = 2           # 笔尖轨迹的像素采样间距
     cap_long_edge: int = 1080      # 输入图长边上限

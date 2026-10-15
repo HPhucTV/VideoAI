@@ -179,7 +179,7 @@ async function scanVideoLibrary() {
         workshop,
         archetype: job.archetype || "explainer",
         targetPlatform: job.targetPlatform || "tiktok",
-        canvas: job.canvas || { width: 1080, height: 1920, fps: workshop === "explainer" ? 90 : 60 },
+        canvas: job.canvas || { width: 1080, height: 1920, fps: (workshop === "explainer" || workshop === "whiteboard") ? 90 : 60 },
         voice: job.voice || { voiceId: "vi-VN-NamMinhNeural" },
         beatsCount: job.beats?.length || 0,
         beats: job.beats || [],
