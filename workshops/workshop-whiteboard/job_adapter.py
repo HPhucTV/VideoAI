@@ -95,7 +95,12 @@ def concat_audio_files(audio_files: list[str], output_path: str, gap_ms: int = 2
         "-ar", "44100",
         output_path
     ]
-    subprocess.run(cmd, capture_output=True, env=get_node_env(), check=True)
+    try:
+        subprocess.run(cmd, capture_output=True, env=get_node_env(), check=True)
+    except subprocess.CalledProcessError as e:
+        err_msg = e.stderr.decode("utf-8", errors="replace") if isinstance(e.stderr, bytes) else str(e.stderr)
+        print(f"[ERR] FFmpeg concat audio failed: {err_msg}", file=sys.stderr)
+        raise RuntimeError(f"FFmpeg concat audio failed: {err_msg}") from e
 
 def cluster_beats_into_scenes(beats: list, max_beats_per_scene: int = 4) -> list[dict]:
     """
@@ -205,7 +210,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
     scenes_base_dir = out_p / "scenes"
     scenes_base_dir.mkdir(parents=True, exist_ok=True)
 
-    voice_config = job.get("voice", {})
+    voice_config = job.get("voice") or {}
     voice_id = voice_config.get("voiceId", "vi-VN-NamMinhNeural")
     fps = job.get("canvas", {}).get("fps", 90)
     canvas = job.get("canvas", {"width": 1920, "height": 1080})
@@ -222,7 +227,6 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
     global_annotations_elements = []
 
     global_beat_idx = 1
-    first_scene_annotation = None
 
     for s_idx, scene in enumerate(scenes, start=1):
         scene_id = scene["sceneId"]
@@ -242,7 +246,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
 
         for local_idx, beat in enumerate(scene_beats, start=1):
             raw_text = beat.get("rawText", "")
-            beat_voice = beat.get("voice", {})
+            beat_voice = beat.get("voice") or {}
             b_voice = beat_voice.get("voiceId", voice_id)
             b_rate = beat_voice.get("rate", voice_config.get("rate", "+0%"))
             b_pitch = beat_voice.get("pitch", voice_config.get("pitch", "+0Hz"))
@@ -335,7 +339,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
                 f"- **Nhịp {local_idx} ({beat.get('id', '')})**: {label or headline} — {subhead or normalized_text[:120]}"
             )
 
-            pause_gap = beat.get("voice", {}).get("pauseAfterMs", 250)
+            pause_gap = (beat.get("voice") or {}).get("pauseAfterMs", 250)
             scene_current_ms = local_end_ms + pause_gap
             global_current_ms = global_end_ms + pause_gap
             global_beat_idx += 1
@@ -358,9 +362,6 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
         scene_annotation_path = scene_dir / f"{scene_id}.annotation.json"
         with open(scene_annotation_path, "w", encoding="utf-8") as f:
             json.dump(scene_annotation_data, f, ensure_ascii=False, indent=2)
-
-        if s_idx == 1:
-            first_scene_annotation = scene_annotation_data
 
         # 3. Concatenate audio for this scene into scenes/scene-XX/scene-XX.mp3
         scene_mp3_path = scene_dir / f"{scene_id}.mp3"
@@ -396,9 +397,9 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
         f.write("\n".join(global_srt_lines))
     print(f"[OK] Da tao phu de SRT tong hop: {srt_path}")
 
-    # Also write scene-01.annotation.json at output_dir for backward compatibility
+    # Root backward-compatibility annotation sync: full global timeline matching input.mp3 & input.srt
     annotation_path = out_p / "scene-01.annotation.json"
-    legacy_annotation_data = first_scene_annotation or {
+    legacy_annotation_data = {
         "sceneId": "scene-01",
         "canvas": {"width": canvas.get("width", 1920), "height": canvas.get("height", 1080)},
         "storyBasis": job.get("title", ""),
@@ -407,7 +408,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
     }
     with open(annotation_path, "w", encoding="utf-8") as f:
         json.dump(legacy_annotation_data, f, ensure_ascii=False, indent=2)
-    print(f"[OK] Da tao khung phan canh tuong thich: {annotation_path}")
+    print(f"[OK] Da tao khung phan canh tuong thich toan cuc: {annotation_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
