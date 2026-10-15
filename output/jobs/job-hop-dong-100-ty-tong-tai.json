@@ -1,0 +1,409 @@
+{
+  "jobId": "job-hop-dong-100-ty-tong-tai",
+  "title": "Bản Hợp Đồng 100 Tỷ: Ánh Trăng Của Tổng Tài Bạc Tỷ",
+  "workshop": "whiteboard",
+  "archetype": "storytelling",
+  "targetPlatform": "youtube_long",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 90
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 0.95,
+    "rate": "-4%",
+    "pitch": "+0Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "genre": "Ngôn tình đô thị, Tổng tài lạnh lùng, Cưới trước yêu sau, Chữa lành, Hào môn thế gia, Sủng ngọt, HE",
+    "durationExpectedMinutes": 60,
+    "author": "Omni-Director",
+    "characters": [
+      "Lục Cảnh Thâm (29 tuổi, Chủ tịch Lục Thị, mất ngủ kinh niên, lạnh lùng quyết đoán)",
+      "Thẩm Nhược Hy (24 tuổi, Thiên kim sa cơ, thông minh kiên cường, đôi mắt sáng)",
+      "Lục Lão Phu Nhân (75 tuổi, Bà nội Cảnh Thâm, nắm quyền tối cao gia tộc, hiền từ)",
+      "Trợ lý Giang Thừa (27 tuổi, Cánh tay phải nhanh nhẹn đắc lực)",
+      "Triệu Bích Nguyệt (26 tuổi, Thiên kim đối thủ kiêu kỳ nhiều tâm cơ)",
+      "Thẩm Minh Viễn (50 tuổi, Chú ruột tham lam phản bội Thẩm gia)"
+    ],
+    "characters_voice": {
+      "lục cảnh thâm": { "voice": "vi-VN-NamMinhNeural", "rate": "-2%", "pitch": "-5Hz", "volume": "+0%" },
+      "cảnh thâm": { "voice": "vi-VN-NamMinhNeural", "rate": "-2%", "pitch": "-5Hz", "volume": "+0%" },
+      "thẩm nhược hy": { "voice": "vi-VN-HoaiMyNeural", "rate": "-2%", "pitch": "+0Hz", "volume": "+0%" },
+      "nhược hy": { "voice": "vi-VN-HoaiMyNeural", "rate": "-2%", "pitch": "+0Hz", "volume": "+0%" },
+      "lục lão phu nhân": { "voice": "vi-VN-HoaiMyNeural", "rate": "-6%", "pitch": "-3Hz", "volume": "+0%" },
+      "bà nội": { "voice": "vi-VN-HoaiMyNeural", "rate": "-6%", "pitch": "-3Hz", "volume": "+0%" },
+      "giang thừa": { "voice": "vi-VN-NamMinhNeural", "rate": "+4%", "pitch": "+3Hz", "volume": "+0%" },
+      "trợ lý giang": { "voice": "vi-VN-NamMinhNeural", "rate": "+4%", "pitch": "+3Hz", "volume": "+0%" },
+      "triệu bích nguyệt": { "voice": "vi-VN-HoaiMyNeural", "rate": "+3%", "pitch": "+4Hz", "volume": "+0%" },
+      "thẩm minh viễn": { "voice": "vi-VN-NamMinhNeural", "rate": "+2%", "pitch": "-3Hz", "volume": "+0%" },
+      "người kể chuyện": { "voice": "vi-VN-NamMinhNeural", "rate": "-4%", "pitch": "+0Hz", "volume": "+0%" }
+    },
+    "tags": [
+      "truyenaudio",
+      "ngontinh",
+      "tongtai",
+      "hopdong100ty",
+      "sachnoi",
+      "cuoitruocyeusau",
+      "chualanh",
+      "whiteboardstory"
+    ]
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "intro_rain_night",
+      "rawText": "Người Kể Chuyện: Mười một giờ đêm ở thành phố cảng, cơn mưa rào trái mùa xối xả trút xuống mặt đường nhựa đen nhánh như muốn nuốt chửng mọi ánh đèn le lói. Trước cổng bệnh viện, Thẩm Nhược Hy chạy loạng choạng dưới mưa, chiếc áo sơ mi mỏng ướt sũng dán chặt vào người. Trên tay cô là xấp thông báo viện phí cấp cứu khẩn cấp cho người cha đang nguy kịch.\nThẩm Nhược Hy: \"Ba ơi... con nhất định sẽ không để ba chết... Dù phải đổi mạng của mình, con cũng phải kiếm đủ tiền phẫu thuật cho ba...\"",
+      "visual": {
+        "headline": "Đêm Mưa Định Mệnh",
+        "subhead": "Thẩm Nhược Hy và bước đường cùng cứu cha",
+        "badge": "CHƯƠNG I: ĐÊM MƯA ĐỊNH MỆNH",
+        "label": "Nhược Hy chạy dưới mưa trước cổng bệnh viện",
+        "type": "character",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_02",
+      "role": "boss_car_headache",
+      "rawText": "Người Kể Chuyện: Cùng lúc đó, chiếc Maybach đen tuyền của Tập đoàn Lục Thị đang lao vút đi trong đêm. Phía sau xe, Lục Cảnh Thâm – người đàn ông quyền lực nhất thương trường Phương Nam đang co quắp người lại, hai tay ôm chặt lấy đầu vì cơn mất ngủ và đau nửa đầu dữ dội cắn xé suốt bốn ngày đêm.\nLục Cảnh Thâm: \"Giang Thừa, lấy thuốc an thần cho tôi!\"\nTrợ Lý Giang: \"Lục tổng! Bác sĩ bảo liều lượng tháng này đã chạm ngưỡng tối đa rồi, ngài không thể uống thêm nữa!\"",
+      "visual": {
+        "headline": "Tổng Tài Lục Cảnh Thâm",
+        "subhead": "Cơn đau đầu và mất ngủ kinh niên hành hạ",
+        "badge": "CHƯƠNG I: ĐÊM MƯA ĐỊNH MỆNH",
+        "label": "Lục Cảnh Thâm ôm đầu trong khoang xe sang trọng",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_03",
+      "role": "crash_hand_touch",
+      "rawText": "Người Kể Chuyện: Bất ngờ, Nhược Hy trượt chân ngã ngay trước đầu xe. Chiếc Maybach phanh gấp trượt dài trên mặt đường. Lục Cảnh Thâm bực bội bước xuống che ô, toan xua đuổi cô gái vì ngỡ đây là trò bẫy tình quen thuộc. Nhưng khi tay Nhược Hy vô tình chạm lướt qua mu bàn tay anh, một dòng điện kỳ lạ chạy dọc sống lưng. Cơn đau đầu búa bổ của Cảnh Thâm đột ngột dịu xuống một nhịp kỳ diệu.\nLục Cảnh Thâm: \"Cô gái này... tại sao lại mang hương hoa nhài quen thuộc đến thế?\"",
+      "visual": {
+        "headline": "Chạm Tay Kỳ Diệu",
+        "subhead": "Cơn đau dịu đi và ánh mắt ngỡ ngàng trong mưa",
+        "badge": "CHƯƠNG I: ĐÊM MƯA ĐỊNH MỆNH",
+        "label": "Khoảnh khắc hai bàn tay chạm nhau dưới làn mưa",
+        "type": "concept",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_04",
+      "role": "contract_offer",
+      "rawText": "Người Kể Chuyện: Sáng hôm sau tại tầng sáu mươi tám Lục Thị Tower. Lục Cảnh Thâm đẩy một bản hợp đồng mạ vàng dày cộm trước mặt Thẩm Nhược Hy. Toàn bộ nợ nần của Thẩm gia được xóa sạch, viện phí của cha cô được lo chu toàn, kèm theo một trăm tỷ đồng thù lao sau một năm làm vợ hợp đồng của anh.\nLục Cảnh Thâm: \"Bà nội tôi bệnh nặng muốn thấy tôi yên bề gia thất. Hơn nữa, tay cô là liều thuốc duy nhất giúp tôi ngủ được. Ký đi, một năm sau đôi bên đường ai nấy đi.\"",
+      "visual": {
+        "headline": "Bản Hợp Đồng 100 Tỷ",
+        "subhead": "Giao kèo hôn nhân một năm tại tầng 68",
+        "badge": "CHƯƠNG II: BẢN HỢP ĐỒNG 100 TỶ",
+        "label": "Tập hợp đồng hôn nhân mạ vàng trên bàn làm việc",
+        "type": "concept",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_05",
+      "role": "contract_terms",
+      "rawText": "Người Kể Chuyện: Nhược Hy cầm tập tài liệu, ánh mắt kiên định ngước nhìn người đàn ông quyền lực.\nThẩm Nhược Hy: \"Tôi ký để cứu cha tôi. Nhưng Lục tổng hãy nhớ rõ điều khoản thứ tư: Tuyệt đối không được can thiệp đời tư, và không ai được phép nảy sinh tình cảm thật!\"\nLục Cảnh Thâm: \"Yên tâm. Tôi không bao giờ có hứng thú với một cô gái yếu ớt như cô. Với tôi, đây chỉ là một thương vụ làm ăn sòng phẳng.\"",
+      "visual": {
+        "headline": "Lời Cam Kết Rắn Rỏi",
+        "subhead": "Không tình cảm - Không can thiệp đời tư",
+        "badge": "CHƯƠNG II: BẢN HỢP ĐỒNG 100 TỶ",
+        "label": "Nhược Hy ký tên vào bản hợp đồng",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_06",
+      "role": "marriage_seal",
+      "rawText": "Người Kể Chuyện: Hai chữ ký son sắt đặt cạnh nhau trên giấy trắng mực đen. Bản hợp đồng hôn nhân một trăm tỷ chính thức có hiệu lực, kéo hai con người ở hai thế giới hoàn toàn trái ngược bước vào một định mệnh gắn kết không thể tách rời.",
+      "visual": {
+        "headline": "Định Mệnh Bắt Đầu",
+        "subhead": "Hai chữ ký son sắt mở ra chương đời mới",
+        "badge": "CHƯƠNG II: BẢN HỢP ĐỒNG 100 TỶ",
+        "label": "Con dấu đỏ son ấn định cuộc hôn nhân",
+        "type": "concept",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_07",
+      "role": "mansion_arrival",
+      "rawText": "Người Kể Chuyện: Chiếc Rolls-Royce đưa Nhược Hy đến Ngự Cảnh Uyển – khu biệt phủ tráng lệ trên sườn đồi nhìn ra biển. Tối hôm đó là đại tiệc mừng thọ của Lục Lão phu nhân quy tụ giới tài phiệt bậc nhất. Vừa bước vào cửa, Nhược Hy trong tà váy lụa trắng thanh nhã đã thu hút mọi ánh mắt soi mói.",
+      "visual": {
+        "headline": "Bước Vào Cửa Hào Môn",
+        "subhead": "Đại tiệc mừng thọ và ánh mắt soi mói của giới thượng lưu",
+        "badge": "CHƯƠNG III: BƯỚC VÀO CỬA HÀO MÔN",
+        "label": "Toàn cảnh biệt phủ Ngự Cảnh Uyển lộng lẫy trong đêm tiệc",
+        "type": "scene",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_08",
+      "role": "rival_insult",
+      "rawText": "Người Kể Chuyện: Triệu Bích Nguyệt – thiên kim tập đoàn đối tác bước tới mỉa mai, toan hắt ly rượu vang vào người Nhược Hy vì ghen tức.\nTriệu Bích Nguyệt: \"Thẩm thị phá sản, cô liền bán thân leo lên giường anh Cảnh Thâm để đổi đời sao? Thật đê tiện!\"\nThẩm Nhược Hy: \"Triệu tiểu thư, tôi cứu cha là đạo làm con, đàng hoàng ký vào hôn thú. Còn cô ăn nói cay độc, chẳng hay đã đánh mất cả phong thái tiểu thư khuê các rồi chăng?\"",
+      "visual": {
+        "headline": "Đối Đầu Sắc Sảo",
+        "subhead": "Khí chất thanh cao không nao núng trước sự mỉa mai",
+        "badge": "CHƯƠNG III: BƯỚC VÀO CỬA HÀO MÔN",
+        "label": "Nhược Hy đối chất điềm tĩnh trước Triệu Bích Nguyệt",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_09",
+      "role": "boss_protects_wife",
+      "rawText": "Người Kể Chuyện: Bàn tay Triệu Bích Nguyệt bị Lục Cảnh Thâm chộp chặt giữa không trung. Anh kéo Nhược Hy ra phía sau lưng mình, ánh mắt lạnh như băng ghim thẳng vào đám đông.\nLục Cảnh Thâm: \"Triệu Bích Nguyệt, ai cho cô quyền xúc phạm người phụ nữ có tên trên sổ hộ khẩu của Lục Cảnh Thâm này? Cút ra ngoài! Kể từ hôm nay, ai dám đụng đến vợ tôi, Lục Thị sẽ cắt đứt toàn bộ làm ăn với kẻ đó!\"",
+      "visual": {
+        "headline": "Sự Bảo Vệ Tuyệt Đối",
+        "subhead": "Lục Cảnh Thâm tuyên bố vị thế của người vợ danh chính ngôn thuận",
+        "badge": "CHƯƠNG III: BƯỚC VÀO CỬA HÀO MÔN",
+        "label": "Lục Cảnh Thâm đứng chắn trước Nhược Hy đầy uy lực",
+        "type": "character",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_10",
+      "role": "midnight_nightmare",
+      "rawText": "Người Kể Chuyện: Nửa đêm tại phòng ngủ Ngự Cảnh Uyển. Cảnh Thâm bất ngờ lên cơn co giật dữ dội, mồ hôi đầm đìa, miệng mê sảng gọi mẹ trong bóng tối kinh hoàng của vụ tai nạn mười năm trước.\nLục Cảnh Thâm: \"Mẹ ơi... Đừng bỏ con... Máu nhiều quá... Lạnh quá...\"\nThẩm Nhược Hy: \"Cảnh Thâm! Anh tỉnh lại đi! Có tôi ở đây rồi, đừng sợ!\"",
+      "visual": {
+        "headline": "Cơn Ác Mộng Nửa Đêm",
+        "subhead": "Vết thương tâm lý rỉ máu suốt mười năm",
+        "badge": "CHƯƠNG IV: ĐÊM MẤT NGỦ & LIỀU THUỐC XOA DỊU",
+        "label": "Cảnh Thâm co ro trong cơn ác mộng",
+        "type": "scene",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_11",
+      "role": "lullaby_healing",
+      "rawText": "Người Kể Chuyện: Cảnh Thâm siết chặt lấy Nhược Hy như chiếc phao cứu sinh. Nhìn giọt nước mắt lăn dài của người đàn ông kiêu ngạo, Nhược Hy không nỡ đẩy ra. Cô ngồi bên cạnh, nhẹ nhàng vuốt tóc anh và cất giọng hát khúc hát ru dịu êm của mẹ.\nThẩm Nhược Hy: \"Gió mùa đông đã qua rồi... Ánh trăng sáng đầu non... Ngủ đi nhé, bình yên đã về bên hiên nhà...\"",
+      "visual": {
+        "headline": "Khúc Hát Ru Chữa Lành",
+        "subhead": "Dịu dàng xoa dịu tâm hồn vụn vỡ",
+        "badge": "CHƯƠNG IV: ĐÊM MẤT NGỦ & LIỀU THUỐC XOA DỊU",
+        "label": "Nhược Hy vuốt tóc và hát ru cho Cảnh Thâm ngủ",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_12",
+      "role": "peaceful_morning",
+      "rawText": "Người Kể Chuyện: Giọng hát trong trẻo quyện cùng hương hoa nhài thanh khiết như dòng suối mát làm dịu cơn bão lòng của người đàn ông. Cảnh Thâm buông lỏng hai tay, vùi mặt vào hõm cổ cô ngủ say sưa cho đến khi ánh bình minh ló rạng. Mười năm qua, đây là giấc ngủ yên bình đầu tiên của anh.",
+      "visual": {
+        "headline": "Giấc Ngủ Yên Bình Đầu Tiên",
+        "subhead": "Bình minh rạng rỡ sau mười năm tăm tối",
+        "badge": "CHƯƠNG IV: ĐÊM MẤT NGỦ & LIỀU THUỐC XOA DỊU",
+        "label": "Cảnh Thâm ngủ say bên cạnh Nhược Hy dưới nắng sớm",
+        "type": "scene",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_13",
+      "role": "business_crisis",
+      "rawText": "Người Kể Chuyện: Ba tháng sau, Tập đoàn Lục Thị chuẩn bị bước vào cuộc đấu thầu Cảng Năng lượng Xanh năm mươi nghìn tỷ. Bất ngờ tài liệu tuyệt mật bị rò rỉ ra ngoài. Nhược Hy bị nghi ngờ vì camera an ninh ghi lại cảnh cô bước vào thư phòng lúc đêm khuya.",
+      "visual": {
+        "headline": "Cơn Sóng Ngầm Thương Trường",
+        "subhead": "Tài liệu năm mươi nghìn tỷ bị rò rỉ",
+        "badge": "CHƯƠNG V: CẠM BẪY NƠI THƯƠNG TRƯỜNG",
+        "label": "Phòng họp hội đồng quản trị Lục Thị căng thẳng tột độ",
+        "type": "scene",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_14",
+      "role": "confrontation_tears",
+      "rawText": "Người Kể Chuyện: Cảnh Thâm trở về Ngự Cảnh Uyển với vẻ mặt u tối. Anh ném tập hồ sơ bị rò rỉ xuống bàn.\nLục Cảnh Thâm: \"Tối qua cô vào thư phòng làm gì? Ai đã gửi mười tỷ vào tài khoản viện phí của cha cô sáng nay?\"\nThẩm Nhược Hy: \"Tôi chỉ vào mang trà cho anh! Tôi không đánh cắp bất cứ thứ gì! Cảnh Thâm, ba tháng qua ở bên nhau... anh vẫn coi tôi là kẻ hám tiền phản trắc sao?\"",
+      "visual": {
+        "headline": "Bóng Đen Nghi Hoặc",
+        "subhead": "Nỗi đau đớn khi niềm tin bị thử thách",
+        "badge": "CHƯƠNG V: CẠM BẪY NƠI THƯƠNG TRƯỜNG",
+        "label": "Cảnh Thâm đối chất bên xấp tài liệu, Nhược Hy rơi nước mắt",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_15",
+      "role": "tears_and_pride",
+      "rawText": "Người Kể Chuyện: Nhìn những giọt nước mắt uất ức của Nhược Hy, trái tim Cảnh Thâm khẽ nhói đau. Dù ngoài miệng lạnh lùng, anh không hề giao cô cho cảnh sát, mà âm thầm ra lệnh cho Giang Thừa điều tra tận cùng ngọn nguồn sự việc.",
+      "visual": {
+        "headline": "Niềm Tin Âm Thầm",
+        "subhead": "Mệnh lệnh điều tra ngầm trong đêm tối",
+        "badge": "CHƯƠNG V: CẠM BẪY NƠI THƯƠNG TRƯỜNG",
+        "label": "Cảnh Thâm đứng bên cửa sổ trầm tư nhìn vào màn đêm",
+        "type": "scene",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_16",
+      "role": "bidding_hall",
+      "rawText": "Người Kể Chuyện: Ngày mở thầu chính thức tại Trung tâm Hội nghị Quốc gia. Triệu Bích Nguyệt và người chú tham lam Thẩm Minh Viễn tự tin mở tiệc ăn mừng sớm, rêu rao rằng Lục Cảnh Thâm đã vì một người phụ nữ mà mất trắng cơ nghiệp.",
+      "visual": {
+        "headline": "Bàn Cờ Quyết Định",
+        "subhead": "Hội trường đấu thầu và nụ cười đắc thắng của kẻ thủ ác",
+        "badge": "CHƯƠNG VI: LẬT MẶT KẺ PHẢN BỘI",
+        "label": "Triệu Bích Nguyệt tự tin trả lời phỏng vấn truyền thông",
+        "type": "character",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_17",
+      "role": "evidence_unveiled",
+      "rawText": "Người Kể Chuyện: Đột nhiên, cánh cửa hội trường bật mở. Lục Cảnh Thâm nắm chặt tay Thẩm Nhược Hy bước vào. Trên màn hình lớn, toàn bộ đoạn băng ghi lại cảnh Triệu Bích Nguyệt cài bọ nghe lén và mua chuộc người hầu được phơi bày trước hàng trăm cơ quan báo chí.\nLục Cảnh Thâm: \"Bản vẽ các người ăn cắp chỉ là mồi nhử chứa lỗi sai số của tôi. Thẩm Minh Viễn, lệnh bắt tạm giam ông về tội lừa đảo và hối lộ đã có hiệu lực!\"",
+      "visual": {
+        "headline": "Sự Thật Phơi Bày",
+        "subhead": "Kẻ phản bội đền tội trước pháp luật",
+        "badge": "CHƯƠNG VI: LẬT MẶT KẺ PHẢN BỘI",
+        "label": "Cảnh sát áp giải Thẩm Minh Viễn và Triệu Bích Nguyệt",
+        "type": "scene",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_18",
+      "role": "public_declaration",
+      "rawText": "Người Kể Chuyện: Trước ống kính truyền thông cả nước, Lục Cảnh Thâm ôm chặt lấy vai Nhược Hy, dõng dạc tuyên bố:\nLục Cảnh Thâm: \"Thẩm Nhược Hy không phải là điểm yếu của tôi. Cô ấy là vảy ngược của Lục Cảnh Thâm này! Ai dám đụng đến cô ấy, Lục Thị sẽ khiến kẻ đó không chốn dung thân!\"",
+      "visual": {
+        "headline": "Lời Tuyên Bố Vương Giả",
+        "subhead": "Cô ấy là vảy ngược bất khả xâm phạm",
+        "badge": "CHƯƠNG VI: LẬT MẶT KẺ PHẢN BỘI",
+        "label": "Cảnh Thâm nắm chặt tay Nhược Hy trước ánh đèn flash",
+        "type": "character",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_19",
+      "role": "grandma_tea_talk",
+      "rawText": "Người Kể Chuyện: Sau cơn bão, Lục Lão phu nhân mời Nhược Hy vào phòng trà. Bà mở chiếc hộp gỗ cẩn xà cừ, lấy ra một chiếc khăn len đỏ đã sờn cùng chiếc móc khóa hình hoa hướng dương nhỏ bé.\nLục Lão Phu Nhân: \"Nhược Hy, con có biết vì sao Cảnh Thâm lại đồng ý ký hợp đồng ngay khi nhìn thấy con không?\"",
+      "visual": {
+        "headline": "Chiếc Hộp Gỗ Cổ Kính",
+        "subhead": "Kỷ vật mười năm được gìn giữ như báu vật",
+        "badge": "CHƯƠNG VII: BÍ MẬT MƯỜI NĂM TRƯỚC",
+        "label": "Chiếc khăn len đỏ và móc khóa hoa hướng dương",
+        "type": "concept",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_20",
+      "role": "snow_night_memory",
+      "rawText": "Người Kể Chuyện: Từng ký ức mười năm trước ùa về. Đêm tai nạn thảm khốc giữa đèo tuyết lạnh giá cướp đi cha mẹ Cảnh Thâm, chính cô bé Nhược Hy mười bốn tuổi đã chui xuống hốc tuyết quàng chiếc khăn len cho anh, hát ru suốt ba tiếng đồng hồ và tiếp cho anh niềm tin để sống sót.\nLục Lão Phu Nhân: \"Thằng bé đã lùng sục tìm kiếm ân nhân suốt mười năm trời. Nó không dùng tiền mua chuộc con, mà đang dùng tất cả những gì nó có để chở che cho con cả đời!\"",
+      "visual": {
+        "headline": "Đêm Tuyết Mười Năm Trước",
+        "subhead": "Cô bé quàng khăn len đỏ thắp sáng hy vọng sống",
+        "badge": "CHƯƠNG VII: BÍ MẬT MƯỜI NĂM TRƯỚC",
+        "label": "Ký ức hai đứa trẻ sưởi ấm cho nhau giữa bão tuyết",
+        "type": "scene",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_21",
+      "role": "tears_of_destiny",
+      "rawText": "Người Kể Chuyện: Những giọt nước mắt nóng hổi lăn dài làm ướt đẫm kỷ vật thời thơ ấu. Nhược Hy bàng hoàng nhận ra, người đàn ông luôn tỏ ra lạnh lùng gai góc kia thực chất đã khắc sâu bóng hình cô vào tận đáy tim suốt một thập kỷ qua.",
+      "visual": {
+        "headline": "Giọt Nước Mắt Định Mệnh",
+        "subhead": "Sự thật xé tan mọi khoảng cách nghi ngờ",
+        "badge": "CHƯƠNG VII: BÍ MẬT MƯỜI NĂM TRƯỚC",
+        "label": "Nhược Hy ôm chiếc khăn len đỏ khóc nghẹn ngào",
+        "type": "character",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_22",
+      "role": "contract_expiration",
+      "rawText": "Người Kể Chuyện: Ba trăm sáu mươi lăm ngày của bản hợp đồng hôn nhân chính thức trôi qua. Cha Nhược Hy bình phục hoàn toàn, nợ nần đã trả xong, một trăm tỷ thù lao đã vào tài khoản. Đêm cuối cùng tại Ngự Cảnh Uyển, Nhược Hy lặng lẽ xếp quần áo vào chiếc vali cũ kỹ.",
+      "visual": {
+        "headline": "Ngày Hợp Đồng Hết Hạn",
+        "subhead": "Chiếc vali cũ và nỗi buồn chia xa lặng lẽ",
+        "badge": "CHƯƠNG VIII: NGÀY HỢP ĐỒNG HẾT HẠN",
+        "label": "Nhược Hy kéo khóa chiếc vali chuẩn bị rời đi",
+        "type": "character",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_23",
+      "role": "cold_farewell",
+      "rawText": "Người Kể Chuyện: Cảnh Thâm đứng tựa khung cửa, giọng nói trầm khàn đầy xót xa.\nLục Cảnh Thâm: \"Một năm qua với cô chỉ là một cuộc mua bán thôi sao? Cô không có chút vương vấn nào với tôi sao?\"\nThẩm Nhược Hy: \"Trong hợp đồng ghi rõ: Tuyệt đối không được nảy sinh tình cảm thật. Tôi chỉ làm đúng cam kết. Chúc Lục tổng một đời bình an.\"",
+      "visual": {
+        "headline": "Lời Từ Biệt Cay Đắng",
+        "subhead": "Hai trái tim yêu nhau nhưng bị ràng buộc bởi tự trọng",
+        "badge": "CHƯƠNG VIII: NGÀY HỢP ĐỒNG HẾT HẠN",
+        "label": "Cảnh Thâm và Nhược Hy đứng đối diện trong bóng tối",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_24",
+      "role": "heartbreak_in_dark",
+      "rawText": "Người Kể Chuyện: Cánh cửa phòng khép lại, chia cắt hai con người yêu nhau tha thiết nhưng đều giấu kín trong lòng. Nhược Hy gục đầu khóc nấc từng tiếng, còn Cảnh Thâm đứng thẫn thờ giữa phòng khách rộng lớn, cảm giác cô đơn lạnh lẽo lại tràn ngập căn phòng.",
+      "visual": {
+        "headline": "Nỗi Đau Chia Lìa",
+        "subhead": "Căn phòng trống trải không còn hơi ấm",
+        "badge": "CHƯƠNG VIII: NGÀY HỢP ĐỒNG HẾT HẠN",
+        "label": "Bóng lưng cô độc của Lục Cảnh Thâm trong căn phòng quạnh quẽ",
+        "type": "scene",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_25",
+      "role": "airport_chase",
+      "rawText": "Người Kể Chuyện: Sáng hôm sau tại sân bay quốc tế, Nhược Hy chuẩn bị lên chuyến bay sang châu Âu. Tại văn phòng Lục Thị, khi nghe tin Nhược Hy sắp rời đi vĩnh viễn, Lục Cảnh Thâm gạt phăng mọi tài liệu, điên cuồng lao ra xe phóng như bay về phía phi trường.",
+      "visual": {
+        "headline": "Cuộc Đua Với Thời Gian",
+        "subhead": "Lao đến phi trường giữ lại ánh trăng của đời mình",
+        "badge": "CHƯƠNG IX: BẢN HỢP ĐỒNG TRỌN ĐỜI",
+        "label": "Chiếc xe Maybach lao vun vút trên đại lộ hướng về sân bay",
+        "type": "scene",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_26",
+      "role": "tearing_contract",
+      "rawText": "Người Kể Chuyện: Giữa sảnh sân bay đông đúc, một bóng người cao lớn chạy thục mạng qua đám đông, giữ chặt lấy tay Nhược Hy. Lục Cảnh Thâm rút tờ hợp đồng một trăm tỷ ra xé nát làm đôi, ném tung lên trời!\nLục Cảnh Thâm: \"Hợp đồng chết tiệt này kết thúc rồi! Nhược Hy, mười năm trước em cứu mạng tôi, tôi đã thề cả đời chỉ cưới mình em! Tôi không cần cô vợ hợp đồng, tôi cần em làm vợ thật sự của Lục Cảnh Thâm này!\"",
+      "visual": {
+        "headline": "Xé Nát Bản Hợp Đồng",
+        "subhead": "Những mảnh giấy bay lả tả và lời tỏ tình xé tan màn đêm",
+        "badge": "CHƯƠNG IX: BẢN HỢP ĐỒNG TRỌN ĐỜI",
+        "label": "Cảnh Thâm xé nát tờ hợp đồng giữa sảnh sân bay",
+        "type": "concept",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_27",
+      "role": "eternal_proposal",
+      "rawText": "Người Kể Chuyện: Cảnh Thâm quỳ một chân xuống sàn gạch, giơ cao chiếc nhẫn kim cương hình hoa hướng dương độc bản.\nLục Cảnh Thâm: \"Không có em, bóng đêm của anh sẽ không bao giờ có bình minh. Lấy anh nhé? Một bản giao ước trọn đời trọn kiếp!\"\nThẩm Nhược Hy: \"Em đồng ý! Cảnh Thâm, em yêu anh!\"\nNgười Kể Chuyện: Tiếng vỗ tay hoan hô vang dội cả phi trường. Giữa ánh nắng rực rỡ, vị tổng tài bạc tỷ đã tìm thấy ánh trăng dịu êm của đời mình – bắt đầu một câu chuyện tình yêu vĩnh cửu đi qua mọi bão giông.",
+      "visual": {
+        "headline": "Bản Hợp Đồng Trọn Đời",
+        "subhead": "Lời cầu hôn dưới ánh nắng rực rỡ và nụ hôn hạnh phúc viên mãn",
+        "badge": "CHƯƠNG IX: BẢN HỢP ĐỒNG TRỌN ĐỜI",
+        "label": "Cảnh Thâm cầu hôn Nhược Hy trước sự chúc phúc của mọi người",
+        "type": "scene",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    }
+  ]
+}

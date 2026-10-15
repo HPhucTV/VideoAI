@@ -361,17 +361,22 @@ def export_whiteboard_video(
                         with open(ann_path, "r", encoding="utf-8") as af:
                             ann = json.load(af)
                             dur_s = ann.get("sceneDurationMs", 0) / 1000.0
+                            if ann.get("badge"):
+                                sc_title = ann["badge"]
                     except Exception:
                         pass
-                prompt_file = sc / "IMAGE_PROMPT.md"
-                if prompt_file.exists():
-                    try:
-                        for line in prompt_file.read_text(encoding="utf-8").splitlines():
-                            if line.startswith("# ") and "Phân cảnh" in line:
-                                sc_title = line.replace("# ", "").strip()
-                                break
-                    except Exception:
-                        pass
+                if sc_title == sc_id:
+                    prompt_file = sc / "IMAGE_PROMPT.md"
+                    if prompt_file.exists():
+                        try:
+                            for line in prompt_file.read_text(encoding="utf-8").splitlines():
+                                if line.startswith("# ") and any(k in line for k in ["Phân cảnh", "CHƯƠNG", "Scene", "scene"]):
+                                    clean_t = line.replace("# ", "").replace("Visual Prompt Guidance:", "").strip()
+                                    if clean_t:
+                                        sc_title = clean_t
+                                        break
+                        except Exception:
+                            pass
                 scenes_info.append({"scene_id": sc_id, "title": sc_title, "duration_sec": dur_s})
 
             meta_file = job_dir / "YOUTUBE_METADATA.md"

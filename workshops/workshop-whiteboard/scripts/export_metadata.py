@@ -14,6 +14,12 @@ import math
 import sys
 from pathlib import Path
 
+# Đảm bảo stdout/stderr luôn dùng UTF-8 trên Windows
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 
 def format_youtube_timestamp(seconds: float | int) -> str:
     """Định dạng số giây thành chuỗi thời gian YouTube (MM:SS hoặc HH:MM:SS)."""
@@ -168,15 +174,19 @@ def main(argv=None) -> int:
                     ann = json.load(f)
                     dur_ms = ann.get("sceneDurationMs", 0)
                     dur_sec = dur_ms / 1000.0
+                    if ann.get("badge"):
+                        sc_title = ann["badge"]
 
-            # Lấy badge từ IMAGE_PROMPT.md nếu có
-            prompt_file = sc_dir / "IMAGE_PROMPT.md"
-            if prompt_file.exists():
-                txt = prompt_file.read_text(encoding="utf-8")
-                for line in txt.splitlines():
-                    if line.startswith("# ") and "Phân cảnh" in line:
-                        sc_title = line.replace("# ", "").strip()
-                        break
+            if sc_title == sc_id:
+                prompt_file = sc_dir / "IMAGE_PROMPT.md"
+                if prompt_file.exists():
+                    txt = prompt_file.read_text(encoding="utf-8")
+                    for line in txt.splitlines():
+                        if line.startswith("# ") and any(k in line for k in ["Phân cảnh", "CHƯƠNG", "Scene", "scene"]):
+                            clean_t = line.replace("# ", "").replace("Visual Prompt Guidance:", "").strip()
+                            if clean_t:
+                                sc_title = clean_t
+                                break
 
             scenes_info.append({
                 "scene_id": sc_id,
