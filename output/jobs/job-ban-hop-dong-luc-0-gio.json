@@ -1,0 +1,347 @@
+{
+  "jobId": "job-ban-hop-dong-luc-0-gio",
+  "title": "Bản Hợp Đồng Lúc 0 Giờ: Chuyện Tình Tổng Tài Mất Ngủ Và Cô Thợ Phục Chế Sách Cổ",
+  "workshop": "whiteboard",
+  "archetype": "storytelling",
+  "targetPlatform": "youtube_long",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 90
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 0.95,
+    "rate": "-4%",
+    "pitch": "+0Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "genre": "Ngôn tình hiện đại, Tổng tài, Chữa lành (Healing), Hài lãng mạn",
+    "durationExpectedMinutes": 20,
+    "author": "Omni-Director",
+    "characters": [
+      "Trần Đình Phong (28 tuổi, Chủ tịch Phong Thịnh, mất ngủ kinh niên)",
+      "Lâm Hạ Vi (24 tuổi, Nghệ nhân phục chế sách cổ Tĩnh Hiên)",
+      "Trợ lý Kiên (26 tuổi, Cánh tay phải đắc lực)",
+      "Minh Ngọc (27 tuổi, Tiểu thư đối tác kiêu kỳ)"
+    ],
+    "tags": ["ngon tinh", "tong tai", "chua lanh", "whiteboard", "audio drama", "truyen ngon tinh", "ban hop dong luc 0 gio"]
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "intro_atmosphere",
+      "rawText": "Đêm muộn ở thủ đô, cơn mưa rào đầu mùa hạ bất ngờ đổ ập xuống con phố cổ. Tiếng mưa rơi lộp độp trên những mái ngói rêu phong, làm dịu đi cái oi bức của ngày dài. Giữa con hẻm nhỏ tĩnh mịch, tiệm phục chế sách cổ Tĩnh Hiên vẫn sáng rực ánh đèn vàng ấm áp. Không gian bên trong ngập tràn mùi giấy dó cổ xưa quyện cùng hương gỗ đàn hương và hoa cúc trắng thoang thoảng. Chiếc đĩa than trên kệ gỗ quay chậm rãi, phát ra giai điệu Jazz cổ điển êm dịu, tách biệt hoàn toàn với giông bão ngoài kia.",
+      "visual": {
+        "headline": "Tiệm Phục Chế Sách Tĩnh Hiên",
+        "subhead": "Đêm mưa mùa hạ và giai điệu Jazz êm dịu",
+        "badge": "CHƯƠNG I: VỊ KHÁCH KHÔNG MỜI LÚC NỬA ĐÊM",
+        "label": "Khung cảnh tiệm sách Tĩnh Hiên trong đêm mưa",
+        "type": "scene",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_02",
+      "role": "character_intro_hawi",
+      "rawText": "Ngồi bên bàn làm việc bằng gỗ sồi mộc mạc, Lâm Hạ Vi, cô gái hai mươi tư tuổi với nét đẹp dịu dàng nhưng ánh mắt đầy cương nghị, đang chăm chú làm việc. Đôi bàn tay thon dài khéo léo dùng nhíp gắp từng mảnh giấy dó mục nát, tỉ mỉ dán lại bằng loại hồ hữu cơ đặc chế. Đột nhiên, cánh cửa gỗ phát ra tiếng kẽo kẹt rồi bật mở. Cơn gió lạnh ùa vào mang theo hơi nước buốt giá làm ngọn nến thơm trên bàn chao đảo dữ dội, báo hiệu sự xuất hiện của một vị khách hoàn toàn nằm ngoài dự tính.",
+      "visual": {
+        "headline": "Đôi Bàn Tay Người Thợ Sách",
+        "subhead": "Lâm Hạ Vi và sự tỉ mỉ phục chế từng trang giấy cổ",
+        "badge": "CHƯƠNG I: VỊ KHÁCH KHÔNG MỜI LÚC NỬA ĐÊM",
+        "label": "Lâm Hạ Vi tỉ mỉ phục chế trang sách cổ",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_03",
+      "role": "character_intro_dinhphong",
+      "rawText": "Bước qua ngưỡng cửa là một người đàn ông cao lớn trong bộ âu phục đen cắt may tinh xảo, nhưng vai áo đã ướt đẫm nước mưa. Đó là Trần Đình Phong, Chủ tịch tập đoàn kiến trúc Phong Thịnh lẫy lừng. Khuôn mặt góc cạnh sắc như dao cạo, ánh mắt lạnh băng nhưng dưới mi mắt là quầng thâm đậm màu, dấu vết của ba năm ròng rã chịu đựng chứng mất ngủ kinh niên. Theo sát phía sau, trợ lý Kiên vội vã thu chiếc ô đen ướt sũng, vẻ mặt đầy căng thẳng lo âu nhìn sếp của mình.",
+      "visual": {
+        "headline": "Vị Tổng Tài Lạnh Lùng",
+        "subhead": "Trần Đình Phong và cơn mất ngủ kinh niên suốt 3 năm",
+        "badge": "CHƯƠNG I: VỊ KHÁCH KHÔNG MỜI LÚC NỬA ĐÊM",
+        "label": "Trần Đình Phong bước vào với vest đen ướt mưa",
+        "type": "character",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_04",
+      "role": "dialogue_conflict",
+      "rawText": "Hạ Vi vẫn không ngẩng đầu lên, giọng nói điềm nhiên như mặt hồ phẳng lặng: Tiệm đóng cửa từ chín giờ tối rồi anh. Nếu muốn trú mưa thì ghế gỗ bên phải, khăn khô trong ngăn kéo thứ hai. Đình Phong bước thẳng tới trước bàn làm việc, lạnh lùng rút tấm danh thiếp mạ vàng đặt xuống: Tôi không đến trú mưa. Tôi đến lấy cuốn sổ phác thảo kiến trúc Đông Dương năm một nghìn chín trăm hai mươi mà cô vừa nhận chiều nay. Ra giá đi, tôi trả gấp mười lần phí phục chế.",
+      "visual": {
+        "headline": "Bản Hợp Đồng Mười Lần Tiền",
+        "subhead": "Tấm danh thiếp mạ vàng và lời đề nghị áp đặt",
+        "badge": "CHƯƠNG I: VỊ KHÁCH KHÔNG MỜI LÚC NỬA ĐÊM",
+        "label": "Đình Phong đặt danh thiếp mạ vàng yêu cầu mua lại sổ",
+        "type": "concept",
+        "region": { "x": 100, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_05",
+      "role": "conflict_escalation",
+      "rawText": "Hạ Vi dừng tay, tháo chiếc kính gọng tròn xuống, đưa mắt nhìn thẳng vào người đàn ông ngạo mạn. Cô đẩy nhẹ tấm danh thiếp trả lại: Chủ tịch Trần, nguyên tắc của Tĩnh Hiên là không tiết lộ danh tính khách hàng, và tuyệt đối không giao vật phẩm cho bên thứ ba khi người gửi chưa đồng ý. Anh có trả gấp trăm lần thì đêm nay cuốn sổ vẫn nằm ở đây. Trợ lý Kiên đổ mồ hôi hột, vội ghé tai giải thích rằng cuốn sổ là di vật thất lạc của ông nội Chủ tịch, người đã thức trắng bốn mươi tám tiếng để tìm kiếm.",
+      "visual": {
+        "headline": "Nguyên Tắc Của Tĩnh Hiên",
+        "subhead": "Chữ tín ngàn vàng không thể đánh đổi bằng tiền",
+        "badge": "CHƯƠNG I: VỊ KHÁCH KHÔNG MỜI LÚC NỬA ĐÊM",
+        "label": "Hạ Vi kiên quyết đẩy trả danh thiếp",
+        "type": "character",
+        "region": { "x": 680, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_06",
+      "role": "climax_fall",
+      "rawText": "Đình Phong chống hai tay xuống bàn, hơi nghiêng người về phía Hạ Vi tạo áp lực: Khu phố cổ này tháng sau nằm trong diện giải tỏa của Phong Thịnh. Giữ nguyên tắc quan trọng hay giữ tiệm quan trọng hơn? Hạ Vi đứng dậy, đối diện thẳng với anh: Tiệm có thể dời đi, nhưng chữ tín bán rồi không mua lại được. Hơn nữa, môi anh trắng bệch, thái dương đập dồn, anh lo xem mình có đứng nổi năm phút nữa không đã! Chưa dứt lời, cơn choáng váng ập đến làm Đình Phong ngã nhào, kéo theo cả hai ngã xuống tấm thảm lông cừu ấm áp.",
+      "visual": {
+        "headline": "Khoảnh Khắc Định Mệnh",
+        "subhead": "Cú ngã bất ngờ vào hõm vai thơm mùi cúc trắng",
+        "badge": "CHƯƠNG I: VỊ KHÁCH KHÔNG MỜI LÚC NỬA ĐÊM",
+        "label": "Đình Phong gục ngã vào hõm vai Hạ Vi",
+        "type": "scene",
+        "region": { "x": 1260, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_07",
+      "role": "morning_after",
+      "rawText": "Sáng sớm hôm sau, những tia nắng mai vàng rực rọi qua khung cửa kính màu, chiếu sáng căn phòng tĩnh lặng. Đình Phong khẽ động hàng mi, từ từ mở mắt nhìn trần nhà bằng gỗ thông cũ kỹ và chiếc chăn len đắp ngang ngực. Anh giật mình nhìn đồng hồ đeo tay: đúng tám giờ mười lăm phút sáng! Suốt ba năm qua, chưa bao giờ anh ngủ quá hai tiếng mỗi đêm nếu không uống thuốc an thần liều cao. Vậy mà đêm qua, trên chiếc ghế sofa cũ chật hẹp, anh đã ngủ say một mạch tám tiếng đồng hồ không hề mộng mị.",
+      "visual": {
+        "headline": "Giấc Ngủ Tám Tiếng Kỷ Lục",
+        "subhead": "Phép màu buổi sớm sau 3 năm đày đọa của mất ngủ",
+        "badge": "CHƯƠNG II: LIỀU THUỐC NGỦ ĐẮT GIÁ NHẤT THẾ GIỚI",
+        "label": "Đình Phong tỉnh dậy ngơ ngác trên sofa",
+        "type": "character",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_08",
+      "role": "tea_dialogue",
+      "rawText": "Trợ lý Kiên bước vào với túi đồ ăn sáng, vẻ mặt kinh ngạc tột cùng: Sếp, đêm qua bác sĩ riêng đến khám thấy sếp ngủ say quá nên không dám đánh thức, chỉ truyền dịch. Bác sĩ nói nhịp tim của anh đêm qua ổn định nhất trong ba năm trở lại đây! Đình Phong đưa mắt nhìn về góc phòng. Hạ Vi đang buộc tóc cao, mặc tạp dề vải lanh mộc mạc, nhẹ nhàng đặt tách trà thảo mộc nóng hổi cùng cuốn sổ di vật đã được phục chế phần gáy hoàn mỹ xuống trước mặt anh, mỉm cười thanh thản như chưa từng có cuộc chạm trán đêm qua.",
+      "visual": {
+        "headline": "Tách Trà Thảo Mộc Buổi Sớm",
+        "subhead": "Cuốn sổ di vật được phục chế nguyên vẹn từng thớ giấy",
+        "badge": "CHƯƠNG II: LIỀU THUỐC NGỦ ĐẮT GIÁ NHẤT THẾ GIỚI",
+        "label": "Hạ Vi bưng tách trà và trao trả cuốn sổ cổ",
+        "type": "scene",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_09",
+      "role": "the_proposal_contract",
+      "rawText": "Hạ Vi cho biết người ủy thác mua cuốn sổ trong phiên đấu giá vốn định tặng Đình Phong nhân dịp kỷ niệm tập đoàn, nên cô trao trả lại anh mà không lấy thêm một đồng. Đình Phong hít hà hương thơm đặc biệt trong phòng, rồi hỏi về mùi hương. Hạ Vi đáp đó là trầm hương pha vỏ cam khô và cúc trắng, công thức gia truyền chống ẩm mốc. Ánh mắt Đình Phong lóe lên tia nhìn quyết đoán. Anh đứng dậy, chỉnh lại áo vest: Kiên, soạn hợp đồng! Tuyển cô Lâm làm Chuyên viên Bảo tồn Tư liệu kiêm Cố vấn Không gian cá nhân tại biệt thự của tôi trong một tháng!",
+      "visual": {
+        "headline": "Ý Định Tuyển Dụng Bất Ngờ",
+        "subhead": "Vị trí Cố vấn Không gian cá nhân tại biệt thự riêng",
+        "badge": "CHƯƠNG II: LIỀU THUỐC NGỦ ĐẮT GIÁ NHẤT THẾ GIỚI",
+        "label": "Đình Phong ra lệnh soạn thảo bản hợp đồng",
+        "type": "character",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_10",
+      "role": "deal_unrefusable",
+      "rawText": "Khi Hạ Vi bật cười từ chối vì không muốn làm thuê cho tư nhân, Đình Phong liền rút bút ký nhanh vào mặt sau tấm danh thiếp rồi đặt vào lòng bàn tay cô: Thù lao một tháng là quyền sở hữu vĩnh viễn mặt bằng Tĩnh Hiên, đồng thời giữ nguyên hiện trạng toàn bộ con hẻm cổ trong bản quy hoạch mới của Phong Thịnh. Tôi là thương nhân, và tôi chỉ đưa ra mức giá mà đối phương không thể từ chối. Sáu giờ chiều nay xe sẽ đón cô. Bước ra khỏi cửa, khóe môi vị tổng tài lạnh lùng khẽ nhếch lên một nụ cười khó giấu.",
+      "visual": {
+        "headline": "Mức Giá Không Thể Chối Từ",
+        "subhead": "Sở hữu vĩnh viễn tiệm Tĩnh Hiên và bảo tồn con hẻm cổ",
+        "badge": "CHƯƠNG II: LIỀU THUỐC NGỦ ĐẮT GIÁ NHẤT THẾ GIỚI",
+        "label": "Danh thiếp ký tên quyền sở hữu mặt bằng",
+        "type": "concept",
+        "region": { "x": 100, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_11",
+      "role": "minimalism_villa",
+      "rawText": "Biệt thự của Đình Phong là một công trình tối giản lạnh lẽo với ba tông màu đen, trắng và xám, vắng lặng như một viện bảo tàng không người viếng thăm. Ngay ngày đầu tiên bước vào, Hạ Vi đã phá vỡ bầu không khí u uất ấy bằng một chậu cây bàng Singapore xanh mướt và bộ ấm trà gốm mộc đặt ở phòng làm việc. Khi Đình Phong nhíu mày dịch chậu cây sang trái hai phân cho thẳng hàng, Hạ Vi thản nhiên dịch lại chỗ cũ vì chỗ đó mới đón nắng. Thấy cô lườm nhẹ, vị chủ tịch đành rút tay về, giả vờ ho khan chữa ngượng.",
+      "visual": {
+        "headline": "Thế Giới Đơn Sắc Bị Đảo Lộn",
+        "subhead": "Chậu bàng xanh mướt và màn tranh chấp hai centimet",
+        "badge": "CHƯƠNG III: KHI THẾ GIỚI ĐƠN SẮC CÓ THÊM MÀU NẮNG",
+        "label": "Hạ Vi mang chậu cây xanh vào phòng làm việc đơn sắc",
+        "type": "scene",
+        "region": { "x": 680, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_12",
+      "role": "dinner_clash",
+      "rawText": "Bữa tối là một màn đối lập hài hước. Đình Phong ngồi đối diện với đĩa salad ức gà luộc không sốt và ly cà phê đen đặc đắng ngắt. Trong khi đó, Hạ Vi vui vẻ thưởng thức bát mì sườn nấu cà chua bốc khói nghi ngút, rắc đầy hành hoa thơm nức mũi. Nhìn vị tổng tài cứ liếc chằm chằm vào bát mì của mình với ánh mắt thèm thuồng, Hạ Vi thở dài, múc một bát nhỏ đẩy sang. Dù gương mặt vẫn giữ vẻ lạnh tanh không biểu cảm, Đình Phong đã ăn sạch bát mì đến giọt nước dùng cuối cùng khiến trợ lý Kiên đứng bên mỉm cười tủm tỉm.",
+      "visual": {
+        "headline": "Bát Mì Sườn Và Sự Tan Chảy",
+        "subhead": "Khi thực đơn khô khan nhường chỗ cho vị ấm gia đình",
+        "badge": "CHƯƠNG III: KHI THẾ GIỚI ĐƠN SẮC CÓ THÊM MÀU NẮNG",
+        "label": "Bát mì sườn cà chua và bữa tối ấm áp",
+        "type": "scene",
+        "region": { "x": 1260, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_13",
+      "role": "safe_radius_sleep",
+      "rawText": "Quy luật kỳ lạ dần hé lộ: chỉ cần Hạ Vi ở trong bán kính ba mét, thế giới của Đình Phong lập tức trở nên yên bình đến lạ kỳ. Buổi tối trong phòng đọc sách, khi Hạ Vi ngồi dưới thảm tỉ mỉ phục chế đống bản vẽ cũ cùng lư hương trầm thơm ngát, chưa đầy mười lăm phút sau, tập hồ sơ trên tay Đình Phong đã rơi xuống. Anh tựa đầu vào ghế ngủ say sưa, nhịp thở đều đặn và thanh thản như một đứa trẻ. Sự hiện diện của cô chính là liều thuốc an thần tuyệt đối xoa dịu những tổn thương dồn nén bấy lâu.",
+      "visual": {
+        "headline": "Bán Kính Ba Mét Bình Yên",
+        "subhead": "Giấc ngủ tự nhiên quay về bên cạnh người con gái ấy",
+        "badge": "CHƯƠNG III: KHI THẾ GIỚI ĐƠN SẮC CÓ THÊM MÀU NẮNG",
+        "label": "Đình Phong ngủ say bên cạnh Hạ Vi làm việc",
+        "type": "character",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_14",
+      "role": "night_sketch",
+      "rawText": "Một đêm muộn lúc mười một giờ, gió đêm thổi hiu hiu ngoài cửa sổ. Thấy Đình Phong ngủ thiếp đi trên bàn làm việc, Hạ Vi nhẹ nhàng bước lại, đắp chiếc chăn mỏng lên vai anh. Dưới ánh đèn bàn dịu nhẹ, gương mặt khi ngủ của anh mất đi vẻ sắc lạnh thường ngày, trông vừa cô độc vừa ấm áp. Hạ Vi bất giác mỉm cười, rút cuốn sổ ký họa nhỏ ra, dùng bút chì phác thảo lại đường nét thanh tú của anh. Nhưng cô không hề nhận ra Đình Phong đã thức giấc từ lúc nào, lặng lẽ ngắm nhìn cô qua khóe mi.",
+      "visual": {
+        "headline": "Nét Vẽ Dưới Ánh Đèn Đêm",
+        "subhead": "Cuốn sổ ký họa phác thảo gương mặt người đàn ông đang say ngủ",
+        "badge": "CHƯƠNG III: KHI THẾ GIỚI ĐƠN SẮC CÓ THÊM MÀU NẮNG",
+        "label": "Hạ Vi lén phác thảo chân dung Đình Phong",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_15",
+      "role": "slowmo_embrace",
+      "rawText": "Khi Hạ Vi đưa tay định vén lọn tóc rũ trên trán anh, Đình Phong bất ngờ nắm chặt lấy cổ tay cô, kéo nhẹ. Trong khoảnh khắc chậm rãi, Hạ Vi mất đà ngã ngồi lên đùi anh, chiếc ghế xoay khẽ đung đưa. Khoảng cách giữa hai gương mặt chỉ còn vài centimet, hơi thở ấm nóng hòa vào nhau. Hạ Vi đỏ bừng mặt, ấp úng chữa thẹn rằng cô chỉ đang kiểm tra độ ẩm không khí. Đình Phong cười khàn đặc, một tay ôm nhẹ lấy eo cô: Kiểm tra độ ẩm bằng cách vẽ lén tôi à? Hợp đồng tuy không có điều khoản làm gối ôm, nhưng tôi không cho phép em lùi lại.",
+      "visual": {
+        "headline": "Khoảng Cách Một Gang Tay",
+        "subhead": "Cú kéo tay bất ngờ và nhịp tim đập loạn xạ",
+        "badge": "CHƯƠNG III: KHI THẾ GIỚI ĐƠN SẮC CÓ THÊM MÀU NẮNG",
+        "label": "Hạ Vi ngã ngồi trên đùi Đình Phong ngại ngùng",
+        "type": "character",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_16",
+      "role": "confession_interrupted",
+      "rawText": "Ánh mắt Đình Phong trở nên dịu dàng sâu thẳm: Lâm Hạ Vi, ba năm qua tôi nghĩ mình mất ngủ vì công việc. Nhưng giờ tôi mới hiểu, không phải tôi không ngủ được, mà trước khi gặp em, tôi chưa từng tìm thấy nơi nào khiến mình cảm thấy đủ an toàn để nhắm mắt lại. Không gian nín thở khi Đình Phong từ từ cúi đầu xuống, đôi môi chỉ còn cách bờ môi Hạ Vi đúng một milimet. Đúng lúc ngàn cân treo sợi tóc ấy, chuông điện thoại trên bàn bỗng reo vang chói tai, màn hình hiện tên Minh Ngọc. Hạ Vi giật mình đẩy anh ra rồi bỏ chạy.",
+      "visual": {
+        "headline": "Lời Tự Tình Trong Đêm",
+        "subhead": "Nụ hôn ngập ngừng bị cắt ngang bởi tiếng chuông điện thoại",
+        "badge": "CHƯƠNG III: KHI THẾ GIỚI ĐƠN SẮC CÓ THÊM MÀU NẮNG",
+        "label": "Cuộc gọi từ Minh Ngọc phá vỡ khoảnh khắc ngọt ngào",
+        "type": "scene",
+        "region": { "x": 100, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_17",
+      "role": "arrival_of_minh_ngoc",
+      "rawText": "Chiều hôm sau, Đình Phong phải đi công tác gấp ở công trường xa. Trong phòng khách biệt thự, tiếng gót giày cao gót gõ nhịp sắc lạnh trên sàn đá cẩm thạch. Minh Ngọc, tiểu thư kiêu kỳ của tập đoàn đối tác, ngồi bắt chéo chân trên ghế sofa với ánh mắt dò xét khinh khỉnh. Cô ta ném xuống bàn kính hai thứ: một tập hồ sơ có dấu đỏ của Hội đồng quản trị với tiêu đề Phương án cưỡng chế giải tỏa khu phố cổ Tĩnh Hiên tuần sau, và một bức ảnh cũ hơi ố vàng chụp tại Paris từ năm năm trước.",
+      "visual": {
+        "headline": "Cơn Bão Mang Tên Minh Ngọc",
+        "subhead": "Hồ sơ cưỡng chế giải tỏa và bức ảnh cũ ố vàng",
+        "badge": "CHƯƠNG IV: CƠN BÃO HIỂU LẦM & VẾT XƯỚC QUÁ KHỨ",
+        "label": "Minh Ngọc kiêu kỳ đặt tập hồ sơ xuống bàn",
+        "type": "character",
+        "region": { "x": 680, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_18",
+      "role": "cruel_revelation",
+      "rawText": "Minh Ngọc nhấp ngụm trà, cất giọng đầy mỉa mai: Cô biết vì sao anh Phong giữ cô ở đây không? Năm xưa anh ấy bị chú ruột hãm hại đẩy sang Pháp trắng tay, từng có một cô gái cứu sống anh ấy dưới mưa. Anh ấy tìm kiếm cô ta năm năm không thấy. Mùi trầm hương hoa cúc ở tiệm cô trùng hợp giống hệt mùi hương chiếc khăn tay người đó để lại. Còn khu phố cổ của cô, lệnh đập bỏ đã thông qua từ lâu. Anh Phong dùng mồi nhử bảo tồn chỉ để cô ngoan ngoãn làm vật thế thân chữa mất ngủ một tháng thôi. Một thương nhân làm sao vì tiệm sách mà bỏ dự án nghìn tỷ?",
+      "visual": {
+        "headline": "Sự Thật Cay Đắng Về Vật Thế Thân",
+        "subhead": "Bóng lưng cô gái dưới mưa Paris và mùi hương hoa cúc",
+        "badge": "CHƯƠNG IV: CƠN BÃO HIỂU LẦM & VẾT XƯỚC QUÁ KHỨ",
+        "label": "Bức ảnh Paris 5 năm trước và lời mỉa mai",
+        "type": "concept",
+        "region": { "x": 1260, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_19",
+      "role": "heartbreak_departure",
+      "rawText": "Hạ Vi run rẩy cầm bức ảnh chụp bóng lưng cô gái cầm ô vàng dưới mưa Paris, phía dưới là nét chữ quen thuộc của Đình Phong: Mùi hương hoa cúc trong mưa, ký ức không thể thay thế. Từng lời nói dịu dàng tối qua bỗng chốc trở thành mũi dao cứa sâu vào tim. Hạ Vi cười nhạt, gạt đi giọt nước mắt vừa rơi xuống bàn kính. Cô bước vào phòng làm việc, sắp xếp toàn bộ bản vẽ đã phục chế tinh tươm, đặt lên trên chiếc chìa khóa cùng bản hợp đồng chưa từng ký tên, rồi kéo vali rời khỏi căn biệt thự lạnh lẽo giữa cơn mưa rào vừa đổ xuống.",
+      "visual": {
+        "headline": "Rời Đi Trong Cơn Mưa Lạnh",
+        "subhead": "Chiếc chìa khóa để lại và niềm tin vỡ vụn",
+        "badge": "CHƯƠNG IV: CƠN BÃO HIỂU LẦM & VẾT XƯỚC QUÁ KHỨ",
+        "label": "Hạ Vi kéo vali bước ra khỏi cổng biệt thự trong mưa",
+        "type": "scene",
+        "region": { "x": 100, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_20",
+      "role": "dinhphong_returns_shock",
+      "rawText": "Hoàng hôn buông xuống, Đình Phong hối hả trở về sớm hơn dự kiến một ngày, trên tay cầm túi bánh hạt dẻ nóng hổi mà Hạ Vi yêu thích. Nhưng đáp lại anh chỉ là sự im lặng rợn ngợp. Bước vào phòng làm việc, nhìn thấy chiếc chìa khóa, bản hợp đồng còn dang dở và tập hồ sơ giải tỏa mà Minh Ngọc cố tình để lại, sắc mặt Đình Phong tái mét. Trợ lý Kiên hốt hoảng chạy vào: Sếp ơi, bản giải tỏa đó là bản nháp bị bác bỏ từ tháng trước, chắc cô Minh Ngọc lén lấy ra để dọa cô Lâm rồi! Đình Phong không kịp thay áo, lao thẳng ra xe giữa giông bão.",
+      "visual": {
+        "headline": "Căn Nhà Trống Không Lúc Hoàng Hôn",
+        "subhead": "Sự thật về bản quy hoạch nháp bị Minh Ngọc lợi dụng",
+        "badge": "CHƯƠNG V: LẬT MỞ SỰ THẬT & BẢN HỢP ĐỒNG VÔ THỜI HẠN",
+        "label": "Đình Phong bàng hoàng trước bản hợp đồng dang dở",
+        "type": "character",
+        "region": { "x": 680, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_21",
+      "role": "chase_in_rain",
+      "rawText": "Tại tiệm Tĩnh Hiên, mưa như trút nước. Hạ Vi đang đứng dưới mái hiên, lặng lẽ đóng gói những thùng sách cuối cùng. Ánh đèn pha ô tô chói lòa xé toạc màn đêm, chiếc xe sang phanh gấp ngay đầu hẻm. Đình Phong đạp cửa xe lao tới, không màng che ô, toàn thân ướt sũng, mái tóc rũ xuống trán trong bộ dạng nhếch nhác chưa từng thấy ở một vị chủ tịch quyền lực. Anh lao lên thềm cửa, giữ chặt lấy hai vai Hạ Vi. Cô nghẹn ngào quay mặt đi: Chủ tịch Trần, sách đã sửa xong, tôi đang dọn đi trả mặt bằng, anh đi tìm người thật sự của mùi hương cúc đó đi!",
+      "visual": {
+        "headline": "Cuộc Rượt Đuổi Trong Mưa Bão",
+        "subhead": "Chiếc xe phanh gấp và vị tổng tài ướt sũng trước mái hiên",
+        "badge": "CHƯƠNG V: LẬT MỞ SỰ THẬT & BẢN HỢP ĐỒNG VÔ THỜI HẠN",
+        "label": "Đình Phong lao đến giữ chặt vai Hạ Vi dưới mưa",
+        "type": "scene",
+        "region": { "x": 1260, "y": 80, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_22",
+      "role": "unveiling_the_deed",
+      "rawText": "Đình Phong thở dốc, rút từ túi áo ngực ra một bọc hồ sơ được bọc kín trong túi chống nước khô ráo, nhét vào tay cô: Mở ra xem đi! Đừng nghe người ngoài, hãy nhìn vào mắt anh và mở nó ra! Hạ Vi run rẩy mở bọc giấy. Bên trong không phải lệnh giải tỏa, mà là Giấy chứng nhận quyền sở hữu đất mang tên Lâm Hạ Vi và Bản phê duyệt Dự án Bảo tồn Văn hóa Phố cổ Tĩnh Hiên. Để giữ lại mảnh đất này, anh đã âm thầm bỏ tiền túi mua lại toàn bộ cổ phần của các cổ đông phản đối từ hai tuần trước mà không hé lộ một lời.",
+      "visual": {
+        "headline": "Bảo Tồn Phố Cổ Tĩnh Hiên",
+        "subhead": "Món quà bảo hộ âm thầm và sổ đỏ đứng tên Lâm Hạ Vi",
+        "badge": "CHƯƠNG V: LẬT MỞ SỰ THẬT & BẢN HỢP ĐỒNG VÔ THỜI HẠN",
+        "label": "Giấy chứng nhận sở hữu đất và dự án bảo tồn phố cổ",
+        "type": "concept",
+        "region": { "x": 100, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_23",
+      "role": "mirror_reflection_truth",
+      "rawText": "Hạ Vi sững sờ nghẹn ngào hỏi về cô gái cầm ô vàng ở Paris. Đình Phong bật cười xót xa, lấy bức ảnh ra rồi lật mặt sau lại: Đồ ngốc này, em nhìn kỹ góc phản chiếu qua gương cửa kính tiệm sách đi! Hạ Vi nhìn kỹ bức ảnh cũ, và bàng hoàng nhận ra hình ảnh phản chiếu qua tấm kính năm xưa: một cô gái đang nhường chiếc ô vàng cho chàng trai thất cơ lỡ vận, trên chiếc túi vải đeo chéo có thêu ba chữ nhỏ: Lâm Hạ Vi. Người con gái năm ấy chính là cô! Đêm đầu tiên bước vào tiệm sách, nhìn thấy chữ ký trên góc tranh tường, Đình Phong đã biết mình tìm được định mệnh của đời mình.",
+      "visual": {
+        "headline": "Chiếc Túi Vải Thêu Tên Lâm Hạ Vi",
+        "subhead": "Bí mật 5 năm ở Paris và hình ảnh phản chiếu qua tấm kính",
+        "badge": "CHƯƠNG V: LẬT MỞ SỰ THẬT & BẢN HỢP ĐỒNG VÔ THỜI HẠN",
+        "label": "Hình ảnh phản chiếu chiếc túi vải thêu tên Hạ Vi",
+        "type": "concept",
+        "region": { "x": 680, "y": 560, "width": 550, "height": 450 }
+      }
+    },
+    {
+      "id": "beat_24",
+      "role": "forever_contract_kiss",
+      "rawText": "Hạ Vi bật khóc nức nở đánh nhẹ vào ngực anh vì đã giấu kín, bắt cô ký hợp đồng dọa dẫm. Đình Phong kéo cô ôm chặt vào lòng: Hợp đồng một tháng hủy rồi. Bây giờ anh muốn ký bản hợp đồng trọn đời, toàn bộ tài sản và con người Trần Đình Phong đều đứng tên em, em có đồng ý không? Hạ Vi mỉm cười trong nước mắt: Phí phục chế một vị tổng tài mất ngủ đắt lắm đấy, trả góp cả đời chưa chắc hết. Đình Phong nâng cằm cô, đặt nụ hôn sâu nồng nàn dưới mái hiên mưa. Đằng xa đầu hẻm, trợ lý Kiên cầm ô đứng nhìn, mỉm cười mãn nguyện rồi lặng lẽ quay đi.",
+      "visual": {
+        "headline": "Bản Hợp Đồng Trọn Đời",
+        "subhead": "Nụ hôn nồng nàn dưới mái hiên mưa và cái kết viên mãn",
+        "badge": "LỜI KẾT",
+        "label": "Nụ hôn ngọt ngào dưới mái hiên mưa và kết thúc viên mãn",
+        "type": "scene",
+        "region": { "x": 1260, "y": 560, "width": 550, "height": 450 },
+        "cta": "ĐĂNG KÝ KÊNH ĐỂ THEO DÕI NHỮNG CÂU CHUYỆN TIẾP THEO"
+      }
+    }
+  ]
+}
