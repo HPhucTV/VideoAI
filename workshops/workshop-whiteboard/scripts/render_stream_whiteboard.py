@@ -353,8 +353,40 @@ class RegionStreamRenderer:
                 sample_cell.append(idx)
         return samples, pen_lifts, sample_cell
 
+    # ── 板擦擦除：S 型 zíc-zắc 扫除所有笔迹，恢复底色 ──
+    def _erase_board(self, writer, erase_frames: int) -> None:
+        if erase_frames <= 0:
+            return
+        disk_radius = max(24, int(round(self.out_h * 0.15)))
+        disk = sr._feathered_disk(disk_radius)
+        canvas_bgr_f32 = self.canvas_bgr.astype(np.float32)
+        sweep_lanes = 6.0
+
+        for fi in range(erase_frames):
+            progress = 1.0 if erase_frames == 1 else fi / (erase_frames - 1)
+            cy = int(round(-disk_radius * 0.5 + progress * (self.out_h + disk_radius)))
+            lane_phase = progress * sweep_lanes * math.pi
+            cx = int(round((0.5 + 0.48 * math.sin(lane_phase)) * self.out_w))
+
+            y0, y1 = max(0, cy - disk_radius), min(self.out_h, cy + disk_radius + 1)
+            x0, x1 = max(0, cx - disk_radius), min(self.out_w, cx + disk_radius + 1)
+            if y1 > y0 and x1 > x0:
+                by0 = y0 - (cy - disk_radius)
+                by1 = disk.shape[0] - ((cy + disk_radius + 1) - y1)
+                bx0 = x0 - (cx - disk_radius)
+                bx1 = disk.shape[1] - ((cx + disk_radius + 1) - x1)
+                m = disk[by0:by1, bx0:bx1, None]
+                target = self.drawn[y0:y1, x0:x1]
+                target[:] = target * (1.0 - m) + canvas_bgr_f32 * m
+
+            writer.write(self._snapshot_with_tip(cx, cy))
+
+        self.drawn[:] = canvas_bgr_f32
+        # Write clean board hold frame so next scene starts from clean state without hand/artifacts
+        writer.write(self.drawn.astype(np.uint8))
+
     # ── 主渲染 ──
-    def render_to(self, raw_path: Path, total_ms: int) -> Path:
+    def render_to(self, raw_path: Path, total_ms: int, with_eraser: bool = False, eraser_seconds: float = 1.3) -> Path:
         cfg = self.cfg
         elements = sorted(self.ann["elements"], key=lambda e: e["reveal"]["startMs"])
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -410,7 +442,7 @@ class RegionStreamRenderer:
                         self._lay_ink_grid(writer, ink_frames, samples, pen_lifts, sample_cell, path, allowed)
                         centers = [self._cell_center(c) for c in path]
                     else:
-                        self._lay_ink(writer, ink_frames, [], set(), None, allowed)
+                        self._lay_ink(writer, ink_frames, [], set(), allowed)
                         centers = []
 
                 cur_ms += ink_frames * ms_per_frame
@@ -426,6 +458,10 @@ class RegionStreamRenderer:
             # 最终帧显示完整原图（凝视）
             self.drawn[...] = self.color_img.astype(np.float32)
             fill_static(gaze_until)
+
+            if with_eraser:
+                erase_frames = max(1, round(eraser_seconds * cfg.fps))
+                self._erase_board(writer, erase_frames)
         finally:
             writer.release()
         return raw_path
@@ -481,6 +517,10 @@ def _parse_args(argv=None):
     p.add_argument("--brush-radius", type=int, default=None)
     p.add_argument("--cap-long-edge", type=int, default=None,
                    help="输出长边像素上限（预览可调小加速，默认 1080）")
+    p.add_argument("--with-eraser", action="store_true", default=False,
+                   help="启用片尾板擦/手部擦除动画")
+    p.add_argument("--eraser-seconds", type=float, default=1.3,
+                   help="板擦擦除动画时长（秒，默认 1.3）")
     return p.parse_args(argv)
 
 
@@ -537,7 +577,7 @@ def main(argv=None) -> int:
     print(f"  区域数: {len(annotation['elements'])}, 总时长: {total_ms}ms, "
           f"笔迹: {cfg.ink_path_mode}, 上色: {cfg.color_fill}")
 
-    renderer.render_to(raw_path, total_ms)
+    renderer.render_to(raw_path, total_ms, with_eraser=args.with_eraser, eraser_seconds=args.eraser_seconds)
     final = sr.transcode_h264(raw_path, out_path)
 
     size_mb = final.stat().st_size / (1024 * 1024)
