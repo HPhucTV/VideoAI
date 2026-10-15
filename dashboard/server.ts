@@ -418,9 +418,8 @@ const server = createServer(async (req, res) => {
         const actualPy = existsSync(pyExe) ? pyExe : "python";
 
         const wbAdapter = spawn(actualPy, [
-          "workshops/workshop-whiteboard/job_adapter.py",
-          jobPath,
-          outDir,
+          "workshops/workshop-whiteboard/scripts/export_video.py",
+          id,
         ], { cwd: ROOT_DIR });
 
         wbAdapter.stdout.on("data", d => {
@@ -437,10 +436,10 @@ const server = createServer(async (req, res) => {
             sendEvent("done", {
               success: true,
               videoUrl: `/media/whiteboard/${encodeURIComponent(id)}.mp4`,
-              message: "Đã cập nhật âm thanh & kịch bản Whiteboard!",
+              message: "Đã xuất hoàn chỉnh video bảng trắng 90 FPS!",
             });
           } else {
-            sendEvent("error", { text: `Whiteboard adapter thất bại (mã lỗi: ${wCode})` });
+            sendEvent("error", { text: `Xuất Whiteboard thất bại (mã lỗi: ${wCode})` });
           }
           res.end();
         });

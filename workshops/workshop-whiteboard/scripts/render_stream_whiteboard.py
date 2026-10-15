@@ -150,7 +150,10 @@ class RegionStreamRenderer:
         mask[y0:y1, x0:x1] = True
         for later in later_elements:
             lx0, ly0, lx1, ly1 = _scaled_rect(later["region"], self.sx, self.sy, self.out_w, self.out_h)
-            mask[ly0:ly1, lx0:lx1] = False
+            temp = mask.copy()
+            temp[ly0:ly1, lx0:lx1] = False
+            if temp.any():
+                mask = temp
         for prot in element.get("reveal", {}).get("protectedRegions", []):
             px0, py0, px1, py1 = _scaled_rect(prot, self.sx, self.sy, self.out_w, self.out_h)
             mask[py0:py1, px0:px1] = False
