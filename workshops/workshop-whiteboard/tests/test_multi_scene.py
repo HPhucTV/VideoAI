@@ -218,14 +218,14 @@ def test_render_scene_with_and_without_eraser(tmp_path, monkeypatch):
     assert "--eraser-seconds" in render_cmd_1
     assert "1.3" in render_cmd_1
     ffmpeg_cmd_1 = recorded_runs[1]
-    assert "-af" in ffmpeg_cmd_1
-    assert "apad" in ffmpeg_cmd_1
+    assert "-filter_complex" in ffmpeg_cmd_1
+    assert any("apad" in c for c in ffmpeg_cmd_1)
     assert "-ar" in ffmpeg_cmd_1
     assert "44100" in ffmpeg_cmd_1
 
     recorded_runs.clear()
 
-    # Scene 2 of 2: Last scene -> with_eraser=False, still has apad to prevent gaze cutoff
+    # Scene 2 of 2: Last scene -> with_eraser=False, still has apad in filter_complex to prevent gaze cutoff
     mp4_2 = render_scene(
         scene_folder=s2_dir,
         scene_idx=1,
@@ -243,8 +243,56 @@ def test_render_scene_with_and_without_eraser(tmp_path, monkeypatch):
     render_cmd_2 = recorded_runs[0]
     assert "--with-eraser" not in render_cmd_2
     ffmpeg_cmd_2 = recorded_runs[1]
-    assert "-af" in ffmpeg_cmd_2
-    assert "apad" in ffmpeg_cmd_2
+    assert "-filter_complex" in ffmpeg_cmd_2
+    assert any("apad" in c for c in ffmpeg_cmd_2)
+
+
+def test_render_scene_with_bgm_and_subtitles(tmp_path, monkeypatch):
+    s_dir = tmp_path / "scene-01"
+    s_dir.mkdir()
+    (s_dir / "scene-01.png").write_text("png")
+    (s_dir / "scene-01.annotation.json").write_text("{}")
+    (s_dir / "scene-01.mp3").write_text("mp3")
+    (s_dir / "scene-01.srt").write_text("1\n00:00:00,000 --> 00:00:01,000\nSub text\n\n")
+
+    bgm_file = tmp_path / "piano.mp3"
+    bgm_file.write_text("bgm")
+
+    recorded = []
+
+    def mock_run(cmd, *args, **kwargs):
+        recorded.append([str(c) for c in cmd])
+        for c in cmd:
+            if str(c).endswith(".mp4"):
+                Path(c).write_text("mp4")
+        return type("Result", (), {"returncode": 0})()
+
+    monkeypatch.setattr("subprocess.run", mock_run)
+
+    mp4 = render_scene(
+        scene_folder=s_dir,
+        scene_idx=0,
+        total_scenes=1,
+        root_dir=tmp_path,
+        job_dir=tmp_path,
+        job_id="test-job",
+        fps=90,
+        cap_long_edge=1080,
+        eraser_seconds=0.0,
+        ffmpeg_bin="ffmpeg",
+        node_env={},
+        bgm_path=bgm_file,
+        bgm_vol=0.25,
+        duck_ratio=5.0,
+        with_subtitles=True,
+    )
+    assert mp4.name == "scene-01.mp4"
+    ff_cmd = recorded[1]
+    assert "-stream_loop" in ff_cmd
+    fc = [ff_cmd[i+1] for i, c in enumerate(ff_cmd) if c == "-filter_complex"][0]
+    assert "sidechaincompress=" in fc
+    assert "ratio=5.0" in fc
+    assert "subtitles=" in fc
 
 
 def test_export_whiteboard_video_multi_scene_e2e(tmp_path, monkeypatch):

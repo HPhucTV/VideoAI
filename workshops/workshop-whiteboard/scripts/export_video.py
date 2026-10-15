@@ -21,6 +21,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+scripts_dir = Path(__file__).resolve().parent
+if str(scripts_dir) not in sys.path:
+    sys.path.insert(0, str(scripts_dir))
+
+from audio_mixer import resolve_bgm_path, generate_default_ambient_bgm
+from export_metadata import generate_youtube_metadata
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -98,6 +105,10 @@ def render_scene(
     eraser_seconds: float,
     ffmpeg_bin: str,
     node_env: dict,
+    bgm_path: Path | None = None,
+    bgm_vol: float = 0.35,
+    duck_ratio: float = 6.0,
+    with_subtitles: bool = True,
 ) -> Path:
     scene_id = scene_folder.name
     print(f"\n--- Đang xử lý phân cảnh [{scene_idx + 1}/{total_scenes}]: {scene_id} ---")
@@ -105,6 +116,7 @@ def render_scene(
     scene_png = ensure_scene_image(scene_folder, job_id, root_dir, job_dir)
     ann_file = scene_folder / f"{scene_id}.annotation.json"
     mp3_file = scene_folder / f"{scene_id}.mp3"
+    srt_file = scene_folder / f"{scene_id}.srt"
 
     if not ann_file.exists():
         raise FileNotFoundError(f"Không tìm thấy file annotation {ann_file}")
@@ -136,20 +148,56 @@ def render_scene(
     if res_render.returncode != 0:
         raise RuntimeError(f"Lỗi khi render hoạt cảnh vẽ tay cho {scene_id} (code {res_render.returncode})")
 
-    print(f"[*] Lồng tiếng và khớp khung hình cho {scene_id} bằng FFmpeg...")
+    print(f"[*] Lồng tiếng, BGM ducking & phụ đề cho {scene_id} bằng FFmpeg...")
     cmd_ffmpeg = [
         ffmpeg_bin, "-y",
         "-i", str(silent_mp4),
         "-i", str(mp3_file),
-        "-af", "apad",
-        "-c:v", "copy",
+    ]
+
+    has_bgm = bgm_path is not None and bgm_path.exists()
+    if has_bgm:
+        cmd_ffmpeg.extend(["-stream_loop", "-1", "-i", str(bgm_path)])
+        audio_filter = (
+            f"[1:a]apad,asplit=2[voice_sc][voice_mix];"
+            f"[2:a]volume={bgm_vol}[bgm];"
+            f"[bgm][voice_sc]sidechaincompress=threshold=0.03:ratio={duck_ratio}:attack=100:release=700[ducked_bgm];"
+            f"[voice_mix][ducked_bgm]amix=inputs=2:duration=first:dropout_transition=2[outa]"
+        )
+    else:
+        audio_filter = "[1:a]apad[outa]"
+
+    has_sub = with_subtitles and srt_file.exists()
+    if has_sub:
+        escaped_srt = str(srt_file.resolve()).replace("\\", "/").replace(":", r"\:")
+        sub_style = "FontName=Arial,FontSize=15,PrimaryColour=&H002C2C2C,BackColour=&H60FFFFFF,BorderStyle=3,Outline=0,Shadow=1,MarginV=35,Alignment=2"
+        filter_complex = f"[0:v]subtitles='{escaped_srt}':force_style='{sub_style}'[outv];{audio_filter}"
+        cmd_ffmpeg.extend([
+            "-filter_complex", filter_complex,
+            "-map", "[outv]",
+            "-map", "[outa]",
+            "-c:v", "libx264",
+            "-crf", "20",
+            "-preset", "faster",
+            "-r", str(fps),
+            "-pix_fmt", "yuv420p",
+        ])
+    else:
+        cmd_ffmpeg.extend([
+            "-filter_complex", audio_filter,
+            "-map", "0:v",
+            "-map", "[outa]",
+            "-c:v", "copy",
+        ])
+
+    cmd_ffmpeg.extend([
         "-c:a", "aac",
         "-b:a", "192k",
         "-ar", "44100",
         "-ac", "2",
         "-shortest",
         str(scene_mp4),
-    ]
+    ])
 
     res_ffmpeg = subprocess.run(cmd_ffmpeg, env=node_env)
     if res_ffmpeg.returncode != 0:
@@ -165,6 +213,10 @@ def export_whiteboard_video(
     cap_long_edge: int = 1080,
     scene: str | None = None,
     eraser_seconds: float = 1.3,
+    bgm: str | None = None,
+    bgm_vol: float = 0.35,
+    duck_ratio: float = 6.0,
+    with_subtitles: bool = True,
     root_dir: Path | None = None,
 ) -> Path | None:
     if root_dir is None:
@@ -211,7 +263,24 @@ def export_whiteboard_video(
     else:
         print("[1/3] Dữ liệu âm thanh & kịch bản đã sẵn sàng.")
 
-    # 2. Kiểm tra chế độ đa phân cảnh (Multi-Scene)
+    # 2. Xử lý đường dẫn nhạc nền BGM (Audio Ducking)
+    if bgm in ("none", "off", "no"):
+        bgm_path = None
+    else:
+        bgm_path = resolve_bgm_path(bgm, root_dir=root_dir)
+        if bgm_path is None and bgm is None:
+            default_bgm = root_dir / "workshops" / "workshop-whiteboard" / "assets" / "audio" / "bgm" / "healing-piano.mp3"
+            if not default_bgm.exists():
+                print(f"[*] Đang tự động tạo nhạc nền ambient mặc định: {default_bgm}...")
+                generate_default_ambient_bgm(default_bgm)
+            bgm_path = default_bgm if default_bgm.exists() else None
+
+    if bgm_path:
+        print(f"[*] Nhạc nền BGM: {bgm_path.name} (vol={bgm_vol}, ducking={duck_ratio}:1)")
+    if with_subtitles:
+        print("[*] Phụ đề: Bật khắc chữ nghệ thuật (Burn-in Subtitles) phong cách giấy kem")
+
+    # 3. Kiểm tra chế độ đa phân cảnh (Multi-Scene)
     all_scene_folders = []
     if scenes_dir.exists() and scenes_dir.is_dir():
         all_scene_folders = sort_scene_folders([
@@ -247,6 +316,10 @@ def export_whiteboard_video(
                 eraser_seconds=eraser_seconds,
                 ffmpeg_bin=ffmpeg_bin,
                 node_env=node_env,
+                bgm_path=bgm_path,
+                bgm_vol=bgm_vol,
+                duck_ratio=duck_ratio,
+                with_subtitles=with_subtitles,
             )
 
         # Verify all scene-XX.mp4 exist
@@ -274,6 +347,37 @@ def export_whiteboard_video(
         # Thumbnail từ scene đầu tiên
         first_scene_png = ensure_scene_image(all_scene_folders[0], job_id, root_dir, job_dir)
         shutil.copy(first_scene_png, thumb_png)
+
+        # 4. Sinh tài liệu YouTube Metadata & Chapters
+        if job_json_file.exists():
+            scenes_info = []
+            for sc in all_scene_folders:
+                sc_id = sc.name
+                ann_path = sc / f"{sc_id}.annotation.json"
+                dur_s = 0.0
+                sc_title = sc_id
+                if ann_path.exists():
+                    try:
+                        with open(ann_path, "r", encoding="utf-8") as af:
+                            ann = json.load(af)
+                            dur_s = ann.get("sceneDurationMs", 0) / 1000.0
+                    except Exception:
+                        pass
+                prompt_file = sc / "IMAGE_PROMPT.md"
+                if prompt_file.exists():
+                    try:
+                        for line in prompt_file.read_text(encoding="utf-8").splitlines():
+                            if line.startswith("# ") and "Phân cảnh" in line:
+                                sc_title = line.replace("# ", "").strip()
+                                break
+                    except Exception:
+                        pass
+                scenes_info.append({"scene_id": sc_id, "title": sc_title, "duration_sec": dur_s})
+
+            meta_file = job_dir / "YOUTUBE_METADATA.md"
+            generate_youtube_metadata(job_json_file, scenes_info, meta_file)
+            shutil.copy(meta_file, output_wb / f"{job_id}-youtube.md")
+            print(f"[*] Đã xuất gói YouTube Metadata & Chapters: {output_wb / f'{job_id}-youtube.md'}")
 
         size_mb = final_mp4.stat().st_size / (1024 * 1024)
         print("=" * 60)
@@ -324,20 +428,52 @@ def export_whiteboard_video(
         if res_render.returncode != 0:
             raise RuntimeError(f"Lỗi khi render hoạt cảnh vẽ tay (code {res_render.returncode})")
 
-        print("[3/3] Đang lồng tiếng và khớp khung hình cuối cùng bằng FFmpeg...")
-        cmd_ffmpeg = [
-            ffmpeg_bin, "-y",
-            "-i", str(silent_mp4),
-            "-i", str(mp3_file),
-            "-af", "apad",
-            "-c:v", "copy",
+        print("[3/3] Đang lồng tiếng, phụ đề & khớp khung hình bằng FFmpeg...")
+        cmd_ffmpeg = [ffmpeg_bin, "-y", "-i", str(silent_mp4), "-i", str(mp3_file)]
+        has_bgm = bgm_path is not None and bgm_path.exists()
+        if has_bgm:
+            cmd_ffmpeg.extend(["-stream_loop", "-1", "-i", str(bgm_path)])
+            audio_filter = (
+                f"[1:a]apad,asplit=2[voice_sc][voice_mix];"
+                f"[2:a]volume={bgm_vol}[bgm];"
+                f"[bgm][voice_sc]sidechaincompress=threshold=0.03:ratio={duck_ratio}:attack=100:release=700[ducked_bgm];"
+                f"[voice_mix][ducked_bgm]amix=inputs=2:duration=first:dropout_transition=2[outa]"
+            )
+        else:
+            audio_filter = "[1:a]apad[outa]"
+
+        srt_file = job_dir / "input.srt"
+        has_sub = with_subtitles and srt_file.exists()
+        if has_sub:
+            escaped_srt = str(srt_file.resolve()).replace("\\", "/").replace(":", r"\:")
+            sub_style = "FontName=Arial,FontSize=15,PrimaryColour=&H002C2C2C,BackColour=&H60FFFFFF,BorderStyle=3,Outline=0,Shadow=1,MarginV=35,Alignment=2"
+            filter_complex = f"[0:v]subtitles='{escaped_srt}':force_style='{sub_style}'[outv];{audio_filter}"
+            cmd_ffmpeg.extend([
+                "-filter_complex", filter_complex,
+                "-map", "[outv]",
+                "-map", "[outa]",
+                "-c:v", "libx264",
+                "-crf", "20",
+                "-preset", "faster",
+                "-r", str(fps),
+                "-pix_fmt", "yuv420p",
+            ])
+        else:
+            cmd_ffmpeg.extend([
+                "-filter_complex", audio_filter,
+                "-map", "0:v",
+                "-map", "[outa]",
+                "-c:v", "copy",
+            ])
+
+        cmd_ffmpeg.extend([
             "-c:a", "aac",
             "-b:a", "192k",
             "-ar", "44100",
             "-ac", "2",
             "-shortest",
             str(final_mp4),
-        ]
+        ])
         res_ffmpeg = subprocess.run(cmd_ffmpeg, env=node_env)
         if res_ffmpeg.returncode != 0:
             raise RuntimeError(f"Lỗi khi ghép âm thanh bằng FFmpeg (code {res_ffmpeg.returncode})")
@@ -354,12 +490,17 @@ def export_whiteboard_video(
 
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(description="Xuất video Whiteboard hoàn chỉnh (hỗ trợ đa phân cảnh)")
+    parser = argparse.ArgumentParser(description="Xuất video Whiteboard hoàn chỉnh (hỗ trợ đa phân cảnh & YouTube Audio)")
     parser.add_argument("job_id", nargs="?", default="job-ban-hop-dong-luc-0-gio", help="ID của job cần xuất")
     parser.add_argument("--fps", type=int, default=90, help="Số khung hình / giây (mặc định 90)")
     parser.add_argument("--cap-long-edge", type=int, default=1080, help="Giới hạn cạnh dài khung hình (mặc định 1080)")
     parser.add_argument("--scene", type=str, default=None, help="Chỉ render phân cảnh này (ví dụ: scene-01), sau đó ghép lại toàn bộ")
     parser.add_argument("--eraser-seconds", type=float, default=1.3, help="Thời lượng hiệu ứng xóa bảng giữa các scene (giây, mặc định 1.3)")
+    parser.add_argument("--bgm", type=str, default=None, help="Đường dẫn file BGM, hoặc 'none'/'off' để tắt nhạc nền")
+    parser.add_argument("--bgm-vol", type=float, default=0.35, help="Âm lượng nền BGM cơ bản (mặc định 0.35)")
+    parser.add_argument("--duck-ratio", type=float, default=6.0, help="Tỷ lệ nén ducking khi có giọng đọc (mặc định 6.0)")
+    parser.add_argument("--with-subtitles", dest="with_subtitles", action="store_true", default=True, help="Khắc phụ đề nghệ thuật lên video (mặc định Bật)")
+    parser.add_argument("--no-subtitles", dest="with_subtitles", action="store_false", help="Tắt hiển thị phụ đề")
     return parser.parse_args(argv)
 
 
@@ -372,6 +513,10 @@ if __name__ == "__main__":
             cap_long_edge=args.cap_long_edge,
             scene=args.scene,
             eraser_seconds=args.eraser_seconds,
+            bgm=args.bgm,
+            bgm_vol=args.bgm_vol,
+            duck_ratio=args.duck_ratio,
+            with_subtitles=args.with_subtitles,
         )
     except Exception as e:
         print(f"[ERR] {e}", file=sys.stderr)
