@@ -4,12 +4,12 @@ import { log } from "../utils/logger.js";
 export interface RenderArgs {
   compositionDir: string;  // path to composition directory
   outputPath: string;      // path for .mp4
-  fps?: number;            // default 30
+  fps?: number;            // default 60
   quality?: "draft" | "standard" | "high"; // default "standard"
 }
 
 export async function renderWithHyperframes(args: RenderArgs): Promise<void> {
-  const { compositionDir, outputPath, fps = 30, quality = "standard" } = args;
+  const { compositionDir, outputPath, fps = 60, quality = "standard" } = args;
 
   const spawnArgs = [
     "hyperframes",

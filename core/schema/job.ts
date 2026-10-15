@@ -3,7 +3,7 @@ import { z } from "zod";
 export const CanvasSchema = z.object({
   width: z.number().int().positive().default(1080),
   height: z.number().int().positive().default(1920),
-  fps: z.number().int().positive().default(30),
+  fps: z.number().int().positive().default(60),
 });
 
 export const VoiceConfigSchema = z.object({
@@ -55,7 +55,7 @@ export const VideoJobSchema = z.object({
   workshop: z.enum(["news", "explainer", "whiteboard"]),
   archetype: z.enum(["storytelling", "explainer", "versus", "mythbuster", "news"]).optional(),
   targetPlatform: z.enum(["tiktok", "youtube_shorts", "youtube_long", "youtube"]).default("tiktok"),
-  canvas: CanvasSchema.default({ width: 1080, height: 1920, fps: 30 }),
+  canvas: CanvasSchema.default({ width: 1080, height: 1920, fps: 60 }),
   voice: VoiceConfigSchema.default({}),
   beats: z.array(VideoBeatSchema).min(1),
   metadata: z.object({

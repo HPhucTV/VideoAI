@@ -11,7 +11,7 @@ const voiceArg = getArg("--voice") || "vi-VN-NamMinhNeural";
 const rateArg = getArg("--rate") || "+0%";
 const pitchArg = getArg("--pitch") || "+0Hz";
 const volumeArg = getArg("--volume") || "+0%";
-const fpsArg = parseInt(getArg("--fps") || "30", 10);
+const fpsArg = parseInt(getArg("--fps") || "60", 10);
 
 if (!textArg) {
   console.error(JSON.stringify({ error: "Missing --text argument" }));

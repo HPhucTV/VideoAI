@@ -23,7 +23,7 @@ export async function convertJobToRemotionProps(options: AdapterOptions): Promis
   await mkdir(publicAudioDir, { recursive: true });
 
   const isLandscape = job.targetPlatform === "youtube_long" || job.canvas.width > job.canvas.height;
-  const fps = job.canvas.fps || 30;
+  const fps = job.canvas.fps || 90;
 
   const beats: OmniBeat[] = [];
 

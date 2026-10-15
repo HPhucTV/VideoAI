@@ -62,6 +62,7 @@ workshops/workshop-explainer/public/audio/
 workshops/workshop-explainer/public/props.json
 workshops/workshop-explainer/test-still.png
 workshops/workshop-explainer/dist/
+workshops/workshop-explainer/build/
 workshops/workshop-explainer/.remotion/
 workshops/workshop-whiteboard/preview.html
 

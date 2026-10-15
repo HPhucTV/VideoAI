@@ -53,7 +53,7 @@ export async function synthesizeVoice(req: TTSRequest): Promise<TTSResponse> {
   const rate = req.rate || "+0%";
   const pitch = req.pitch || "+0Hz";
   const volume = req.volume || "+0%";
-  const fps = req.fps || 30;
+  const fps = req.fps || 60;
 
   // 1. Chuẩn hóa ngữ âm tiếng Việt bằng Single Source of Truth
   const normalizedText = normalizeVietnameseText(req.text);

@@ -226,7 +226,10 @@ createForm.onsubmit = async (e) => {
     visual: { headline: line.trim().slice(0, 40) }
   }));
 
-  const canvas = platform === "tiktok" ? { width: 1080, height: 1920, fps: 30 } : { width: 1920, height: 1080, fps: 30 };
+  const defaultFps = workshop === "explainer" ? 90 : 60;
+  const canvas = platform === "tiktok"
+    ? { width: 1080, height: 1920, fps: defaultFps }
+    : { width: 1920, height: 1080, fps: defaultFps };
 
   const payload = {
     jobId: id,

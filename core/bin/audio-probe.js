@@ -7,7 +7,7 @@ function getArg(flag) {
 }
 
 const file = getArg("--file") || process.argv[2];
-const fps = parseInt(getArg("--fps") || "30", 10);
+const fps = parseInt(getArg("--fps") || "60", 10);
 
 if (!file) {
   console.error(JSON.stringify({ error: "Missing --file argument" }));

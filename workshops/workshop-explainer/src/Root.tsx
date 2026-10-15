@@ -13,16 +13,16 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="OmniExplainer-Portrait"
         component={OmniExplainer}
-        durationInFrames={150}
-        fps={30}
+        durationInFrames={450}
+        fps={90}
         width={1080}
         height={1920}
         schema={omniExplainerSchema}
         calculateMetadata={({ props }) => {
           const beats = props.beats || [];
-          const totalFrames = beats.reduce((sum, b) => sum + (b.durationFrames || 150), 0);
+          const totalFrames = beats.reduce((sum, b) => sum + (b.durationFrames || 450), 0);
           return {
-            durationInFrames: Math.max(totalFrames, 150),
+            durationInFrames: Math.max(totalFrames, 450),
             props: {
               ...props,
               orientation: "portrait",
@@ -40,7 +40,7 @@ export const RemotionRoot: React.FC = () => {
               id: "b1",
               name: "hook",
               voiceText: "Chào mừng bạn đến với OmniVideo Studio Local bản 2.0.",
-              durationFrames: 150,
+              durationFrames: 450,
               badge: "CÔNG NGHỆ 2026",
               headline: "OmniVideo Studio Local",
               subhead: "Hệ thống video tự động 100% Offline",
@@ -54,16 +54,16 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="OmniExplainer-Landscape"
         component={OmniExplainer}
-        durationInFrames={150}
-        fps={30}
+        durationInFrames={450}
+        fps={90}
         width={1920}
         height={1080}
         schema={omniExplainerSchema}
         calculateMetadata={({ props }) => {
           const beats = props.beats || [];
-          const totalFrames = beats.reduce((sum, b) => sum + (b.durationFrames || 150), 0);
+          const totalFrames = beats.reduce((sum, b) => sum + (b.durationFrames || 450), 0);
           return {
-            durationInFrames: Math.max(totalFrames, 150),
+            durationInFrames: Math.max(totalFrames, 450),
             props: {
               ...props,
               orientation: "landscape",
@@ -81,7 +81,7 @@ export const RemotionRoot: React.FC = () => {
               id: "b1",
               name: "hook",
               voiceText: "Chào mừng bạn đến với OmniVideo Studio Local bản 2.0.",
-              durationFrames: 150,
+              durationFrames: 450,
               badge: "YOUTUBE LANDSCAPE",
               headline: "OmniVideo Studio Local",
               subhead: "Hệ thống video tự động 100% Offline",
@@ -95,8 +95,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="DockerExplainer"
         component={DockerExplainer}
-        durationInFrames={1280}
-        fps={30}
+        durationInFrames={3840}
+        fps={90}
         width={1080}
         height={1920}
         schema={dockerExplainerSchema}

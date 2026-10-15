@@ -80,9 +80,9 @@ export function estimateMp3Duration(buffer: Buffer, defaultBitrateKbps = 48): nu
 }
 
 /**
- * Hàm đo thời lượng audio duy nhất của toàn hệ thống (30 FPS mặc định).
+ * Hàm đo thời lượng audio duy nhất của toàn hệ thống (60 FPS mặc định).
  */
-export async function getAudioDuration(filePath: string, fps = 30): Promise<AudioProbeResult> {
+export async function getAudioDuration(filePath: string, fps = 60): Promise<AudioProbeResult> {
   // 1. Thử ffprobe trước
   const ffprobeDuration = await probeWithFfprobe(filePath);
   if (ffprobeDuration !== null && ffprobeDuration > 0) {
