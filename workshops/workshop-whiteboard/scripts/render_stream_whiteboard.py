@@ -353,19 +353,20 @@ class RegionStreamRenderer:
                 sample_cell.append(idx)
         return samples, pen_lifts, sample_cell
 
-    # ── 板擦擦除：S 型 zíc-zắc 4 泳道扫除所有笔迹，恢复底色 ──
+    # ── 板擦擦除：S 型 zíc-zắc 扫除所有笔迹，恢复底色 ──
     def _erase_board(self, writer, erase_frames: int) -> None:
         if erase_frames <= 0:
             return
-        disk_radius = int(round(self.out_h * 0.08))
+        disk_radius = max(24, int(round(self.out_h * 0.15)))
         disk = sr._feathered_disk(disk_radius)
-        canvas_patch = self.canvas_bgr.astype(np.float32)
+        canvas_bgr_f32 = self.canvas_bgr.astype(np.float32)
+        sweep_lanes = 6.0
 
         for fi in range(erase_frames):
             progress = 1.0 if erase_frames == 1 else fi / (erase_frames - 1)
-            cy = int(round(progress * self.out_h))
-            lane_phase = progress * 4.0 * math.pi
-            cx = int(round((0.5 + 0.42 * math.sin(lane_phase)) * self.out_w))
+            cy = int(round(-disk_radius * 0.5 + progress * (self.out_h + disk_radius)))
+            lane_phase = progress * sweep_lanes * math.pi
+            cx = int(round((0.5 + 0.48 * math.sin(lane_phase)) * self.out_w))
 
             y0, y1 = max(0, cy - disk_radius), min(self.out_h, cy + disk_radius + 1)
             x0, x1 = max(0, cx - disk_radius), min(self.out_w, cx + disk_radius + 1)
@@ -376,11 +377,13 @@ class RegionStreamRenderer:
                 bx1 = disk.shape[1] - ((cx + disk_radius + 1) - x1)
                 m = disk[by0:by1, bx0:bx1, None]
                 target = self.drawn[y0:y1, x0:x1]
-                target[:] = target * (1.0 - m) + canvas_patch * m
+                target[:] = target * (1.0 - m) + canvas_bgr_f32 * m
 
             writer.write(self._snapshot_with_tip(cx, cy))
 
-        self.drawn[:] = canvas_patch
+        self.drawn[:] = canvas_bgr_f32
+        # Write clean board hold frame so next scene starts from clean state without hand/artifacts
+        writer.write(self.drawn.astype(np.uint8))
 
     # ── 主渲染 ──
     def render_to(self, raw_path: Path, total_ms: int, with_eraser: bool = False, eraser_seconds: float = 1.3) -> Path:
