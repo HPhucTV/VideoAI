@@ -9,6 +9,7 @@ Converts unified job.json into whiteboard assets:
 """
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -70,6 +71,147 @@ def fmt_srt_time(ms: int) -> str:
     m, ms = divmod(ms, 60_000)
     s, ms = divmod(ms, 1000)
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
+
+def extract_characters_from_metadata(metadata: dict | None) -> list[str]:
+    if not metadata:
+        return []
+    raw_chars = metadata.get("characters", [])
+    known = []
+    for c in raw_chars:
+        base_name = re.split(r"[\(,:;\-]", c)[0].strip()
+        if base_name:
+            known.append(base_name)
+            words = base_name.split()
+            if len(words) >= 3:
+                known.append(" ".join(words[-2:]))
+    return list(dict.fromkeys(known))
+
+def resolve_speaker_voice(speaker_name: str, job_meta: dict | None = None) -> dict:
+    name_clean = speaker_name.lower().strip()
+
+    if job_meta and "characters_voice" in job_meta:
+        for k, v in job_meta["characters_voice"].items():
+            if k.lower() in name_clean:
+                return v
+
+    # Female voice (Hạ Vi, etc.)
+    if any(k in name_clean for k in ["hạ vi", "ha vi", "nữ", "female", "cô gái", "bà", "mẹ"]):
+        return {
+            "voice": "vi-VN-HoaiMyNeural",
+            "rate": "+0%",
+            "pitch": "+0Hz",
+            "volume": "+0%",
+        }
+
+    # Male boss / cold / deep voice (Đình Phong, etc.)
+    if any(k in name_clean for k in ["đình phong", "dinh phong", "tổng tài", "chủ tịch", "boss"]):
+        return {
+            "voice": "vi-VN-NamMinhNeural",
+            "rate": "-2%",
+            "pitch": "-5Hz",
+            "volume": "+0%",
+        }
+
+    # Assistant / younger male voice (Kiên, etc.)
+    if any(k in name_clean for k in ["kiên", "kien", "trợ lý", "tro ly"]):
+        return {
+            "voice": "vi-VN-NamMinhNeural",
+            "rate": "+4%",
+            "pitch": "+2Hz",
+            "volume": "+0%",
+        }
+
+    # Default Narrator voice
+    return {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-4%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+    }
+
+def parse_dialogue_segments(text: str, known_speakers: list[str] | None = None) -> list[dict]:
+    if not text or not text.strip():
+        return []
+
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    script_pattern = re.compile(r"^([A-ZÀ-Ỹa-zà-ỹ0-9_ ]+?)(?:\s*\([^)]*\))?\s*:\s*(.+)$", re.UNICODE)
+
+    # 1. Script format across multiple lines
+    if len(lines) > 1 and all(script_pattern.match(l) for l in lines):
+        segments = []
+        for line in lines:
+            m = script_pattern.match(line)
+            if m:
+                spk = m.group(1).strip()
+                dlg = m.group(2).strip()
+                segments.append({"speaker": spk, "text": dlg})
+        return segments
+
+    # 2. Single line script format: "Speaker: dialogue"
+    if len(lines) == 1:
+        m = script_pattern.match(lines[0])
+        if m:
+            spk = m.group(1).strip()
+            dlg = m.group(2).strip()
+            if len(spk.split()) <= 4:
+                return [{"speaker": spk, "text": dlg}]
+
+    # 3. Embedded narrative prose
+    if not known_speakers:
+        known_speakers = ["Hạ Vi", "Lâm Hạ Vi", "Đình Phong", "Trần Đình Phong", "Kiên", "Trợ lý Kiên"]
+
+    if ":" in text:
+        parts = text.split(":")
+        segments = []
+
+        p0 = parts[0].strip()
+        current_speaker = "narrator"
+        for spk in known_speakers:
+            if spk.lower() in p0.lower():
+                current_speaker = spk
+                break
+
+        segments.append({"speaker": "narrator", "text": p0 + ":"})
+
+        for i in range(1, len(parts)):
+            part_content = parts[i].strip()
+            is_last = (i == len(parts) - 1)
+
+            if is_last:
+                if part_content:
+                    segments.append({"speaker": current_speaker, "text": part_content})
+            else:
+                sentences = re.split(r"(?<=[.!?])\s+", part_content)
+                split_idx = len(sentences)
+                next_speaker = "narrator"
+
+                for s_idx in range(len(sentences) - 1, -1, -1):
+                    s = sentences[s_idx]
+                    found = False
+                    for spk in known_speakers:
+                        if spk.lower() in s.lower():
+                            next_speaker = spk
+                            found = True
+                            break
+                    if found:
+                        split_idx = s_idx
+                        break
+
+                dialogue_text = " ".join(sentences[:split_idx]).strip()
+                narration_text = " ".join(sentences[split_idx:]).strip()
+
+                if dialogue_text:
+                    segments.append({"speaker": current_speaker, "text": dialogue_text})
+                if narration_text:
+                    segments.append({"speaker": "narrator", "text": narration_text + ":"})
+
+                current_speaker = next_speaker
+
+        segments = [s for s in segments if s["text"].strip()]
+        if segments:
+            return segments
+
+    return [{"speaker": "narrator", "text": text.strip()}]
 
 def concat_audio_files(audio_files: list[str], output_path: str, gap_ms: int = 250):
     """Gộp các file MP3 với khoảng lặng bằng FFmpeg concat filter."""
@@ -226,6 +368,11 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
     all_audio_files = []
     global_annotations_elements = []
 
+    job_meta = job.get("metadata") or {}
+    known_speakers = extract_characters_from_metadata(job_meta)
+    if known_speakers:
+        print(f"[*] Nhan dien {len(known_speakers)} nhan vat trong kich ban: {known_speakers}")
+
     global_beat_idx = 1
 
     for s_idx, scene in enumerate(scenes, start=1):
@@ -247,44 +394,82 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
         for local_idx, beat in enumerate(scene_beats, start=1):
             raw_text = beat.get("rawText", "")
             beat_voice = beat.get("voice") or {}
-            b_voice = beat_voice.get("voiceId", voice_id)
-            b_rate = beat_voice.get("rate", voice_config.get("rate", "+0%"))
-            b_pitch = beat_voice.get("pitch", voice_config.get("pitch", "+0Hz"))
-            b_volume = beat_voice.get("volume", voice_config.get("volume", "+0%"))
+            explicit_speaker = beat.get("speaker")
 
-            tts_res = call_core_tts(raw_text, voice=b_voice, rate=b_rate, pitch=b_pitch, volume=b_volume, fps=fps)
+            if explicit_speaker:
+                segments = [{"speaker": explicit_speaker, "text": raw_text}]
+            elif beat_voice.get("voiceId"):
+                segments = [{"speaker": "custom", "text": raw_text, "voice": beat_voice}]
+            else:
+                segments = parse_dialogue_segments(raw_text, known_speakers=known_speakers)
 
-            cached_mp3 = tts_res["filePath"]
+            segment_audio_files = []
+            segment_normalized_texts = []
+            beat_start_local_ms = scene_current_ms
+            beat_start_global_ms = global_current_ms
+
+            for seg_idx, seg in enumerate(segments, start=1):
+                seg_text = seg["text"]
+                seg_spk = seg.get("speaker", "narrator")
+
+                if "voice" in seg:
+                    v_cfg = seg["voice"]
+                else:
+                    v_cfg = resolve_speaker_voice(seg_spk, job_meta)
+
+                s_voice = v_cfg.get("voice", beat_voice.get("voiceId", voice_id))
+                s_rate = v_cfg.get("rate", beat_voice.get("rate", voice_config.get("rate", "+0%")))
+                s_pitch = v_cfg.get("pitch", beat_voice.get("pitch", voice_config.get("pitch", "+0Hz")))
+                s_volume = v_cfg.get("volume", beat_voice.get("volume", voice_config.get("volume", "+0%")))
+
+                tts_res = call_core_tts(seg_text, voice=s_voice, rate=s_rate, pitch=s_pitch, volume=s_volume, fps=fps)
+                cached_mp3 = tts_res["filePath"]
+                seg_mp3 = voice_dir / f"beat-{global_beat_idx:02d}-seg-{seg_idx:02d}.mp3"
+                shutil.copy(cached_mp3, seg_mp3)
+                segment_audio_files.append(str(seg_mp3))
+
+                seg_dur_sec = tts_res["probe"]["durationSec"]
+                seg_dur_ms = int(seg_dur_sec * 1000)
+
+                seg_local_start = scene_current_ms
+                seg_local_end = seg_local_start + seg_dur_ms
+                seg_global_start = global_current_ms
+                seg_global_end = seg_global_start + seg_dur_ms
+
+                scene_current_ms += seg_dur_ms
+                global_current_ms += seg_dur_ms
+
+                norm_text = tts_res.get("normalizedText", seg_text)
+                segment_normalized_texts.append(norm_text)
+
+                # Local scene SRT
+                scene_srt_idx = len(scene_srt_lines) // 4 + 1
+                scene_srt_lines.append(f"{scene_srt_idx}")
+                scene_srt_lines.append(f"{fmt_srt_time(seg_local_start)} --> {fmt_srt_time(seg_local_end)}")
+                scene_srt_lines.append(norm_text)
+                scene_srt_lines.append("")
+
+                # Global SRT
+                global_srt_idx = len(global_srt_lines) // 4 + 1
+                global_srt_lines.append(f"{global_srt_idx}")
+                global_srt_lines.append(f"{fmt_srt_time(seg_global_start)} --> {fmt_srt_time(seg_global_end)}")
+                global_srt_lines.append(norm_text)
+                global_srt_lines.append("")
+
+            # Concat segments into beat_mp3
             beat_mp3 = voice_dir / f"beat-{global_beat_idx:02d}.mp3"
-            shutil.copy(cached_mp3, beat_mp3)
+            concat_audio_files(segment_audio_files, str(beat_mp3), gap_ms=100)
 
             all_audio_files.append(str(beat_mp3))
             scene_audio_files.append(str(beat_mp3))
 
-            dur_sec = tts_res["probe"]["durationSec"]
-            dur_ms = int(dur_sec * 1000)
+            dur_ms = scene_current_ms - beat_start_local_ms
+            local_start_ms = beat_start_local_ms
+            local_end_ms = scene_current_ms
+            global_start_ms = beat_start_global_ms
+            global_end_ms = global_current_ms
 
-            # Local timing (starts at 0)
-            local_start_ms = scene_current_ms
-            local_end_ms = local_start_ms + dur_ms
-
-            # Global timing (continuous)
-            global_start_ms = global_current_ms
-            global_end_ms = global_start_ms + dur_ms
-
-            normalized_text = tts_res.get("normalizedText", raw_text)
-
-            # Local scene SRT
-            scene_srt_lines.append(f"{local_idx}")
-            scene_srt_lines.append(f"{fmt_srt_time(local_start_ms)} --> {fmt_srt_time(local_end_ms)}")
-            scene_srt_lines.append(normalized_text)
-            scene_srt_lines.append("")
-
-            # Global SRT
-            global_srt_lines.append(f"{global_beat_idx}")
-            global_srt_lines.append(f"{fmt_srt_time(global_start_ms)} --> {fmt_srt_time(global_end_ms)}")
-            global_srt_lines.append(normalized_text)
-            global_srt_lines.append("")
+            normalized_text = " ".join(segment_normalized_texts)
 
             # Visual config
             vis = beat.get("visual") or {}
