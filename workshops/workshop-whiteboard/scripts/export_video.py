@@ -83,8 +83,7 @@ def ensure_scene_image(scene_folder: Path, job_id: str, root_dir: Path, job_dir:
         shutil.copy(found_asset, scene_png)
         return scene_png
     else:
-        print(f"[ERR] Không tìm thấy ảnh minh họa cho {scene_id} tại {scene_png}")
-        sys.exit(1)
+        raise FileNotFoundError(f"Không tìm thấy ảnh minh họa cho {scene_id} tại {scene_png}")
 
 
 def render_scene(
@@ -108,11 +107,9 @@ def render_scene(
     mp3_file = scene_folder / f"{scene_id}.mp3"
 
     if not ann_file.exists():
-        print(f"[ERR] Không tìm thấy file annotation {ann_file}")
-        sys.exit(1)
+        raise FileNotFoundError(f"Không tìm thấy file annotation {ann_file}")
     if not mp3_file.exists():
-        print(f"[ERR] Không tìm thấy file audio {mp3_file}")
-        sys.exit(1)
+        raise FileNotFoundError(f"Không tìm thấy file audio {mp3_file}")
 
     is_last = (scene_idx == total_scenes - 1)
     with_eraser = not is_last
@@ -137,29 +134,26 @@ def render_scene(
 
     res_render = subprocess.run(cmd_render, cwd=str(root_dir), env=node_env)
     if res_render.returncode != 0:
-        print(f"[ERR] Lỗi khi render hoạt cảnh vẽ tay cho {scene_id}!")
-        sys.exit(res_render.returncode)
+        raise RuntimeError(f"Lỗi khi render hoạt cảnh vẽ tay cho {scene_id} (code {res_render.returncode})")
 
     print(f"[*] Lồng tiếng và khớp khung hình cho {scene_id} bằng FFmpeg...")
     cmd_ffmpeg = [
         ffmpeg_bin, "-y",
         "-i", str(silent_mp4),
         "-i", str(mp3_file),
-    ]
-    if with_eraser and eraser_sec > 0:
-        cmd_ffmpeg.extend(["-af", f"apad=pad_dur={eraser_sec}"])
-    cmd_ffmpeg.extend([
+        "-af", "apad",
         "-c:v", "copy",
         "-c:a", "aac",
         "-b:a", "192k",
+        "-ar", "44100",
+        "-ac", "2",
         "-shortest",
         str(scene_mp4),
-    ])
+    ]
 
     res_ffmpeg = subprocess.run(cmd_ffmpeg, env=node_env)
     if res_ffmpeg.returncode != 0:
-        print(f"[ERR] Lỗi khi ghép âm thanh cho {scene_id} bằng FFmpeg!")
-        sys.exit(res_ffmpeg.returncode)
+        raise RuntimeError(f"Lỗi khi ghép âm thanh cho {scene_id} bằng FFmpeg (code {res_ffmpeg.returncode})")
 
     print(f"[OK] Đã hoàn thành phân cảnh {scene_id}: {scene_mp4}")
     return scene_mp4
@@ -198,10 +192,12 @@ def export_whiteboard_video(
     ann_file = job_dir / "scene-01.annotation.json"
     scenes_dir = job_dir / "scenes"
 
-    if not (mp3_file.exists() and ann_file.exists()):
+    has_scenes = scenes_dir.exists() and any(scenes_dir.glob("scene-*"))
+    has_single = mp3_file.exists() and ann_file.exists()
+
+    if not (has_scenes or has_single):
         if not job_json_file.exists():
-            print(f"[ERR] Không tìm thấy file kịch bản: {job_json_file}")
-            sys.exit(1)
+            raise FileNotFoundError(f"Không tìm thấy file kịch bản: {job_json_file}")
         print("[1/3] Đang tổng hợp giọng đọc & đồng bộ phụ đề (job_adapter.py)...")
         adapter_script = Path(__file__).resolve().parent.parent / "job_adapter.py"
         res_adapter = subprocess.run([
@@ -211,8 +207,7 @@ def export_whiteboard_video(
             str(job_dir),
         ], cwd=str(root_dir), env=node_env)
         if res_adapter.returncode != 0:
-            print("[ERR] Tổng hợp job_adapter thất bại!")
-            sys.exit(res_adapter.returncode)
+            raise RuntimeError(f"Tổng hợp job_adapter thất bại (code {res_adapter.returncode})")
     else:
         print("[1/3] Dữ liệu âm thanh & kịch bản đã sẵn sàng.")
 
@@ -231,8 +226,7 @@ def export_whiteboard_video(
         if scene:
             target_scene_dir = scenes_dir / scene
             if not (target_scene_dir.exists() and target_scene_dir.is_dir()):
-                print(f"[ERR] Không tìm thấy phân cảnh {scene} tại {target_scene_dir}")
-                sys.exit(1)
+                raise ValueError(f"Không tìm thấy phân cảnh {scene} tại {target_scene_dir}")
             scenes_to_render = [target_scene_dir]
             print(f"[*] Chỉ render phân cảnh: {scene}")
         else:
@@ -263,8 +257,7 @@ def export_whiteboard_video(
                 print(f"[WARN] Chưa thể ghép video hoàn chỉnh vì thiếu các phân cảnh chưa render: {', '.join(missing_mp4s)}")
                 print(f"[*] Phân cảnh {scene} đã được xuất thành công tại: {scenes_dir / scene / f'{scene}.mp4'}")
                 return scenes_dir / scene / f"{scene}.mp4"
-            print(f"[ERR] Thiếu các file video phân cảnh: {', '.join(missing_mp4s)}")
-            sys.exit(1)
+            raise RuntimeError(f"Thiếu các file video phân cảnh: {', '.join(missing_mp4s)}")
 
         print(f"\n[*] Đang ghép nối {len(all_scene_mp4s)} phân cảnh bằng merge_scenes...")
         scripts_dir = Path(__file__).resolve().parent
@@ -276,8 +269,7 @@ def export_whiteboard_video(
         if not concat_ok:
             concat_ok = _pyav_concat(all_scene_mp4s, final_mp4)
         if not concat_ok:
-            print("[ERR] Lỗi khi ghép nối các phân cảnh!")
-            sys.exit(1)
+            raise RuntimeError("Lỗi khi ghép nối các phân cảnh!")
 
         # Thumbnail từ scene đầu tiên
         first_scene_png = ensure_scene_image(all_scene_folders[0], job_id, root_dir, job_dir)
@@ -293,14 +285,14 @@ def export_whiteboard_video(
     else:
         # Chế độ tương thích ngược (đơn cảnh)
         if scene:
-            print(f"[ERR] Không thể dùng tham số --scene vì job này không có thư mục scenes/")
-            sys.exit(1)
+            raise ValueError("Không thể dùng tham số --scene vì job này không có thư mục scenes/")
 
         scene_png = job_dir / "scene-01.png"
         if not scene_png.exists():
+            job_slug = job_id.replace("job-", "")
             possible_assets = [
-                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_id.replace("job-", "") / "scene-01-storyboard.png",
-                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_id.replace("job-", "") / "scene-01.png",
+                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_slug / "scene-01-storyboard.png",
+                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_slug / "scene-01.png",
                 root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "ban-hop-dong-luc-0-gio" / "scene-01-storyboard.png",
                 root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "tam-cam" / "scene-tam-cam.png",
             ]
@@ -313,8 +305,7 @@ def export_whiteboard_video(
                 print(f"[*] Sao chép ảnh phân cảnh từ: {found_asset}")
                 shutil.copy(found_asset, scene_png)
             else:
-                print(f"[ERR] Không tìm thấy ảnh minh họa cho {job_id} tại {scene_png}")
-                sys.exit(1)
+                raise FileNotFoundError(f"Không tìm thấy ảnh minh họa cho {job_id} tại {scene_png}")
 
         silent_mp4 = job_dir / "video-silent.mp4"
         render_script = Path(__file__).resolve().parent / "render_stream_whiteboard.py"
@@ -331,24 +322,25 @@ def export_whiteboard_video(
         ]
         res_render = subprocess.run(cmd_render, cwd=str(root_dir), env=node_env)
         if res_render.returncode != 0:
-            print("[ERR] Lỗi khi render hoạt cảnh vẽ tay!")
-            sys.exit(res_render.returncode)
+            raise RuntimeError(f"Lỗi khi render hoạt cảnh vẽ tay (code {res_render.returncode})")
 
         print("[3/3] Đang lồng tiếng và khớp khung hình cuối cùng bằng FFmpeg...")
         cmd_ffmpeg = [
             ffmpeg_bin, "-y",
             "-i", str(silent_mp4),
             "-i", str(mp3_file),
+            "-af", "apad",
             "-c:v", "copy",
             "-c:a", "aac",
             "-b:a", "192k",
+            "-ar", "44100",
+            "-ac", "2",
             "-shortest",
             str(final_mp4),
         ]
         res_ffmpeg = subprocess.run(cmd_ffmpeg, env=node_env)
         if res_ffmpeg.returncode != 0:
-            print("[ERR] Lỗi khi ghép âm thanh bằng FFmpeg!")
-            sys.exit(res_ffmpeg.returncode)
+            raise RuntimeError(f"Lỗi khi ghép âm thanh bằng FFmpeg (code {res_ffmpeg.returncode})")
 
         if scene_png.exists():
             shutil.copy(scene_png, thumb_png)
@@ -373,10 +365,14 @@ def parse_args(argv=None):
 
 if __name__ == "__main__":
     args = parse_args()
-    export_whiteboard_video(
-        args.job_id,
-        fps=args.fps,
-        cap_long_edge=args.cap_long_edge,
-        scene=args.scene,
-        eraser_seconds=args.eraser_seconds,
-    )
+    try:
+        export_whiteboard_video(
+            args.job_id,
+            fps=args.fps,
+            cap_long_edge=args.cap_long_edge,
+            scene=args.scene,
+            eraser_seconds=args.eraser_seconds,
+        )
+    except Exception as e:
+        print(f"[ERR] {e}", file=sys.stderr)
+        sys.exit(1)

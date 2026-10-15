@@ -219,11 +219,13 @@ def test_render_scene_with_and_without_eraser(tmp_path, monkeypatch):
     assert "1.3" in render_cmd_1
     ffmpeg_cmd_1 = recorded_runs[1]
     assert "-af" in ffmpeg_cmd_1
-    assert "apad=pad_dur=1.3" in ffmpeg_cmd_1
+    assert "apad" in ffmpeg_cmd_1
+    assert "-ar" in ffmpeg_cmd_1
+    assert "44100" in ffmpeg_cmd_1
 
     recorded_runs.clear()
 
-    # Scene 2 of 2: Last scene -> with_eraser=False, no apad
+    # Scene 2 of 2: Last scene -> with_eraser=False, still has apad to prevent gaze cutoff
     mp4_2 = render_scene(
         scene_folder=s2_dir,
         scene_idx=1,
@@ -241,7 +243,8 @@ def test_render_scene_with_and_without_eraser(tmp_path, monkeypatch):
     render_cmd_2 = recorded_runs[0]
     assert "--with-eraser" not in render_cmd_2
     ffmpeg_cmd_2 = recorded_runs[1]
-    assert "-af" not in ffmpeg_cmd_2
+    assert "-af" in ffmpeg_cmd_2
+    assert "apad" in ffmpeg_cmd_2
 
 
 def test_export_whiteboard_video_multi_scene_e2e(tmp_path, monkeypatch):
@@ -344,5 +347,69 @@ def test_export_whiteboard_video_single_scene_compat(tmp_path, monkeypatch):
     assert final_video.name == f"{job_id}.mp4"
     thumb = tmp_path / "output" / "whiteboard" / f"{job_id}-thumb.png"
     assert thumb.exists()
+
+
+def test_export_video_invalid_scene_raises_value_error(tmp_path):
+    from export_video import export_whiteboard_video
+    import pytest
+
+    job_id = "job-test-invalid"
+    job_dir = tmp_path / "output" / "whiteboard" / job_id
+    scenes_dir = job_dir / "scenes"
+    scenes_dir.mkdir(parents=True)
+    (scenes_dir / "scene-01").mkdir()
+
+    with pytest.raises(ValueError, match="Không tìm thấy phân cảnh scene-99"):
+        export_whiteboard_video(job_id=job_id, scene="scene-99", root_dir=tmp_path)
+
+
+def test_export_video_single_scene_with_scene_flag_raises(tmp_path):
+    from export_video import export_whiteboard_video
+    import pytest
+
+    job_id = "job-single-only"
+    job_dir = tmp_path / "output" / "whiteboard" / job_id
+    job_dir.mkdir(parents=True)
+    (job_dir / "input.mp3").write_text("mp3")
+    (job_dir / "scene-01.annotation.json").write_text("{}")
+    (job_dir / "scene-01.png").write_text("png")
+
+    with pytest.raises(ValueError, match="Không thể dùng tham số --scene"):
+        export_whiteboard_video(job_id=job_id, scene="scene-01", root_dir=tmp_path)
+
+
+def test_export_video_missing_scene_mp4_in_selective_returns_partial_path(tmp_path, monkeypatch):
+    from export_video import export_whiteboard_video
+
+    job_id = "job-selective-partial"
+    job_dir = tmp_path / "output" / "whiteboard" / job_id
+    scenes_dir = job_dir / "scenes"
+    scenes_dir.mkdir(parents=True)
+
+    for s_name in ["scene-01", "scene-02"]:
+        s_dir = scenes_dir / s_name
+        s_dir.mkdir()
+        (s_dir / f"{s_name}.png").write_text("png")
+        (s_dir / f"{s_name}.annotation.json").write_text("{}")
+        (s_dir / f"{s_name}.mp3").write_text("mp3")
+
+    def mock_subprocess_run(cmd, *args, **kwargs):
+        cmd_strs = [str(c) for c in cmd]
+        if "ffmpeg" in cmd_strs[0] or cmd_strs[0].endswith("ffmpeg.exe"):
+            Path(cmd_strs[-1]).write_text("muxed-mp4")
+        elif any("render_stream_whiteboard.py" in str(c) for c in cmd):
+            Path(cmd_strs[4]).write_text("silent-mp4")
+        return type("Result", (), {"returncode": 0})()
+
+    monkeypatch.setattr("subprocess.run", mock_subprocess_run)
+
+    # Render only scene-01 when scene-02 is NOT yet rendered
+    res = export_whiteboard_video(job_id=job_id, scene="scene-01", root_dir=tmp_path)
+    assert res == scenes_dir / "scene-01" / "scene-01.mp4"
+    assert res.exists()
+    # Final video was not merged because scene-02 is missing
+    final_video = tmp_path / "output" / "whiteboard" / f"{job_id}.mp4"
+    assert not final_video.exists()
+
 
 
