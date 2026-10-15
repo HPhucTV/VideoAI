@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """
-OmniVideo Studio - Whiteboard Video Exporter
+OmniVideo Studio - Whiteboard Video Exporter (Multi-scene Support)
 Pipeline xuất video bảng trắng vẽ tay hoàn chỉnh:
-1. Chuẩn bị tài nguyên (Job -> Audio TTS + SRT + Annotation)
-2. Render hoạt cảnh nét vẽ tay theo thời gian thực (90 FPS)
-3. Ghép nối âm thanh chất lượng cao bằng FFmpeg
-4. Tạo thumbnail xem trước cho Dashboard
+1. Chuẩn bị tài nguyên (Job -> Audio TTS + SRT + Annotation + Phân cụm scenes)
+2. Hỗ trợ đa phân cảnh (Multi-scene):
+   - Duyệt từng scene-XX trong job_dir/scenes
+   - Render video vẽ tay từng nét ở 90 FPS với hiệu ứng bàn tay xóa bảng giữa các cảnh
+   - Ghép âm thanh cục bộ scene-XX.mp3 vào scene-XX.mp4
+3. Ghép nối tất cả các phân cảnh thành video tổng bằng merge_scenes
+4. Hỗ trợ cờ --scene để render lại một phân cảnh cụ thể
+5. Tương thích ngược với định dạng đơn cảnh cũ
 """
 from __future__ import annotations
 
@@ -22,7 +26,8 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-def get_node_env():
+
+def get_node_env() -> dict:
     env = os.environ.copy()
     current_path = env.get("PATH", "")
     node_paths = [
@@ -35,23 +40,164 @@ def get_node_env():
     env["PATH"] = current_path
     return env
 
-def export_whiteboard_video(job_id: str, fps: int = 90, cap_long_edge: int = 1080):
-    root_dir = Path(__file__).resolve().parent.parent.parent.parent
+
+def sort_scene_folders(scene_folders: list[Path]) -> list[Path]:
+    def sort_key(p: Path):
+        name = p.name
+        parts = name.replace("_", "-").split("-")
+        for part in parts:
+            if part.isdigit():
+                return (int(part), name)
+        return (9999, name)
+
+    return sorted(scene_folders, key=sort_key)
+
+
+def ensure_scene_image(scene_folder: Path, job_id: str, root_dir: Path, job_dir: Path) -> Path:
+    scene_id = scene_folder.name
+    scene_png = scene_folder / f"{scene_id}.png"
+    if scene_png.exists():
+        return scene_png
+
+    job_slug = job_id.replace("job-", "")
+    possible_assets = [
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_slug / f"{scene_id}.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_slug / f"{scene_id}-storyboard.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_slug / "scene-01.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_slug / "scene-01-storyboard.png",
+        job_dir / f"{scene_id}.png",
+        job_dir / "scene-01.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "ban-hop-dong-luc-0-gio" / f"{scene_id}.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "ban-hop-dong-luc-0-gio" / f"{scene_id}-storyboard.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "ban-hop-dong-luc-0-gio" / "scene-01-storyboard.png",
+        root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "tam-cam" / "scene-tam-cam.png",
+    ]
+    found_asset = None
+    for p in possible_assets:
+        if p.exists():
+            found_asset = p
+            break
+
+    if found_asset:
+        print(f"[*] Sao chép ảnh phân cảnh {scene_id} từ: {found_asset}")
+        shutil.copy(found_asset, scene_png)
+        return scene_png
+    else:
+        print(f"[ERR] Không tìm thấy ảnh minh họa cho {scene_id} tại {scene_png}")
+        sys.exit(1)
+
+
+def render_scene(
+    scene_folder: Path,
+    scene_idx: int,
+    total_scenes: int,
+    root_dir: Path,
+    job_dir: Path,
+    job_id: str,
+    fps: int,
+    cap_long_edge: int,
+    eraser_seconds: float,
+    ffmpeg_bin: str,
+    node_env: dict,
+) -> Path:
+    scene_id = scene_folder.name
+    print(f"\n--- Đang xử lý phân cảnh [{scene_idx + 1}/{total_scenes}]: {scene_id} ---")
+
+    scene_png = ensure_scene_image(scene_folder, job_id, root_dir, job_dir)
+    ann_file = scene_folder / f"{scene_id}.annotation.json"
+    mp3_file = scene_folder / f"{scene_id}.mp3"
+
+    if not ann_file.exists():
+        print(f"[ERR] Không tìm thấy file annotation {ann_file}")
+        sys.exit(1)
+    if not mp3_file.exists():
+        print(f"[ERR] Không tìm thấy file audio {mp3_file}")
+        sys.exit(1)
+
+    is_last = (scene_idx == total_scenes - 1)
+    with_eraser = not is_last
+    eraser_sec = eraser_seconds if with_eraser else 0.0
+
+    silent_mp4 = scene_folder / "video-silent.mp4"
+    scene_mp4 = scene_folder / f"{scene_id}.mp4"
+    render_script = Path(__file__).resolve().parent / "render_stream_whiteboard.py"
+
+    print(f"[*] Vẽ nét tay {scene_id} ({fps} FPS, with_eraser={with_eraser}, eraser_sec={eraser_sec}s)...")
+    cmd_render = [
+        sys.executable,
+        str(render_script),
+        str(scene_png),
+        str(ann_file),
+        str(silent_mp4),
+        "--fps", str(fps),
+        "--cap-long-edge", str(cap_long_edge),
+    ]
+    if with_eraser:
+        cmd_render.extend(["--with-eraser", "--eraser-seconds", str(eraser_sec)])
+
+    res_render = subprocess.run(cmd_render, cwd=str(root_dir), env=node_env)
+    if res_render.returncode != 0:
+        print(f"[ERR] Lỗi khi render hoạt cảnh vẽ tay cho {scene_id}!")
+        sys.exit(res_render.returncode)
+
+    print(f"[*] Lồng tiếng và khớp khung hình cho {scene_id} bằng FFmpeg...")
+    cmd_ffmpeg = [
+        ffmpeg_bin, "-y",
+        "-i", str(silent_mp4),
+        "-i", str(mp3_file),
+    ]
+    if with_eraser and eraser_sec > 0:
+        cmd_ffmpeg.extend(["-af", f"apad=pad_dur={eraser_sec}"])
+    cmd_ffmpeg.extend([
+        "-c:v", "copy",
+        "-c:a", "aac",
+        "-b:a", "192k",
+        "-shortest",
+        str(scene_mp4),
+    ])
+
+    res_ffmpeg = subprocess.run(cmd_ffmpeg, env=node_env)
+    if res_ffmpeg.returncode != 0:
+        print(f"[ERR] Lỗi khi ghép âm thanh cho {scene_id} bằng FFmpeg!")
+        sys.exit(res_ffmpeg.returncode)
+
+    print(f"[OK] Đã hoàn thành phân cảnh {scene_id}: {scene_mp4}")
+    return scene_mp4
+
+
+def export_whiteboard_video(
+    job_id: str = "job-ban-hop-dong-luc-0-gio",
+    fps: int = 90,
+    cap_long_edge: int = 1080,
+    scene: str | None = None,
+    eraser_seconds: float = 1.3,
+    root_dir: Path | None = None,
+) -> Path | None:
+    if root_dir is None:
+        root_dir = Path(__file__).resolve().parent.parent.parent.parent
     output_wb = root_dir / "output" / "whiteboard"
+
     job_dir = output_wb / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
-    
+
+    node_env = get_node_env()
+    os.environ["PATH"] = node_env["PATH"]
+    ffmpeg_bin = shutil.which("ffmpeg") or "ffmpeg"
+
     jobs_json_dir = root_dir / "output" / "jobs"
     job_json_file = jobs_json_dir / f"{job_id}.json"
-    
+
     print("=" * 60)
-    print(f"[*] OMNIVIDEO - XUAT VIDEO BANG TRANG 90 FPS: {job_id}")
+    print(f"[*] OMNIVIDEO - XUAT VIDEO BANG TRANG {fps} FPS: {job_id}")
+    if scene:
+        print(f"[*] Mục tiêu: Chỉ render phân cảnh '{scene}'")
     print("=" * 60)
-    
+
     # 1. Đảm bảo âm thanh & annotation đã được tạo
     mp3_file = job_dir / "input.mp3"
     ann_file = job_dir / "scene-01.annotation.json"
-    
+    scenes_dir = job_dir / "scenes"
+
     if not (mp3_file.exists() and ann_file.exists()):
         if not job_json_file.exists():
             print(f"[ERR] Không tìm thấy file kịch bản: {job_json_file}")
@@ -62,91 +208,175 @@ def export_whiteboard_video(job_id: str, fps: int = 90, cap_long_edge: int = 108
             sys.executable,
             str(adapter_script),
             str(job_json_file),
-            str(job_dir)
-        ], cwd=str(root_dir), env=get_node_env())
+            str(job_dir),
+        ], cwd=str(root_dir), env=node_env)
         if res_adapter.returncode != 0:
             print("[ERR] Tổng hợp job_adapter thất bại!")
             sys.exit(res_adapter.returncode)
     else:
         print("[1/3] Dữ liệu âm thanh & kịch bản đã sẵn sàng.")
-        
-    # 2. Đảm bảo ảnh minh họa scene-01.png
-    scene_png = job_dir / "scene-01.png"
-    if not scene_png.exists():
-        # Tìm trong assets
-        possible_assets = [
-            root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_id.replace("job-", "") / "scene-01-storyboard.png",
-            root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_id.replace("job-", "") / "scene-01.png",
-            root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "ban-hop-dong-luc-0-gio" / "scene-01-storyboard.png",
-            root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "tam-cam" / "scene-tam-cam.png"
-        ]
-        found_asset = None
-        for p in possible_assets:
-            if p.exists():
-                found_asset = p
-                break
-        if found_asset:
-            print(f"[*] Sao chép ảnh phân cảnh từ: {found_asset}")
-            shutil.copy(found_asset, scene_png)
-        else:
-            print(f"[ERR] Không tìm thấy ảnh minh họa cho {job_id} tại {scene_png}")
-            sys.exit(1)
 
-    # 3. Render video nét vẽ không lời (video-silent.mp4)
-    silent_mp4 = job_dir / "video-silent.mp4"
-    render_script = Path(__file__).resolve().parent / "render_stream_whiteboard.py"
-    
-    print(f"[2/3] Đang vẽ tay từng nét chuyển động ở {fps} FPS (Stream Renderer)...")
-    cmd_render = [
-        sys.executable,
-        str(render_script),
-        str(scene_png),
-        str(ann_file),
-        str(silent_mp4),
-        "--fps", str(fps),
-        "--cap-long-edge", str(cap_long_edge)
-    ]
-    res_render = subprocess.run(cmd_render, cwd=str(root_dir), env=get_node_env())
-    if res_render.returncode != 0:
-        print("[ERR] Lỗi khi render hoạt cảnh vẽ tay!")
-        sys.exit(res_render.returncode)
+    # 2. Kiểm tra chế độ đa phân cảnh (Multi-Scene)
+    all_scene_folders = []
+    if scenes_dir.exists() and scenes_dir.is_dir():
+        all_scene_folders = sort_scene_folders([
+            d for d in scenes_dir.iterdir() if d.is_dir() and d.name.startswith("scene-")
+        ])
 
-    # 4. Mux audio với ffmpeg
     final_mp4 = output_wb / f"{job_id}.mp4"
     thumb_png = output_wb / f"{job_id}-thumb.png"
-    
-    print("[3/3] Đang lồng tiếng và khớp khung hình cuối cùng bằng FFmpeg...")
-    ffmpeg_bin = shutil.which("ffmpeg") or "ffmpeg"
-    cmd_ffmpeg = [
-        ffmpeg_bin, "-y",
-        "-i", str(silent_mp4),
-        "-i", str(mp3_file),
-        "-c:v", "copy",
-        "-c:a", "aac",
-        "-b:a", "192k",
-        "-shortest",
-        str(final_mp4)
-    ]
-    res_ffmpeg = subprocess.run(cmd_ffmpeg, env=get_node_env())
-    if res_ffmpeg.returncode != 0:
-        print("[ERR] Lỗi khi ghép âm thanh bằng FFmpeg!")
-        sys.exit(res_ffmpeg.returncode)
 
-    # 5. Tạo thumbnail
-    if scene_png.exists():
-        shutil.copy(scene_png, thumb_png)
-        
-    size_mb = final_mp4.stat().st_size / (1024 * 1024)
-    print("=" * 60)
-    print(f"[HOAN THANH] XUAT VIDEO THANH CONG: {final_mp4} ({size_mb:.2f} MB)")
-    print(f"OUTPUT={final_mp4}")
-    print("=" * 60)
+    if all_scene_folders:
+        print(f"[*] Phát hiện {len(all_scene_folders)} phân cảnh trong {scenes_dir}: {[d.name for d in all_scene_folders]}")
+        if scene:
+            target_scene_dir = scenes_dir / scene
+            if not (target_scene_dir.exists() and target_scene_dir.is_dir()):
+                print(f"[ERR] Không tìm thấy phân cảnh {scene} tại {target_scene_dir}")
+                sys.exit(1)
+            scenes_to_render = [target_scene_dir]
+            print(f"[*] Chỉ render phân cảnh: {scene}")
+        else:
+            scenes_to_render = all_scene_folders
+            print(f"[*] Sẽ render toàn bộ {len(all_scene_folders)} phân cảnh")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Xuất video Whiteboard hoàn chỉnh")
+        for scene_folder in scenes_to_render:
+            scene_idx = all_scene_folders.index(scene_folder)
+            render_scene(
+                scene_folder=scene_folder,
+                scene_idx=scene_idx,
+                total_scenes=len(all_scene_folders),
+                root_dir=root_dir,
+                job_dir=job_dir,
+                job_id=job_id,
+                fps=fps,
+                cap_long_edge=cap_long_edge,
+                eraser_seconds=eraser_seconds,
+                ffmpeg_bin=ffmpeg_bin,
+                node_env=node_env,
+            )
+
+        # Verify all scene-XX.mp4 exist
+        all_scene_mp4s = [s / f"{s.name}.mp4" for s in all_scene_folders]
+        missing_mp4s = [s.name for s, p in zip(all_scene_folders, all_scene_mp4s) if not p.exists()]
+        if missing_mp4s:
+            if scene is not None:
+                print(f"[WARN] Chưa thể ghép video hoàn chỉnh vì thiếu các phân cảnh chưa render: {', '.join(missing_mp4s)}")
+                print(f"[*] Phân cảnh {scene} đã được xuất thành công tại: {scenes_dir / scene / f'{scene}.mp4'}")
+                return scenes_dir / scene / f"{scene}.mp4"
+            print(f"[ERR] Thiếu các file video phân cảnh: {', '.join(missing_mp4s)}")
+            sys.exit(1)
+
+        print(f"\n[*] Đang ghép nối {len(all_scene_mp4s)} phân cảnh bằng merge_scenes...")
+        scripts_dir = Path(__file__).resolve().parent
+        if str(scripts_dir) not in sys.path:
+            sys.path.insert(0, str(scripts_dir))
+        from merge_scenes import _ffmpeg_concat_copy, _pyav_concat
+
+        concat_ok = _ffmpeg_concat_copy(all_scene_mp4s, final_mp4)
+        if not concat_ok:
+            concat_ok = _pyav_concat(all_scene_mp4s, final_mp4)
+        if not concat_ok:
+            print("[ERR] Lỗi khi ghép nối các phân cảnh!")
+            sys.exit(1)
+
+        # Thumbnail từ scene đầu tiên
+        first_scene_png = ensure_scene_image(all_scene_folders[0], job_id, root_dir, job_dir)
+        shutil.copy(first_scene_png, thumb_png)
+
+        size_mb = final_mp4.stat().st_size / (1024 * 1024)
+        print("=" * 60)
+        print(f"[HOAN THANH] XUAT VIDEO THANH CONG: {final_mp4} ({size_mb:.2f} MB)")
+        print(f"OUTPUT={final_mp4}")
+        print("=" * 60)
+        return final_mp4
+
+    else:
+        # Chế độ tương thích ngược (đơn cảnh)
+        if scene:
+            print(f"[ERR] Không thể dùng tham số --scene vì job này không có thư mục scenes/")
+            sys.exit(1)
+
+        scene_png = job_dir / "scene-01.png"
+        if not scene_png.exists():
+            possible_assets = [
+                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_id.replace("job-", "") / "scene-01-storyboard.png",
+                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / job_id.replace("job-", "") / "scene-01.png",
+                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "ban-hop-dong-luc-0-gio" / "scene-01-storyboard.png",
+                root_dir / "workshops" / "workshop-whiteboard" / "assets" / "whiteboard" / "tam-cam" / "scene-tam-cam.png",
+            ]
+            found_asset = None
+            for p in possible_assets:
+                if p.exists():
+                    found_asset = p
+                    break
+            if found_asset:
+                print(f"[*] Sao chép ảnh phân cảnh từ: {found_asset}")
+                shutil.copy(found_asset, scene_png)
+            else:
+                print(f"[ERR] Không tìm thấy ảnh minh họa cho {job_id} tại {scene_png}")
+                sys.exit(1)
+
+        silent_mp4 = job_dir / "video-silent.mp4"
+        render_script = Path(__file__).resolve().parent / "render_stream_whiteboard.py"
+
+        print(f"[2/3] Đang vẽ tay từng nét chuyển động ở {fps} FPS (Stream Renderer)...")
+        cmd_render = [
+            sys.executable,
+            str(render_script),
+            str(scene_png),
+            str(ann_file),
+            str(silent_mp4),
+            "--fps", str(fps),
+            "--cap-long-edge", str(cap_long_edge),
+        ]
+        res_render = subprocess.run(cmd_render, cwd=str(root_dir), env=node_env)
+        if res_render.returncode != 0:
+            print("[ERR] Lỗi khi render hoạt cảnh vẽ tay!")
+            sys.exit(res_render.returncode)
+
+        print("[3/3] Đang lồng tiếng và khớp khung hình cuối cùng bằng FFmpeg...")
+        cmd_ffmpeg = [
+            ffmpeg_bin, "-y",
+            "-i", str(silent_mp4),
+            "-i", str(mp3_file),
+            "-c:v", "copy",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            "-shortest",
+            str(final_mp4),
+        ]
+        res_ffmpeg = subprocess.run(cmd_ffmpeg, env=node_env)
+        if res_ffmpeg.returncode != 0:
+            print("[ERR] Lỗi khi ghép âm thanh bằng FFmpeg!")
+            sys.exit(res_ffmpeg.returncode)
+
+        if scene_png.exists():
+            shutil.copy(scene_png, thumb_png)
+
+        size_mb = final_mp4.stat().st_size / (1024 * 1024)
+        print("=" * 60)
+        print(f"[HOAN THANH] XUAT VIDEO THANH CONG: {final_mp4} ({size_mb:.2f} MB)")
+        print(f"OUTPUT={final_mp4}")
+        print("=" * 60)
+        return final_mp4
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="Xuất video Whiteboard hoàn chỉnh (hỗ trợ đa phân cảnh)")
     parser.add_argument("job_id", nargs="?", default="job-ban-hop-dong-luc-0-gio", help="ID của job cần xuất")
     parser.add_argument("--fps", type=int, default=90, help="Số khung hình / giây (mặc định 90)")
     parser.add_argument("--cap-long-edge", type=int, default=1080, help="Giới hạn cạnh dài khung hình (mặc định 1080)")
-    args = parser.parse_args()
-    
-    export_whiteboard_video(args.job_id, fps=args.fps, cap_long_edge=args.cap_long_edge)
+    parser.add_argument("--scene", type=str, default=None, help="Chỉ render phân cảnh này (ví dụ: scene-01), sau đó ghép lại toàn bộ")
+    parser.add_argument("--eraser-seconds", type=float, default=1.3, help="Thời lượng hiệu ứng xóa bảng giữa các scene (giây, mặc định 1.3)")
+    return parser.parse_args(argv)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    export_whiteboard_video(
+        args.job_id,
+        fps=args.fps,
+        cap_long_edge=args.cap_long_edge,
+        scene=args.scene,
+        eraser_seconds=args.eraser_seconds,
+    )
