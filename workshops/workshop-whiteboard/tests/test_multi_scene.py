@@ -295,6 +295,51 @@ def test_render_scene_with_bgm_and_subtitles(tmp_path, monkeypatch):
     assert "subtitles=" in fc
 
 
+def test_render_scene_default_no_subtitles_stream_copy(tmp_path, monkeypatch):
+    s_dir = tmp_path / "scenes" / "scene-01"
+    s_dir.mkdir(parents=True)
+    (s_dir / "scene-01.png").write_text("dummy-png")
+    (s_dir / "scene-01.annotation.json").write_text("{}")
+    (s_dir / "scene-01.mp3").write_text("dummy-mp3")
+    (s_dir / "scene-01.srt").write_text("1\n00:00:00,000 --> 00:00:02,000\nHello\n")
+
+    recorded = []
+
+    def mock_run(cmd, *args, **kwargs):
+        recorded.append(cmd)
+        if any("render_stream_whiteboard.py" in str(c) for c in cmd):
+            (s_dir / "video-silent.mp4").write_text("dummy-silent-video")
+        elif "ffmpeg" in str(cmd[0]):
+            (s_dir / "scene-01.mp4").write_text("dummy-final-video")
+        return type("Result", (), {"returncode": 0})()
+
+    monkeypatch.setattr("subprocess.run", mock_run)
+
+    # Calling render_scene with default with_subtitles (which is now False)
+    mp4 = render_scene(
+        scene_folder=s_dir,
+        scene_idx=0,
+        total_scenes=1,
+        root_dir=tmp_path,
+        job_dir=tmp_path,
+        job_id="test-job",
+        fps=90,
+        cap_long_edge=1080,
+        eraser_seconds=0.0,
+        ffmpeg_bin="ffmpeg",
+        node_env={},
+    )
+    assert mp4.name == "scene-01.mp4"
+    ff_cmd = recorded[1]
+    # Verify no subtitles filter and stream copy -c:v copy
+    assert "-c:v" in ff_cmd
+    c_v_idx = ff_cmd.index("-c:v")
+    assert ff_cmd[c_v_idx + 1] == "copy"
+    if "-filter_complex" in ff_cmd:
+        fc = [ff_cmd[i+1] for i, c in enumerate(ff_cmd) if c == "-filter_complex"][0]
+        assert "subtitles=" not in fc
+
+
 def test_export_whiteboard_video_multi_scene_e2e(tmp_path, monkeypatch):
     from export_video import export_whiteboard_video
     import merge_scenes

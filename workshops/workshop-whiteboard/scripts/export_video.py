@@ -152,7 +152,7 @@ def render_scene(
     bgm_path: Path | None = None,
     bgm_vol: float = 0.35,
     duck_ratio: float = 6.0,
-    with_subtitles: bool = True,
+    with_subtitles: bool = False,
 ) -> Path:
     scene_id = scene_folder.name
     print(f"\n--- Đang xử lý phân cảnh [{scene_idx + 1}/{total_scenes}]: {scene_id} ---")
@@ -173,11 +173,13 @@ def render_scene(
 
     silent_mp4 = scene_folder / "video-silent.mp4"
     scene_mp4 = scene_folder / f"{scene_id}.mp4"
+    venv_py = root_dir / "workshops" / "workshop-whiteboard" / ".venv" / "Scripts" / "python.exe"
+    py_exec = str(venv_py) if venv_py.exists() else sys.executable
     render_script = Path(__file__).resolve().parent / "render_stream_whiteboard.py"
 
     print(f"[*] Vẽ nét tay {scene_id} ({fps} FPS, with_eraser={with_eraser}, eraser_sec={eraser_sec}s)...")
     cmd_render = [
-        sys.executable,
+        py_exec,
         str(render_script),
         str(scene_png),
         str(ann_file),
@@ -260,7 +262,7 @@ def export_whiteboard_video(
     bgm: str | None = None,
     bgm_vol: float = 0.35,
     duck_ratio: float = 6.0,
-    with_subtitles: bool = True,
+    with_subtitles: bool = False,
     root_dir: Path | None = None,
 ) -> Path | None:
     if root_dir is None:
@@ -323,6 +325,8 @@ def export_whiteboard_video(
         print(f"[*] Nhạc nền BGM: {bgm_path.name} (vol={bgm_vol}, ducking={duck_ratio}:1)")
     if with_subtitles:
         print("[*] Phụ đề: Bật khắc chữ nghệ thuật (Burn-in Subtitles) phong cách giấy kem")
+    else:
+        print("[*] Phụ đề: Tắt khắc chữ cứng vào video (Dùng phụ đề mềm / CC chuẩn YouTube)")
 
     # 3. Kiểm tra chế độ đa phân cảnh (Multi-Scene)
     all_scene_folders = []
@@ -348,6 +352,10 @@ def export_whiteboard_video(
 
         for scene_folder in scenes_to_render:
             scene_idx = all_scene_folders.index(scene_folder)
+            scene_mp4_check = scene_folder / f"{scene_folder.name}.mp4"
+            if scene is None and scene_mp4_check.exists() and scene_mp4_check.stat().st_size > 1024 * 1024:
+                print(f"[*] Phân cảnh {scene_folder.name} đã được xuất hoàn chỉnh trước đó ({scene_mp4_check.stat().st_size / 1024 / 1024:.2f} MB), bỏ qua.")
+                continue
             render_scene(
                 scene_folder=scene_folder,
                 scene_idx=scene_idx,
@@ -548,8 +556,9 @@ def parse_args(argv=None):
     parser.add_argument("--bgm", type=str, default=None, help="Đường dẫn file BGM, hoặc 'none'/'off' để tắt nhạc nền")
     parser.add_argument("--bgm-vol", type=float, default=0.35, help="Âm lượng nền BGM cơ bản (mặc định 0.35)")
     parser.add_argument("--duck-ratio", type=float, default=6.0, help="Tỷ lệ nén ducking khi có giọng đọc (mặc định 6.0)")
-    parser.add_argument("--with-subtitles", dest="with_subtitles", action="store_true", default=True, help="Khắc phụ đề nghệ thuật lên video (mặc định Bật)")
-    parser.add_argument("--no-subtitles", dest="with_subtitles", action="store_false", help="Tắt hiển thị phụ đề")
+    parser.add_argument("--with-subtitles", dest="with_subtitles", action="store_true", default=False, help="Khắc phụ đề cứng lên video")
+    parser.add_argument("--burn-subtitles", dest="with_subtitles", action="store_true", help="Khắc phụ đề cứng lên video")
+    parser.add_argument("--no-subtitles", dest="with_subtitles", action="store_false", help="Tắt hiển thị phụ đề cứng (mặc định Tắt - dùng CC YouTube)")
     return parser.parse_args(argv)
 
 

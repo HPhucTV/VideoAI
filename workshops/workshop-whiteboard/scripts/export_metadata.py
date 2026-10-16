@@ -139,6 +139,16 @@ Một câu chuyện audio drama nhẹ nhàng, ấm áp được thể hiện qua
 ```
 
 ---
+
+## 5. File Phụ Đề Rời (YouTube Closed Captions / CC)
+- File phụ đề rời đồng bộ hoàn hảo đã được tạo sẵn tại: `input.srt` (hoặc tải trực tiếp từ nút "Tải file SRT" trên Web Dashboard).
+- **Cách nạp lên YouTube:**
+  1. Vào YouTube Studio -> Chọn video vừa tải lên -> Mục **"Phụ đề" (Subtitles)**.
+  2. Bấm **"Thêm phụ đề"** -> Chọn **"Tải tệp lên" (Upload file)** -> Chọn **"Có mốc thời gian" (With timing)**.
+  3. Chọn file `input.srt`.
+- **Lợi ích:** Video trên YouTube sẽ hiển thị phụ đề sắc nét, người xem có thể bật/tắt (CC) tùy ý, chỉnh cỡ chữ, và YouTube có thể tự động dịch sang tiếng Anh/ngôn ngữ khác!
+
+---
 *Tài liệu được sinh tự động bởi OmniVideo Studio Whiteboard Pipeline.*
 """
 
