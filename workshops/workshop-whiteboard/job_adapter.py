@@ -36,8 +36,10 @@ def get_node_env():
 def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0%", pitch: str = "+0Hz", volume: str = "+0%", fps: int = 90) -> dict:
     root_dir = Path(__file__).resolve().parent.parent.parent
     tts_cli = root_dir / "core" / "bin" / "tts.js"
+    env = get_node_env()
+    node_bin = shutil.which("node", path=env.get("PATH")) or "node"
     cmd = [
-        "node",
+        node_bin,
         "--experimental-strip-types",
         str(tts_cli),
         "--text", text,
@@ -47,7 +49,7 @@ def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0
         "--volume", volume,
         "--fps", str(fps),
     ]
-    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=True, env=get_node_env())
+    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=False, env=env)
     if res.returncode != 0:
         raise RuntimeError(f"Core TTS call failed: {res.stderr or res.stdout}")
     return json.loads(res.stdout.strip())
@@ -55,13 +57,15 @@ def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0
 def call_core_phonetics(text: str) -> str:
     root_dir = Path(__file__).resolve().parent.parent.parent
     phonetics_cli = root_dir / "core" / "bin" / "phonetics.js"
+    env = get_node_env()
+    node_bin = shutil.which("node", path=env.get("PATH")) or "node"
     cmd = [
-        "node",
+        node_bin,
         "--experimental-strip-types",
         str(phonetics_cli),
         "--text", text,
     ]
-    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=True, env=get_node_env())
+    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=False, env=env)
     if res.returncode != 0:
         return text
     return res.stdout.strip()
@@ -86,47 +90,60 @@ def extract_characters_from_metadata(metadata: dict | None) -> list[str]:
                 known.append(" ".join(words[-2:]))
     return list(dict.fromkeys(known))
 
-def resolve_speaker_voice(speaker_name: str, job_meta: dict | None = None) -> dict:
+def resolve_speaker_voice(speaker_name: str, job_meta: dict | None = None, default_voice_config: dict | None = None) -> dict:
     name_clean = speaker_name.lower().strip()
 
     if job_meta and "characters_voice" in job_meta:
-        for k, v in job_meta["characters_voice"].items():
-            if k.lower() in name_clean:
+        chars_voice = job_meta["characters_voice"]
+        # Check narrator aliases first if speaker is narrator
+        is_narrator = any(w in name_clean for w in ["narrator", "kể chuyện", "người kể", "dẫn truyện"])
+        if is_narrator:
+            for k, v in chars_voice.items():
+                if any(w in k.lower() for w in ["narrator", "kể chuyện", "người kể", "dẫn truyện"]):
+                    return v
+
+        for k, v in chars_voice.items():
+            k_lower = k.lower().strip()
+            if k_lower in name_clean or name_clean in k_lower:
                 return v
 
-    # Female voice (Hạ Vi, etc.)
-    if any(k in name_clean for k in ["hạ vi", "ha vi", "nữ", "female", "cô gái", "bà", "mẹ"]):
+    default_rate = default_voice_config.get("rate", "-4%") if default_voice_config else "-4%"
+    default_pitch = default_voice_config.get("pitch", "+0Hz") if default_voice_config else "+0Hz"
+    default_volume = default_voice_config.get("volume", "+0%") if default_voice_config else "+0%"
+
+    # Female voice (Hạ Vi, Nhược Hy, etc.)
+    if any(k in name_clean for k in ["hạ vi", "ha vi", "nhược hy", "nhuoc hy", "nữ", "female", "cô gái", "bà", "mẹ"]):
         return {
             "voice": "vi-VN-HoaiMyNeural",
-            "rate": "+0%",
+            "rate": default_rate,
             "pitch": "+0Hz",
-            "volume": "+0%",
+            "volume": default_volume,
         }
 
-    # Male boss / cold / deep voice (Đình Phong, etc.)
-    if any(k in name_clean for k in ["đình phong", "dinh phong", "tổng tài", "chủ tịch", "boss"]):
+    # Male boss / cold / deep voice (Đình Phong, Cảnh Thâm, etc.)
+    if any(k in name_clean for k in ["đình phong", "dinh phong", "cảnh thâm", "canh tham", "tổng tài", "chủ tịch", "boss"]):
         return {
             "voice": "vi-VN-NamMinhNeural",
-            "rate": "-2%",
+            "rate": default_rate,
             "pitch": "-5Hz",
-            "volume": "+0%",
+            "volume": default_volume,
         }
 
-    # Assistant / younger male voice (Kiên, etc.)
-    if any(k in name_clean for k in ["kiên", "kien", "trợ lý", "tro ly"]):
+    # Assistant / younger male voice (Kiên, Giang Thừa, etc.)
+    if any(k in name_clean for k in ["kiên", "kien", "giang thừa", "giang thua", "trợ lý", "tro ly"]):
         return {
             "voice": "vi-VN-NamMinhNeural",
-            "rate": "+4%",
+            "rate": "+0%",
             "pitch": "+2Hz",
-            "volume": "+0%",
+            "volume": default_volume,
         }
 
     # Default Narrator voice
     return {
-        "voice": "vi-VN-NamMinhNeural",
-        "rate": "-4%",
-        "pitch": "+0Hz",
-        "volume": "+0%",
+        "voice": default_voice_config.get("voiceId", "vi-VN-NamMinhNeural") if default_voice_config else "vi-VN-NamMinhNeural",
+        "rate": default_rate,
+        "pitch": default_pitch,
+        "volume": default_volume,
     }
 
 def parse_dialogue_segments(text: str, known_speakers: list[str] | None = None) -> list[dict]:
@@ -308,6 +325,33 @@ def cluster_beats_into_scenes(beats: list, max_beats_per_scene: int = 4) -> list
 
     return scenes
 
+def generate_subagent_prompt(scene_id: str, scene_badge: str, job_title: str, beats: list, target_path: str = "") -> str:
+    """Tạo prompt chuẩn hóa cho subagent 'image-generator' tạo ảnh minh họa 3 khung cảnh 16:9."""
+    vignettes = []
+    positions = ["Left vignette", "Center vignette", "Right vignette"]
+    for i, b in enumerate(beats[:3]):
+        vis = b.get("visual") or {}
+        hl = vis.get("headline", "")
+        sub = vis.get("subhead", "")
+        lbl = vis.get("label", "")
+        pos = positions[i] if i < len(positions) else f"Vignette {i+1}"
+        desc_parts = [p for p in [hl, sub, lbl] if p]
+        desc = " — ".join(desc_parts) if desc_parts else f"Visual scene for beat {b.get('id', i+1)}"
+        vignettes.append(f"  {i+1}. {pos}: {desc}")
+
+    vignettes_str = "\n".join(vignettes)
+    save_instruction = f"\nSave the image as an opaque 16:9 PNG file at:\n{target_path}\nReport back the absolute path of the generated image." if target_path else ""
+
+    return (
+        f"Create one landscape 16:9 source illustration for a whiteboard animation of '{job_title}' - {scene_badge} ({scene_id}).\n"
+        f"Style requirements:\n"
+        f"- Absolutely NO text, letters, words, numbers, captions, labels, logos, or watermarks anywhere.\n"
+        f"- Minimal hand-drawn sketch, clean Notion-like doodle aesthetic, dark gray crisp outlines (#2D3748) on uniform warm cream paper (#F5EBD7), lots of negative space.\n"
+        f"- Layout: {len(beats[:3])} distinct narrative vignettes arranged neatly side-by-side from left to right with clear empty space between them (Landscape 16:9, 1920x1080):\n"
+        f"{vignettes_str}\n"
+        f"- Color: Solid warm cream background (#F5EBD7), dark gray outlines, minimal subtle pastel or monochrome ink accents only.{save_instruction}"
+    )
+
 def generate_image_prompt_md(scene_id: str, scene_badge: str, job_title: str, elements_text: str, beats: list) -> str:
     """Tạo file hướng dẫn prompt ảnh Notion doodle style cho phân cảnh."""
     headlines = []
@@ -317,6 +361,7 @@ def generate_image_prompt_md(scene_id: str, scene_badge: str, job_title: str, el
         if hl:
             headlines.append(hl)
     visual_summary = ", ".join(headlines) if headlines else scene_badge
+    subagent_prompt = generate_subagent_prompt(scene_id, scene_badge, job_title, beats)
 
     return f"""# Visual Prompt Guidance: {scene_id} ({scene_badge})
 
@@ -339,6 +384,11 @@ def generate_image_prompt_md(scene_id: str, scene_badge: str, job_title: str, el
 
 ## 4. Suggested Image Generation Prompt (AI Image Models)
 > **Prompt**: Minimalist hand-drawn doodle illustration, Notion art style, clean dark gray outline sketch on warm cream paper (#F5EBD7), whiteboard storyboard depicting {visual_summary}, charming simple character and environment line art, spacious composition, warm and cozy aesthetic, 16:9 aspect ratio, --no text words letters watermark labels typography signature
+
+## 5. Antigravity 'image-generator' Subagent Protocol
+```text
+{subagent_prompt}
+```
 """
 
 def convert_job_to_whiteboard(job_path: str, output_dir: str):
@@ -367,6 +417,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
     global_current_ms = 0
     all_audio_files = []
     global_annotations_elements = []
+    manifest_scenes = []
 
     job_meta = job.get("metadata") or {}
     known_speakers = extract_characters_from_metadata(job_meta)
@@ -415,7 +466,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
                 if "voice" in seg:
                     v_cfg = seg["voice"]
                 else:
-                    v_cfg = resolve_speaker_voice(seg_spk, job_meta)
+                    v_cfg = resolve_speaker_voice(seg_spk, job_meta, default_voice_config=voice_config)
 
                 s_voice = v_cfg.get("voice", beat_voice.get("voiceId", voice_id))
                 s_rate = v_cfg.get("rate", beat_voice.get("rate", voice_config.get("rate", "+0%")))
@@ -423,7 +474,9 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
                 s_volume = v_cfg.get("volume", beat_voice.get("volume", voice_config.get("volume", "+0%")))
 
                 tts_res = call_core_tts(seg_text, voice=s_voice, rate=s_rate, pitch=s_pitch, volume=s_volume, fps=fps)
-                cached_mp3 = tts_res["filePath"]
+                cached_mp3 = Path(tts_res["filePath"])
+                if not cached_mp3.exists() or cached_mp3.stat().st_size == 0:
+                    raise RuntimeError(f"TTS result empty or missing: {cached_mp3}")
                 seg_mp3 = voice_dir / f"beat-{global_beat_idx:02d}-seg-{seg_idx:02d}.mp3"
                 shutil.copy(cached_mp3, seg_mp3)
                 segment_audio_files.append(str(seg_mp3))
@@ -567,7 +620,49 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
         scene_prompt_path = scene_dir / "IMAGE_PROMPT.md"
         with open(scene_prompt_path, "w", encoding="utf-8") as f:
             f.write(prompt_content)
+
+        # 5. Write scenes/scene-XX/image_generator_brief.json
+        target_scene_png = scene_dir / f"{scene_id}.png"
+        subagent_prompt_full = generate_subagent_prompt(
+            scene_id=scene_id,
+            scene_badge=scene_badge,
+            job_title=job.get("title", ""),
+            beats=scene_beats,
+            target_path=str(target_scene_png.resolve())
+        )
+        brief_data = {
+            "sceneId": scene_id,
+            "badge": scene_badge,
+            "jobTitle": job.get("title", ""),
+            "targetPng": str(target_scene_png.resolve()),
+            "beatsCount": len(scene_beats),
+            "subagentPrompt": subagent_prompt_full
+        }
+        with open(scene_dir / "image_generator_brief.json", "w", encoding="utf-8") as bf:
+            json.dump(brief_data, bf, ensure_ascii=False, indent=2)
+        manifest_scenes.append(brief_data)
+
         print(f"[OK] Da tao tai nguyen phan canh: {scene_dir}")
+
+    # Export consolidated IMAGE_GENERATOR_MANIFEST.json for the full video production
+    manifest_data = {
+        "jobId": job.get("jobId", out_p.name),
+        "jobTitle": job.get("title", ""),
+        "standardGenerator": "image-generator",
+        "style": {
+            "aspectRatio": "16:9",
+            "resolution": "1920x1080",
+            "paperColor": "#F5EBD7",
+            "strokeColor": "#2D3748",
+            "aesthetic": "Notion Doodle Minimalist Sketch"
+        },
+        "totalScenes": len(scenes),
+        "scenes": manifest_scenes
+    }
+    manifest_path = out_p / "IMAGE_GENERATOR_MANIFEST.json"
+    with open(manifest_path, "w", encoding="utf-8") as mf:
+        json.dump(manifest_data, mf, ensure_ascii=False, indent=2)
+    print(f"[OK] Da tao manifest Generative AI 'image-generator': {manifest_path}")
 
     # Backward compatibility: global concatenated input.mp3 and input.srt at output_dir
     input_mp3_path = out_p / "input.mp3"
