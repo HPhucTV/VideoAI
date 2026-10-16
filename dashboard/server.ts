@@ -1,6 +1,6 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { createReadStream, existsSync, statSync } from "node:fs";
-import { readFile, writeFile, unlink, readdir, mkdir } from "node:fs/promises";
+import { readFile, writeFile, unlink, readdir, mkdir, rm } from "node:fs/promises";
 import { join, extname, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
@@ -286,25 +286,78 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname.startsWith("/api/videos/") && req.method === "DELETE") {
-    const id = pathname.replace("/api/videos/", "");
-    const jobPath = join(JOBS_DIR, `${id}.json`);
+    const rawId = pathname.replace("/api/videos/", "");
+    const id = decodeURIComponent(rawId).trim();
+
+    if (!id || id.includes("..") || id.includes("/") || id.includes("\\")) {
+      sendJson(res, 400, { success: false, error: "ID video không hợp lệ" });
+      return;
+    }
+
     try {
+      // 1. Xóa file kịch bản job
+      const jobPath = join(JOBS_DIR, `${id}.json`);
       if (existsSync(jobPath)) {
-        await unlink(jobPath);
+        await rm(jobPath, { force: true }).catch(() => {});
       }
-      // Dọn tệp video liên quan
-      const possibleOutputs = [
-        join(OUTPUT_DIR, "explainer", `${id}.mp4`),
-        join(OUTPUT_DIR, "explainer", `${id}-thumb.png`),
-        join(OUTPUT_DIR, "whiteboard", `${id}.mp4`),
-        join(OUTPUT_DIR, "whiteboard", `${id}-sub.mp4`),
-        join(OUTPUT_DIR, "whiteboard", `${id}-thumb.png`),
-        join(OUTPUT_DIR, "whiteboard", `${id}-sub-thumb.png`),
-      ];
-      for (const p of possibleOutputs) {
-        if (existsSync(p)) await unlink(p).catch(() => {});
+
+      // 2. Lấy danh sách các thư mục xưởng trong output (whiteboard, explainer, news...)
+      let workshops = ["whiteboard", "explainer", "news"];
+      try {
+        const entries = await readdir(OUTPUT_DIR, { withFileTypes: true });
+        workshops = entries.filter((e) => e.isDirectory() && e.name !== "jobs").map((e) => e.name);
+      } catch {
+        // Fallback danh sách cố định
       }
-      sendJson(res, 200, { success: true, message: `Đã xóa thành công ${id}` });
+
+      let deletedItemsCount = 0;
+
+      // 3. Quét từng xưởng để xóa triệt để thư mục phân cảnh & các tệp thành phẩm liên quan
+      for (const ws of workshops) {
+        const wsDir = join(OUTPUT_DIR, ws);
+        if (!existsSync(wsDir)) continue;
+
+        // Xóa thư mục làm việc phân cảnh (ví dụ: output/whiteboard/{id}/)
+        const jobDir = join(wsDir, id);
+        if (existsSync(jobDir)) {
+          await rm(jobDir, { recursive: true, force: true }).catch(() => {});
+          deletedItemsCount++;
+        }
+
+        // Quét các tệp thành phẩm liên quan (mp4, thumb, srt, vtt, caption, metadata...)
+        try {
+          const files = await readdir(wsDir);
+          for (const f of files) {
+            if (f === id || f.startsWith(`${id}.`) || f.startsWith(`${id}-`)) {
+              await rm(join(wsDir, f), { recursive: true, force: true }).catch(() => {});
+              deletedItemsCount++;
+            }
+          }
+        } catch {
+          // Bỏ qua lỗi đọc thư mục con nếu có
+        }
+      }
+
+      // 4. Quét thư mục gốc output nếu có file/folder liên quan
+      try {
+        const rootFiles = await readdir(OUTPUT_DIR);
+        for (const f of rootFiles) {
+          if (f === "jobs") continue;
+          if (f === id || f.startsWith(`${id}.`) || f.startsWith(`${id}-`)) {
+            await rm(join(OUTPUT_DIR, f), { recursive: true, force: true }).catch(() => {});
+            deletedItemsCount++;
+          }
+        }
+      } catch {
+        // Bỏ qua
+      }
+
+      sendJson(res, 200, {
+        success: true,
+        message: `Đã xóa thành công kịch bản và toàn bộ tệp liên quan của ${id}`,
+        jobId: id,
+        deletedItemsCount,
+      });
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }
