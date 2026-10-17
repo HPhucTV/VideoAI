@@ -7,7 +7,7 @@ sys.path.insert(0, str(root_wb))
 scripts_dir = root_wb / "scripts"
 sys.path.insert(0, str(scripts_dir))
 
-from audio_mixer import build_ducking_filter_complex, resolve_bgm_path
+from audio_mixer import build_ducking_filter_complex, resolve_bgm_path, build_final_bgm_ducking_filter
 
 
 def test_build_ducking_filter_complex():
@@ -38,3 +38,16 @@ def test_resolve_bgm_path_none(tmp_path):
     resolved = resolve_bgm_path(None, root_dir=tmp_path)
     # Default does not exist in tmp_path, so returns None
     assert resolved is None
+
+
+def test_build_final_bgm_ducking_filter():
+    filter_str = build_final_bgm_ducking_filter(
+        total_duration_sec=120.0,
+        bgm_base_vol=0.30,
+        duck_ratio=6.0,
+        target_lufs=-14.0,
+    )
+    assert "normalize=0" in filter_str
+    assert "sidechaincompress=" in filter_str
+    assert "afade=t=out:st=118.00:d=2.00" in filter_str
+    assert "loudnorm=I=-14.0" in filter_str

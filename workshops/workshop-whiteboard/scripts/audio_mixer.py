@@ -39,6 +39,27 @@ def build_ducking_filter_complex(
     )
 
 
+def build_final_bgm_ducking_filter(
+    total_duration_sec: float,
+    bgm_base_vol: float = 0.30,
+    duck_ratio: float = 6.0,
+    attack_ms: int = 100,
+    release_ms: int = 600,
+    threshold: float = 0.04,
+    fade_out_sec: float = 2.0,
+    target_lufs: float = -14.0,
+) -> str:
+    """Tạo chuỗi filter_complex cho FFmpeg để thực hiện Audio Ducking hậu kỳ một lần duy nhất với loudnorm -14 LUFS."""
+    fade_start = max(0.0, total_duration_sec - fade_out_sec)
+    return (
+        f"[0:a]asplit=2[voice_sc][voice_mix];"
+        f"[1:a]volume={bgm_base_vol}[bgm_in];"
+        f"[bgm_in][voice_sc]sidechaincompress=threshold={threshold}:ratio={duck_ratio}:attack={attack_ms}:release={release_ms}[ducked_bgm];"
+        f"[voice_mix][ducked_bgm]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[mix_raw];"
+        f"[mix_raw]afade=t=out:st={fade_start:.2f}:d={fade_out_sec:.2f},loudnorm=I={target_lufs:.1f}:LRA=11:TP=-1.5[outa]"
+    )
+
+
 def resolve_bgm_path(bgm_arg: str | Path | None, root_dir: Path | None = None) -> Path | None:
     """Tìm đường dẫn tệp BGM từ tham số hoặc asset mặc định."""
     if bgm_arg:

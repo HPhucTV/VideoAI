@@ -25,7 +25,7 @@ scripts_dir = Path(__file__).resolve().parent
 if str(scripts_dir) not in sys.path:
     sys.path.insert(0, str(scripts_dir))
 
-from audio_mixer import resolve_bgm_path, generate_default_ambient_bgm
+from audio_mixer import resolve_bgm_path, generate_default_ambient_bgm, build_final_bgm_ducking_filter
 from export_metadata import generate_youtube_metadata
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -46,6 +46,29 @@ def get_node_env() -> dict:
             current_path = f"{p};{current_path}"
     env["PATH"] = current_path
     return env
+
+
+def get_media_duration(media_path: Path, ffmpeg_bin: str = "ffmpeg") -> float:
+    """Lấy thời lượng (giây) của tệp media qua ffprobe."""
+    ffprobe_bin = shutil.which("ffprobe") or "ffprobe"
+    try:
+        res = subprocess.run(
+            [
+                ffprobe_bin, "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                str(media_path)
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if res.returncode == 0:
+            out_str = getattr(res, "stdout", "") or ""
+            if out_str.strip():
+                return float(out_str.strip())
+    except Exception:
+        pass
+    return 0.0
 
 
 def sort_scene_folders(scene_folders: list[Path]) -> list[Path]:
@@ -194,24 +217,14 @@ def render_scene(
     if res_render.returncode != 0:
         raise RuntimeError(f"Lỗi khi render hoạt cảnh vẽ tay cho {scene_id} (code {res_render.returncode})")
 
-    print(f"[*] Lồng tiếng, BGM ducking & phụ đề cho {scene_id} bằng FFmpeg...")
+    print(f"[*] Lồng tiếng & phụ đề cho {scene_id} bằng FFmpeg...")
     cmd_ffmpeg = [
         ffmpeg_bin, "-y",
         "-i", str(silent_mp4),
         "-i", str(mp3_file),
     ]
 
-    has_bgm = bgm_path is not None and bgm_path.exists()
-    if has_bgm:
-        cmd_ffmpeg.extend(["-stream_loop", "-1", "-i", str(bgm_path)])
-        audio_filter = (
-            f"[1:a]apad,asplit=2[voice_sc][voice_mix];"
-            f"[2:a]volume={bgm_vol}[bgm];"
-            f"[bgm][voice_sc]sidechaincompress=threshold=0.03:ratio={duck_ratio}:attack=100:release=700[ducked_bgm];"
-            f"[voice_mix][ducked_bgm]amix=inputs=2:duration=first:dropout_transition=2[outa]"
-        )
-    else:
-        audio_filter = "[1:a]apad[outa]"
+    audio_filter = "[1:a]apad[outa]"
 
     has_sub = with_subtitles and srt_file.exists()
     if has_sub:
@@ -384,17 +397,100 @@ def export_whiteboard_video(
                 return scenes_dir / scene / f"{scene}.mp4"
             raise RuntimeError(f"Thiếu các file video phân cảnh: {', '.join(missing_mp4s)}")
 
+        raw_joined_mp4 = output_wb / f"{job_id}_raw_joined.mp4"
         print(f"\n[*] Đang ghép nối {len(all_scene_mp4s)} phân cảnh bằng merge_scenes...")
         scripts_dir = Path(__file__).resolve().parent
         if str(scripts_dir) not in sys.path:
             sys.path.insert(0, str(scripts_dir))
         from merge_scenes import _ffmpeg_concat_copy, _pyav_concat
 
-        concat_ok = _ffmpeg_concat_copy(all_scene_mp4s, final_mp4)
+        concat_ok = _ffmpeg_concat_copy(all_scene_mp4s, raw_joined_mp4)
         if not concat_ok:
-            concat_ok = _pyav_concat(all_scene_mp4s, final_mp4)
+            concat_ok = _pyav_concat(all_scene_mp4s, raw_joined_mp4)
         if not concat_ok:
             raise RuntimeError("Lỗi khi ghép nối các phân cảnh!")
+
+        # Thu thập thông tin phân cảnh để tính tổng thời lượng và xuất YouTube Metadata
+        scenes_info = []
+        for sc in all_scene_folders:
+            sc_id = sc.name
+            ann_path = sc / f"{sc_id}.annotation.json"
+            dur_s = 0.0
+            sc_title = sc_id
+            if ann_path.exists():
+                try:
+                    with open(ann_path, "r", encoding="utf-8") as af:
+                        ann = json.load(af)
+                        dur_s = ann.get("sceneDurationMs", 0) / 1000.0
+                        if ann.get("badge"):
+                            sc_title = ann["badge"]
+                except Exception:
+                    pass
+            if sc_title == sc_id:
+                prompt_file = sc / "IMAGE_PROMPT.md"
+                if prompt_file.exists():
+                    try:
+                        for line in prompt_file.read_text(encoding="utf-8").splitlines():
+                            if line.startswith("# ") and any(k in line for k in ["Phân cảnh", "CHƯƠNG", "Scene", "scene"]):
+                                clean_t = line.replace("# ", "").replace("Visual Prompt Guidance:", "").strip()
+                                if clean_t:
+                                    sc_title = clean_t
+                                    break
+                    except Exception:
+                        pass
+            scenes_info.append({"scene_id": sc_id, "title": sc_title, "duration_sec": dur_s})
+
+        total_dur_sec = get_media_duration(raw_joined_mp4, ffmpeg_bin=ffmpeg_bin)
+        if total_dur_sec <= 0.0:
+            total_dur_sec = sum(sc.get("duration_sec", 0.0) for sc in scenes_info)
+        if total_dur_sec <= 0.0:
+            total_dur_sec = 60.0
+
+        # Áp dụng BGM ducking và YouTube loudnorm -14 LUFS mastering một lần duy nhất
+        has_bgm = bgm_path is not None and bgm_path.exists()
+        if has_bgm:
+            print(f"[*] Trộn BGM hậu kỳ ({bgm_path.name}) với ducking ({duck_ratio}:1) và chuẩn hóa YouTube -14 LUFS (tổng {total_dur_sec:.1f}s)...")
+            filter_complex = build_final_bgm_ducking_filter(
+                total_duration_sec=total_dur_sec,
+                bgm_base_vol=bgm_vol,
+                duck_ratio=duck_ratio,
+            )
+            cmd_master = [
+                ffmpeg_bin, "-y",
+                "-i", str(raw_joined_mp4),
+                "-stream_loop", "-1",
+                "-i", str(bgm_path),
+                "-filter_complex", filter_complex,
+                "-map", "0:v",
+                "-map", "[outa]",
+                "-c:v", "copy",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                "-shortest",
+                str(final_mp4),
+            ]
+        else:
+            print("[*] Chuẩn hóa âm lượng YouTube -14 LUFS mastering cho video...")
+            cmd_master = [
+                ffmpeg_bin, "-y",
+                "-i", str(raw_joined_mp4),
+                "-af", "loudnorm=I=-14.0:LRA=11:TP=-1.5",
+                "-c:v", "copy",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                str(final_mp4),
+            ]
+
+        res_master = subprocess.run(cmd_master, env=node_env)
+        if res_master.returncode != 0:
+            raise RuntimeError(f"Lỗi khi hoàn thiện âm thanh final_mp4 qua FFmpeg (code {res_master.returncode})")
+
+        # Dọn dẹp tệp tạm raw_joined_mp4
+        if raw_joined_mp4.exists() and raw_joined_mp4 != final_mp4:
+            try:
+                raw_joined_mp4.unlink()
+            except Exception:
+                pass
 
         # Thumbnail từ scene đầu tiên
         first_scene_png = ensure_scene_image(all_scene_folders[0], job_id, root_dir, job_dir)
@@ -402,35 +498,6 @@ def export_whiteboard_video(
 
         # 4. Sinh tài liệu YouTube Metadata & Chapters
         if job_json_file.exists():
-            scenes_info = []
-            for sc in all_scene_folders:
-                sc_id = sc.name
-                ann_path = sc / f"{sc_id}.annotation.json"
-                dur_s = 0.0
-                sc_title = sc_id
-                if ann_path.exists():
-                    try:
-                        with open(ann_path, "r", encoding="utf-8") as af:
-                            ann = json.load(af)
-                            dur_s = ann.get("sceneDurationMs", 0) / 1000.0
-                            if ann.get("badge"):
-                                sc_title = ann["badge"]
-                    except Exception:
-                        pass
-                if sc_title == sc_id:
-                    prompt_file = sc / "IMAGE_PROMPT.md"
-                    if prompt_file.exists():
-                        try:
-                            for line in prompt_file.read_text(encoding="utf-8").splitlines():
-                                if line.startswith("# ") and any(k in line for k in ["Phân cảnh", "CHƯƠNG", "Scene", "scene"]):
-                                    clean_t = line.replace("# ", "").replace("Visual Prompt Guidance:", "").strip()
-                                    if clean_t:
-                                        sc_title = clean_t
-                                        break
-                        except Exception:
-                            pass
-                scenes_info.append({"scene_id": sc_id, "title": sc_title, "duration_sec": dur_s})
-
             meta_file = job_dir / "YOUTUBE_METADATA.md"
             generate_youtube_metadata(job_json_file, scenes_info, meta_file)
             shutil.copy(meta_file, output_wb / f"{job_id}-youtube.md")
