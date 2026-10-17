@@ -5,7 +5,52 @@ from pathlib import Path
 root_wb = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(root_wb))
 
-from job_adapter import parse_dialogue_segments, resolve_speaker_voice
+from job_adapter import sanitize_dialogue_text, parse_dialogue_segments, resolve_speaker_voice
+
+
+def test_sanitize_dialogue_narrator_prefix():
+    text = "Người Kể Chuyện: Tiên sơn vạn trượng, ngút ngàn mây trắng."
+    known = ["Người Kể Chuyện", "Lâm Mặc"]
+    spk, clean = sanitize_dialogue_text(text, known_speakers=known)
+    assert spk == "Người Kể Chuyện"
+    assert clean == "Tiên sơn vạn trượng, ngút ngàn mây trắng."
+    assert "Người Kể Chuyện:" not in clean
+
+
+def test_sanitize_dialogue_character_with_expression():
+    text = "Sở Thiên Kiêu (lạnh lùng): Các ngươi quỳ xuống cho ta!"
+    known = ["Sở Thiên Kiêu"]
+    spk, clean = sanitize_dialogue_text(text, known_speakers=known)
+    assert spk == "Sở Thiên Kiêu"
+    assert clean == "Các ngươi quỳ xuống cho ta!"
+    assert ":" not in clean
+
+
+def test_sanitize_dialogue_narrative_colon_preserved():
+    text = "Hắn gầm lên: Ngươi dám sao?!"
+    known = ["Lâm Mặc", "Người Kể Chuyện"]
+    spk, clean = sanitize_dialogue_text(text, known_speakers=known)
+    # Không phải tên nhân vật vì có động từ tường thuật
+    assert spk is None
+    assert clean == "Hắn gầm lên: Ngươi dám sao?!"
+
+
+def test_sanitize_dialogue_time_colon_preserved():
+    text = "Lúc 10:30 sáng, lò đan bốc hỏa dữ dội."
+    known = ["Lâm Mặc"]
+    spk, clean = sanitize_dialogue_text(text, known_speakers=known)
+    assert spk is None
+    assert clean == "Lúc 10:30 sáng, lò đan bốc hỏa dữ dội."
+
+
+def test_parse_dialogue_segments_no_colon_in_narrator():
+    text = "Lâm Mặc: Ta không phục!"
+    known = ["Lâm Mặc"]
+    segs = parse_dialogue_segments(text, known_speakers=known)
+    assert len(segs) == 1
+    assert segs[0]["speaker"] == "Lâm Mặc"
+    assert segs[0]["text"] == "Ta không phục!"
+    assert ":" not in segs[0]["text"]
 
 
 def test_parse_dialogue_simple_script():

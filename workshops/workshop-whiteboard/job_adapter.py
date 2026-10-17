@@ -152,87 +152,157 @@ def resolve_speaker_voice(speaker_name: str, job_meta: dict | None = None, defau
         "volume": default_volume,
     }
 
+NARRATOR_ALIASES = {"người kể chuyện", "dẫn truyện", "kể chuyện", "narrator"}
+REPORTING_VERBS = {
+    "nói", "hỏi", "gầm lên", "quát", "đáp", "nghĩ",
+    "cười lớn", "la lên", "thì thầm", "hô", "thốt", "kêu", "hét"
+}
+
+def sanitize_dialogue_text(raw_text: str, known_speakers: list[str] | None = None) -> tuple[str | None, str]:
+    """
+    Tách tiền tố tên nhân vật / vai dẫn truyện ra khỏi lời thoại theo quy tắc ngữ nghĩa chặt chẽ.
+    Trả về (speaker_name, clean_text) hoặc (None, raw_text.strip()).
+    """
+    if not raw_text or ":" not in raw_text:
+        return None, raw_text.strip() if raw_text else ""
+
+    parts = raw_text.split(":", 1)
+    prefix = parts[0].strip()
+    rest = parts[1].strip()
+
+    # Loại trừ nếu prefix chứa chữ số (ví dụ mốc thời gian "10:30", tập số, v.v.)
+    if any(c.isdigit() for c in prefix):
+        return None, raw_text.strip()
+
+    # Loại bỏ biểu cảm trong ngoặc đơn: "Sở Thiên Kiêu (lạnh lùng)" -> "Sở Thiên Kiêu"
+    base_prefix = re.sub(r"\s*\([^)]*\)", "", prefix).strip()
+    if not base_prefix:
+        return None, raw_text.strip()
+
+    base_prefix_clean = base_prefix.strip(" -—\"'“”")
+    if not base_prefix_clean:
+        return None, raw_text.strip()
+
+    base_lower = base_prefix_clean.lower()
+
+    # 1. Kiểm tra Whitelist: known_speakers hoặc bí danh dẫn truyện
+    if known_speakers:
+        for k in known_speakers:
+            if base_lower == k.strip().lower():
+                return k, rest
+
+    if base_lower in NARRATOR_ALIASES:
+        return base_prefix_clean, rest
+
+    # 2. Kiểm tra Heuristic Title Case (1 đến 4 từ)
+    words = base_prefix_clean.split()
+    if 1 <= len(words) <= 4:
+        # Nếu tận cùng bằng động từ tường thuật -> câu kể, không phải tên nhân vật
+        is_reporting = any(
+            base_lower == rv or base_lower.endswith(" " + rv)
+            for rv in REPORTING_VERBS
+        )
+        if is_reporting:
+            return None, raw_text.strip()
+
+        # Nếu tất cả các từ đều viết hoa chữ cái đầu
+        if all(w[0].isupper() for w in words):
+            return base_prefix_clean, rest
+
+    return None, raw_text.strip()
+
 def parse_dialogue_segments(text: str, known_speakers: list[str] | None = None) -> list[dict]:
     if not text or not text.strip():
         return []
 
     lines = [l.strip() for l in text.split("\n") if l.strip()]
-    script_pattern = re.compile(r"^([A-ZÀ-Ỹa-zà-ỹ0-9_ ]+?)(?:\s*\([^)]*\))?\s*:\s*(.+)$", re.UNICODE)
 
-    # 1. Script format across multiple lines
-    if len(lines) > 1 and all(script_pattern.match(l) for l in lines):
-        segments = []
+    # 1. Script format across multiple lines: "Speaker: dialogue"
+    if len(lines) > 1:
+        script_segs = []
+        is_all_script = True
         for line in lines:
-            m = script_pattern.match(line)
-            if m:
-                spk = m.group(1).strip()
-                dlg = m.group(2).strip()
-                segments.append({"speaker": spk, "text": dlg})
-        return segments
+            s_spk, s_clean = sanitize_dialogue_text(line, known_speakers=known_speakers)
+            if s_spk and s_clean:
+                script_segs.append({"speaker": s_spk, "text": s_clean})
+            else:
+                is_all_script = False
+                break
+        if is_all_script and script_segs:
+            return script_segs
 
     # 2. Single line script format: "Speaker: dialogue"
     if len(lines) == 1:
-        m = script_pattern.match(lines[0])
-        if m:
-            spk = m.group(1).strip()
-            dlg = m.group(2).strip()
-            if len(spk.split()) <= 4:
-                return [{"speaker": spk, "text": dlg}]
+        s_spk, s_clean = sanitize_dialogue_text(lines[0], known_speakers=known_speakers)
+        if s_spk and s_clean:
+            return [{"speaker": s_spk, "text": s_clean}]
 
     # 3. Embedded narrative prose
     if not known_speakers:
         known_speakers = ["Hạ Vi", "Lâm Hạ Vi", "Đình Phong", "Trần Đình Phong", "Kiên", "Trợ lý Kiên"]
 
     if ":" in text:
-        parts = text.split(":")
-        segments = []
+        parts = re.split(r"(?<!\d):|:(?!\d)", text)
+        if len(parts) > 1:
+            segments = []
 
-        p0 = parts[0].strip()
-        current_speaker = "narrator"
-        for spk in known_speakers:
-            if spk.lower() in p0.lower():
-                current_speaker = spk
-                break
+            p0 = parts[0].strip()
+            p0_spk, _ = sanitize_dialogue_text(p0 + ":", known_speakers=known_speakers)
 
-        segments.append({"speaker": "narrator", "text": p0 + ":"})
-
-        for i in range(1, len(parts)):
-            part_content = parts[i].strip()
-            is_last = (i == len(parts) - 1)
-
-            if is_last:
-                if part_content:
-                    segments.append({"speaker": current_speaker, "text": part_content})
+            current_speaker = "narrator"
+            if p0_spk:
+                current_speaker = p0_spk
             else:
-                sentences = re.split(r"(?<=[.!?])\s+", part_content)
-                split_idx = len(sentences)
-                next_speaker = "narrator"
-
-                for s_idx in range(len(sentences) - 1, -1, -1):
-                    s = sentences[s_idx]
-                    found = False
-                    for spk in known_speakers:
-                        if spk.lower() in s.lower():
-                            next_speaker = spk
-                            found = True
-                            break
-                    if found:
-                        split_idx = s_idx
+                for spk in known_speakers:
+                    if spk.lower() in p0.lower():
+                        current_speaker = spk
                         break
+                if p0:
+                    segments.append({"speaker": "narrator", "text": p0.rstrip(":")})
 
-                dialogue_text = " ".join(sentences[:split_idx]).strip()
-                narration_text = " ".join(sentences[split_idx:]).strip()
+            for i in range(1, len(parts)):
+                part_content = parts[i].strip()
+                is_last = (i == len(parts) - 1)
 
-                if dialogue_text:
-                    segments.append({"speaker": current_speaker, "text": dialogue_text})
-                if narration_text:
-                    segments.append({"speaker": "narrator", "text": narration_text + ":"})
+                if is_last:
+                    if part_content:
+                        segments.append({"speaker": current_speaker, "text": part_content})
+                else:
+                    sentences = re.split(r"(?<=[.!?])\s+", part_content)
+                    split_idx = len(sentences)
+                    next_speaker = "narrator"
 
-                current_speaker = next_speaker
+                    for s_idx in range(len(sentences) - 1, -1, -1):
+                        s = sentences[s_idx]
+                        found = False
+                        for spk in known_speakers:
+                            if spk.lower() in s.lower():
+                                next_speaker = spk
+                                found = True
+                                break
+                        if found:
+                            split_idx = s_idx
+                            break
 
-        segments = [s for s in segments if s["text"].strip()]
-        if segments:
-            return segments
+                    dialogue_text = " ".join(sentences[:split_idx]).strip()
+                    narration_text = " ".join(sentences[split_idx:]).strip()
+
+                    if dialogue_text:
+                        segments.append({"speaker": current_speaker, "text": dialogue_text})
+                    if narration_text:
+                        n_spk, _ = sanitize_dialogue_text(narration_text + ":", known_speakers=known_speakers)
+                        if n_spk:
+                            next_speaker = n_spk
+                        else:
+                            segments.append({"speaker": "narrator", "text": narration_text.rstrip(":")})
+
+                    current_speaker = next_speaker
+
+            segments = [s for s in segments if s["text"].strip()]
+            if segments:
+                if all(s.get("speaker") == "narrator" for s in segments):
+                    return [{"speaker": "narrator", "text": text.strip()}]
+                return segments
 
     return [{"speaker": "narrator", "text": text.strip()}]
 
@@ -454,9 +524,15 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
             explicit_speaker = beat.get("speaker") or (beat.get("voice") or {}).get("speaker")
 
             if explicit_speaker:
-                segments = [{"speaker": explicit_speaker, "text": raw_text}]
+                clean_spk, clean_txt = sanitize_dialogue_text(raw_text, known_speakers=known_speakers)
+                if clean_txt:
+                    segments = [{"speaker": clean_spk or explicit_speaker, "text": clean_txt}]
+                else:
+                    segments = [{"speaker": explicit_speaker, "text": raw_text}]
             elif beat_voice.get("voiceId"):
-                segments = [{"speaker": "custom", "text": raw_text, "voice": beat_voice}]
+                clean_spk, clean_txt = sanitize_dialogue_text(raw_text, known_speakers=known_speakers)
+                txt = clean_txt if clean_txt else raw_text
+                segments = [{"speaker": clean_spk or "custom", "text": txt, "voice": beat_voice}]
             else:
                 segments = parse_dialogue_segments(raw_text, known_speakers=known_speakers)
 
@@ -468,6 +544,12 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
             for seg_idx, seg in enumerate(segments, start=1):
                 seg_text = seg["text"]
                 seg_spk = seg.get("speaker", "narrator")
+
+                clean_spk, clean_txt = sanitize_dialogue_text(seg_text, known_speakers=known_speakers)
+                if clean_spk and clean_txt:
+                    seg_text = clean_txt
+                    if seg_spk in ("narrator", "custom", explicit_speaker):
+                        seg_spk = clean_spk
 
                 if "voice" in seg:
                     v_cfg = seg["voice"]
