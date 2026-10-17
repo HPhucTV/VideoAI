@@ -1,4 +1,4 @@
-﻿[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 if ($env:PATH -notmatch "nodejs") { $env:PATH = "C:\Program Files\nodejs;" + $env:PATH }
 if ($env:PATH -notmatch "chocolatey") { $env:PATH = "C:\ProgramData\chocolatey\bin;" + $env:PATH }
 
@@ -52,6 +52,25 @@ function Check-Environment {
         Write-Host "  [THIẾU] FFprobe/FFmpeg chưa có trong PATH!" -ForegroundColor Red
     }
 
+    # 4. Blender 5.x
+    try {
+        $blenderVer = $null
+        $defaultBlender = "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
+        if (Test-Path $defaultBlender) {
+            $blenderVer = & $defaultBlender -v 2>$null | Select-Object -First 1
+        }
+        if (-not $blenderVer) {
+            $blenderVer = & blender -v 2>$null | Select-Object -First 1
+        }
+        if ($blenderVer) {
+            Write-Host "  [OK] Blender: $blenderVer" -ForegroundColor Green
+        } else {
+            Write-Host "  [THIẾU] Blender 5.x chưa có! Cài đặt Blender 5.2 tại https://www.blender.org/" -ForegroundColor Red
+        }
+    } catch {
+        Write-Host "  [THIẾU] Blender chưa có trong PATH hoặc thư mục cài đặt!" -ForegroundColor Red
+    }
+
     Write-Host ""
     Write-Host "Bấm phím bất kỳ để quay lại menu..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
@@ -93,12 +112,13 @@ function Main-Loop {
         Write-Host " [3] 🏭 Xưởng 3: Làm video Bảng Trắng Vẽ Tay (Python Whiteboard Animation)" -ForegroundColor White
         Write-Host " [4] 🖥️ Mở Remotion Studio Live Preview (Xem trước từng frame trên web)" -ForegroundColor White
         Write-Host " [5] 🎨 Mở Whiteboard Region Editor (Kéo thả vùng vẽ không cần server)" -ForegroundColor White
-        Write-Host " [6] 🛠️ Kiểm tra môi trường hệ thống (Node, Python, FFmpeg, FFprobe)" -ForegroundColor White
+        Write-Host " [6] 🛠️ Kiểm tra môi trường hệ thống (Node, Python, FFmpeg, FFprobe, Blender)" -ForegroundColor White
         Write-Host " [7] 🌐 Mở Video Library Dashboard (Web UI quản lý kho video)" -ForegroundColor White
+        Write-Host " [8] 🎥 Xưởng 4: Hoạt hình 3D Blender (EEVEE Next Cinematic Animation)" -ForegroundColor White
         Write-Host " [0] 🚪 Thoát" -ForegroundColor Gray
         Write-Host ""
         
-        $choice = Read-Host "Nhập lựa chọn của bạn (0-7)"
+        $choice = Read-Host "Nhập lựa chọn của bạn (0-8)"
         switch ($choice) {
             "1" {
                 Write-Host ""
@@ -119,6 +139,12 @@ function Main-Loop {
             "5" { Open-WhiteboardEditor }
             "6" { Check-Environment }
             "7" { Open-VideoDashboard }
+            "8" {
+                Write-Host ""
+                Write-Host "👉 XƯỞNG 4: Chạy lệnh render hoạt hình 3D Blender:" -ForegroundColor Cyan
+                Write-Host "python workshops/workshop-blender/scripts/export_3d_video.py --job [jobId]" -ForegroundColor Yellow
+                Read-Host "Bấm Enter để tiếp tục..."
+            }
             "0" { Write-Host "Tạm biệt!"; return }
             default { Write-Host "Lựa chọn không hợp lệ!" -ForegroundColor Red; Start-Sleep -Seconds 1 }
         }
