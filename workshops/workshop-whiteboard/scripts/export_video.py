@@ -616,6 +616,7 @@ def export_whiteboard_video(
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Xuất video Whiteboard hoàn chỉnh (hỗ trợ đa phân cảnh & YouTube Audio)")
     parser.add_argument("job_id", nargs="?", default="job-ban-hop-dong-luc-0-gio", help="ID của job cần xuất")
+    parser.add_argument("--job", dest="job_flag", default=None, help="ID của job cần xuất (tùy chọn thay thế vị trí)")
     parser.add_argument("--fps", type=int, default=90, help="Số khung hình / giây (mặc định 90)")
     parser.add_argument("--cap-long-edge", type=int, default=1080, help="Giới hạn cạnh dài khung hình (mặc định 1080)")
     parser.add_argument("--scene", type=str, default=None, help="Chỉ render phân cảnh này (ví dụ: scene-01), sau đó ghép lại toàn bộ")
@@ -626,7 +627,10 @@ def parse_args(argv=None):
     parser.add_argument("--with-subtitles", dest="with_subtitles", action="store_true", default=False, help="Khắc phụ đề cứng lên video")
     parser.add_argument("--burn-subtitles", dest="with_subtitles", action="store_true", help="Khắc phụ đề cứng lên video")
     parser.add_argument("--no-subtitles", dest="with_subtitles", action="store_false", help="Tắt hiển thị phụ đề cứng (mặc định Tắt - dùng CC YouTube)")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.job_flag:
+        args.job_id = args.job_flag
+    return args
 
 
 if __name__ == "__main__":
