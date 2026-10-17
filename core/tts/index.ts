@@ -43,7 +43,12 @@ function findPythonExe(): string {
 }
 
 export function computeAudioHash(req: TTSRequest, normalizedText: string): string {
-  const payload = `${req.provider || "edge-tts"}:${req.voice || "vi-VN-NamMinhNeural"}:${req.rate || "+0%"}:${normalizedText}`;
+  const provider = req.provider || "edge-tts";
+  const voice = req.voice || "vi-VN-NamMinhNeural";
+  const rate = req.rate || "+0%";
+  const pitch = req.pitch || "+0Hz";
+  const volume = req.volume || "+0%";
+  const payload = `${provider}:${voice}:${rate}:${pitch}:${volume}:${normalizedText}`;
   return createHash("sha256").update(payload).digest("hex").slice(0, 16);
 }
 

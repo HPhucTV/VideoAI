@@ -1,0 +1,62 @@
+{
+  "jobId": "job-test-e2e-audio-drama",
+  "title": "E2E Audio Drama Test",
+  "workshop": "whiteboard",
+  "archetype": "storytelling",
+  "targetPlatform": "youtube_long",
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "rate": "+25%",
+    "pitch": "+0Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "channel": "OmniVideo Audio Studio",
+    "author": "Test Runner",
+    "characters": [
+      "Lâm Mặc",
+      "Triệu Trưởng Lão",
+      "Người Kể Chuyện"
+    ],
+    "characters_voice": {
+      "lâm mặc": { "voice": "vi-VN-NamMinhNeural", "rate": "+20%", "pitch": "-3Hz" },
+      "triệu trưởng lão": { "voice": "vi-VN-NamMinhNeural", "rate": "+10%", "pitch": "-6Hz" }
+    }
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "hook_teaser",
+      "speaker": "Lâm Mặc",
+      "rawText": "Hôm nay, ta sẽ dùng chính ngọn hỏa diễm này thiêu rụi toàn bộ Thanh Vân Tông!",
+      "visual": { "sceneId": "scene-01", "badge": "HOOK TEASER", "headline": "Phản Kháng" }
+    },
+    {
+      "id": "beat_02",
+      "role": "hook_intro",
+      "speaker": "Người Kể Chuyện",
+      "rawText": "Người Kể Chuyện: Chào mừng các đạo hữu đến với câu chuyện. Hãy bấm đăng ký kênh ngay sau đây.",
+      "visual": { "sceneId": "scene-01", "badge": "INTRO", "headline": "Giới Thiệu" }
+    },
+    {
+      "id": "beat_03",
+      "role": "scene_02_beat_1",
+      "speaker": "Triệu Trưởng Lão",
+      "rawText": "Tên phế vật to gan, ngươi dám cướp lò đan sao?!",
+      "visual": { "sceneId": "scene-02", "badge": "HỒI 1", "headline": "Thịnh Nộ" }
+    },
+    {
+      "id": "beat_04",
+      "role": "scene_02_beat_2",
+      "speaker": "Lâm Mặc",
+      "rawText": "Lò đan này là mạng của ta, có giỏi thì tới lấy!",
+      "visual": { "sceneId": "scene-02", "badge": "HỒI 1", "headline": "Quyết Chiến" }
+    }
+  ]
+}

@@ -40,6 +40,7 @@ export const VideoBeatSchema = z.object({
   role: z.string(), // Hỗ trợ linh hoạt mọi Archetype
   rawText: z.string(),
   normalizedVoiceText: z.string().optional(),
+  speaker: z.string().optional(),
   voice: BeatVoiceSchema.optional(), // Đa giọng đọc / pacing theo từng beat
   cues: VisualCueSchema.optional(),  // Retention cues, SFX, Camera
   voiceFile: z.string().optional(),
@@ -63,7 +64,9 @@ export const VideoJobSchema = z.object({
     author: z.string().optional(),
     tags: z.array(z.string()).default([]),
     sourceUrl: z.string().optional(),
-  }).default({}),
+    characters: z.array(z.string()).optional(),
+    characters_voice: z.record(z.any()).optional(),
+  }).passthrough().default({}),
   output: z.object({
     dir: z.string().optional(),
     videoPath: z.string().optional(),

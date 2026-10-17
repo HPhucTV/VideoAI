@@ -288,11 +288,11 @@ def test_render_scene_with_bgm_and_subtitles(tmp_path, monkeypatch):
     )
     assert mp4.name == "scene-01.mp4"
     ff_cmd = recorded[1]
-    assert "-stream_loop" in ff_cmd
+    # In Task 5: BGM is deferred to post-merge, individual scene doesn't mix BGM
+    assert "-stream_loop" not in ff_cmd
     fc = [ff_cmd[i+1] for i, c in enumerate(ff_cmd) if c == "-filter_complex"][0]
-    assert "sidechaincompress=" in fc
-    assert "ratio=5.0" in fc
     assert "subtitles=" in fc
+    assert "apad" in fc
 
 
 def test_render_scene_default_no_subtitles_stream_copy(tmp_path, monkeypatch):
