@@ -53,7 +53,7 @@ export const VideoBeatSchema = z.object({
 export const VideoJobSchema = z.object({
   jobId: z.string(),
   title: z.string(),
-  workshop: z.enum(["news", "explainer", "whiteboard"]),
+  workshop: z.enum(["news", "explainer", "whiteboard", "blender"]),
   archetype: z.enum(["storytelling", "explainer", "versus", "mythbuster", "news"]).optional(),
   targetPlatform: z.enum(["tiktok", "youtube_shorts", "youtube_long", "youtube"]).default("tiktok"),
   canvas: CanvasSchema.default({ width: 1080, height: 1920, fps: 60 }),
