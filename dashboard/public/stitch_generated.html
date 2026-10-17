@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OmniVideo Studio - VFX &amp; Neural NLE Engine</title>
+<!-- Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config verbatim matching design system -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#0b1326",
+            "secondary-container": "#03b5d3",
+            "on-surface-variant": "#bbcabf",
+            "on-error-container": "#ffdad6",
+            "on-surface": "#dae2fd",
+            "tertiary-fixed": "#e9ddff",
+            "on-secondary-container": "#00424e",
+            "on-secondary-fixed-variant": "#004e5c",
+            "on-primary-fixed": "#002113",
+            "tertiary-fixed-dim": "#d0bcff",
+            "tertiary-container": "#b090ff",
+            "outline": "#86948a",
+            "error-container": "#93000a",
+            "surface-container-lowest": "#060e20",
+            "surface-dim": "#0b1326",
+            "surface-container": "#171f33",
+            "secondary-fixed-dim": "#4cd7f6",
+            "on-tertiary-fixed": "#23005c",
+            "error": "#ffb4ab",
+            "on-tertiary-container": "#4600a7",
+            "primary-fixed": "#6ffbbe",
+            "surface-container-low": "#131b2e",
+            "on-background": "#dae2fd",
+            "surface-variant": "#2d3449",
+            "secondary": "#4cd7f6",
+            "primary-fixed-dim": "#4edea3",
+            "surface-bright": "#31394d",
+            "surface-tint": "#4edea3",
+            "secondary-fixed": "#acedff",
+            "surface-container-highest": "#2d3449",
+            "on-primary-fixed-variant": "#005236",
+            "on-tertiary-fixed-variant": "#5516be",
+            "primary-container": "#10b981",
+            "surface": "#0b1326",
+            "surface-container-high": "#222a3d",
+            "on-tertiary": "#3c0091",
+            "on-secondary": "#003640",
+            "inverse-surface": "#dae2fd",
+            "primary": "#4edea3",
+            "inverse-on-surface": "#283044",
+            "inverse-primary": "#006c49",
+            "tertiary": "#d0bcff",
+            "on-error": "#690005",
+            "on-secondary-fixed": "#001f26",
+            "on-primary-container": "#00422b",
+            "on-primary": "#003824",
+            "outline-variant": "#3c4a42"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "margin": "1.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-lg": "2rem",
+            "gutter-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem",
+            "gutter-lg": "1.5rem",
+            "margin-sm": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "display-hero-mobile": ["Plus Jakarta Sans"],
+            "label-code-md": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "display-hero": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "label-code-sm": ["JetBrains Mono"],
+            "body-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-code-lg": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-code-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-code-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-code-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #060e20;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #222a3d;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #3c4a42;
+    }
+    @keyframes sweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+    .animate-sweep {
+      animation: sweep 2.2s infinite ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.9; }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 2.5s infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden selection:bg-primary selection:text-on-primary">
+<!-- ================= TOP APP BAR (Shared Component Anchor) ================= -->
+<header class="docked full-width top-0 z-40 bg-surface-container-low shadow-sm backdrop-blur-md flex justify-between items-center w-full px-space-lg py-space-sm h-16 fixed left-0 border-b border-outline-variant/30">
+<!-- Left Cluster: Logo & Search / Channel Status -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center relative overflow-hidden shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30"></div>
+<span class="material-symbols-outlined text-primary text-[20px] relative z-10" data-icon="videocam">videocam</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm font-bold text-primary tracking-tight">OmniVideo Studio</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+            Channel: Storyverse VN • Connected (124K subs)
+          </span>
+</div>
+</div>
+<!-- Navigation Links from Shared JSON -->
+<nav class="hidden xl:flex items-center gap-space-md ml-space-md">
+<a class="text-primary border-b-2 border-primary font-semibold text-label-code-md font-label-code-md px-space-xs py-space-xs" href="#">Workspaces</a>
+<a class="text-on-surface-variant font-medium text-label-code-md font-label-code-md px-space-xs py-space-xs hover:text-on-surface transition-colors" href="#">Render Nodes</a>
+<a class="text-on-surface-variant font-medium text-label-code-md font-label-code-md px-space-xs py-space-xs hover:text-on-surface transition-colors" href="#">Pipelines</a>
+<a class="text-on-surface-variant font-medium text-label-code-md font-label-code-md px-space-xs py-space-xs hover:text-on-surface transition-colors" href="#">Docs</a>
+</nav>
+<!-- Search Input on Left -->
+<div class="relative hidden lg:block w-64 ml-space-sm">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[18px]" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest/80 border border-outline-variant/30 rounded-lg pl-8 pr-3 py-1.5 text-label-code-md font-label-code-md text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 transition-all" placeholder="Search projects, prompts..." type="text"/>
+</div>
+</div>
+<!-- Right Cluster: Telemetry, CTAs, Icons & User Avatar -->
+<div class="flex items-center gap-space-md">
+<!-- Telemetry Chip -->
+<div class="hidden 2xl:flex items-center gap-space-xs bg-surface-container-lowest border border-outline-variant/30 px-space-sm py-1 rounded-full">
+<span class="material-symbols-outlined text-primary text-[14px]" data-icon="developer_board">developer_board</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant">GPU Cluster: <span class="text-primary font-semibold">4x RTX 4090 Online</span></span>
+</div>
+<!-- Trailing Action: Run Pipeline -->
+<button class="bg-surface-container-high hover:bg-surface-container text-secondary border border-outline-variant/40 hover:border-secondary/50 font-label-code-md font-label-code-md px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 active:scale-[0.98] transition-all duration-150 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="bolt">bolt</span>
+<span>Run Pipeline</span>
+</button>
+<!-- Trailing Action: New Video Project -->
+<button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline-sm font-semibold text-[13px] px-4 py-1.5 rounded-lg flex items-center gap-1.5 shadow-[0_0_16px_rgba(16,185,129,0.35)] active:scale-[0.98] transition-all duration-150">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+<span>New Video Project</span>
+</button>
+<!-- Trailing Action Icons -->
+<div class="flex items-center gap-1 border-l border-outline-variant/30 pl-space-sm">
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors relative" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-secondary"></span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors" title="Engine Optimization">
+<span class="material-symbols-outlined text-[20px]" data-icon="bolt">bolt</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors" title="Settings Tuning">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+</button>
+</div>
+<!-- Director Avatar -->
+<div class="flex items-center gap-2 pl-space-xs">
+<div class="relative cursor-pointer">
+<img class="w-8 h-8 rounded-full border border-primary/40 object-cover shadow-[0_0_8px_rgba(78,222,163,0.3)]" data-alt="Close-up portrait of a high-tech video creative director wearing studio headphones, framed with moody cyan rim lighting and deep slate background tones in a cyberpunk-inspired dark workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEz_WsmkDRxCkeUmWXRtRm1X3idmF7B1W2N3MhT7FtGZbTojF84giDzmiMd-6VeT7mS6vylwnNctbCo1nnFEBYlUTB1BCPloT57bhihonrLJMmj9LsivzGuYY4H_a9HG-Y6fVy3PjecTfTu1jiQUCPDf6FBOCPbQZfefkngHdyyPQ_Edh5v1EtwQYosvc7UupUhnIVeVM6gmc2juK_5r_R2BvmdrLJhdMLkTcC1crjPd9r7AaMod7h6DiW6dkiw4xzxpwpKwHHIeQT"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-primary-container border-2 border-surface-container-low flex items-center justify-center"></span>
+</div>
+<div class="hidden sm:flex flex-col text-left">
+<span class="text-label-code-md font-label-code-md font-semibold text-on-surface leading-tight">Alex Vance</span>
+<span class="text-label-code-sm font-label-code-sm text-primary uppercase tracking-wider">Director</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ================= MAIN APP LAYOUT (With SideNav Dock) ================= -->
+<div class="flex pt-16 min-h-screen">
+<!-- ================= SIDE NAV BAR (Shared Component Anchor) ================= -->
+<aside class="docked h-[calc(100vh-4rem)] left-0 top-16 w-64 z-30 fixed bg-surface-container-lowest border-r border-outline-variant/30 shadow-md backdrop-blur-lg flex flex-col justify-between py-space-md px-space-sm custom-scrollbar overflow-y-auto">
+<!-- Top Rail: Navigation Groups -->
+<div class="flex flex-col gap-space-md">
+<!-- Sidebar Branding Header -->
+<div class="px-space-md py-space-xs flex items-center justify-between border-b border-outline-variant/20 pb-3">
+<div>
+<h2 class="text-headline-sm font-headline-sm font-bold text-primary">OmniVideo Studio</h2>
+<p class="text-label-code-sm font-label-code-sm text-on-surface-variant">VFX &amp; Neural NLE Engine</p>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#4edea3]"></span>
+</div>
+<!-- Primary Navigation List -->
+<nav class="flex flex-col gap-1">
+<span class="text-label-code-sm font-label-code-sm text-outline uppercase tracking-wider px-space-md pt-1 pb-1">Core Workspaces</span>
+<!-- Tab 1: Dashboard / Overview (Active Match) -->
+<a class="bg-surface-container-high text-primary border-l-2 border-primary font-semibold px-space-md py-space-sm rounded-r-lg flex items-center justify-between active:scale-[0.99] transition-all duration-100" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="space_dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">space_dashboard</span>
+<span class="text-body-md font-body-md font-semibold">Dashboard / Overview</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</a>
+<!-- AI Workshops Group -->
+<div class="pt-2">
+<span class="text-label-code-sm font-label-code-sm text-outline uppercase tracking-wider px-space-md pt-1 pb-1">AI Workshops</span>
+</div>
+<!-- Tab 2: HyperFrames Shorts (9:16) -->
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary" data-icon="flash_on">flash_on</span>
+<span class="text-body-md font-body-md">HyperFrames Shorts (9:16)</span>
+</div>
+<span class="bg-primary/20 text-primary text-[10px] font-label-code-sm px-1.5 py-0.5 rounded border border-primary/30 font-bold">HOT</span>
+</a>
+<!-- Tab 3: Remotion Tech Explainer -->
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-tertiary" data-icon="code_blocks">code_blocks</span>
+<span class="text-body-md font-body-md">Remotion Tech Explainer</span>
+</div>
+</a>
+<!-- Tab 4: Whiteboard Storyteller -->
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary-fixed-dim" data-icon="history_edu">history_edu</span>
+<span class="text-body-md font-body-md">Whiteboard Storyteller</span>
+</div>
+<span class="bg-tertiary/20 text-tertiary text-[10px] font-label-code-sm px-1.5 py-0.5 rounded border border-tertiary/30">60m Audio</span>
+</a>
+<!-- Group: Assets & Integrations -->
+<div class="pt-2">
+<span class="text-label-code-sm font-label-code-sm text-outline uppercase tracking-wider px-space-md pt-1 pb-1">Studio Assets</span>
+</div>
+<!-- Tab 5: Media Library -->
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="perm_media">perm_media</span>
+<span class="text-body-md font-body-md">Media Library</span>
+</div>
+<span class="text-label-code-sm font-label-code-sm text-outline">1.4TB</span>
+</a>
+<!-- Tab 6: Settings & MCP -->
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="hub">hub</span>
+<span class="text-body-md font-body-md">Settings &amp; MCP</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_4px_#4cd7f6]"></span>
+</a>
+</nav>
+</div>
+<!-- Bottom Sidebar Region: Action CTA & Hardware Telemetry -->
+<div class="flex flex-col gap-space-sm pt-space-md border-t border-outline-variant/30">
+<!-- Live Node Telemetry Widget -->
+<div class="bg-surface-container-low/90 border border-outline-variant/40 rounded-lg p-space-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="memory">memory</span>
+              Engine Latency: 14ms
+            </span>
+<span class="text-label-code-sm font-label-code-sm text-primary font-bold">ONLINE</span>
+</div>
+<!-- Compute Load Meter -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between text-label-code-sm font-label-code-sm text-outline">
+<span>Compute Load</span>
+<span class="text-on-surface">68%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<!-- VRAM Meter -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between text-label-code-sm font-label-code-sm text-outline">
+<span>VRAM Used</span>
+<span class="text-secondary font-medium">78GB / 96GB</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 81%;"></div>
+</div>
+</div>
+</div>
+<!-- Deploy Pipeline CTA button from JSON -->
+<button class="w-full bg-primary-container hover:bg-primary-fixed-dim text-on-primary-container font-headline-sm font-semibold text-body-md py-2 px-space-md rounded-lg flex items-center justify-center gap-2 shadow-[0_0_14px_rgba(16,185,129,0.25)] transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+<span>Deploy Pipeline</span>
+</button>
+<!-- System Diagnostic Footer Link from JSON -->
+<a class="text-label-code-sm font-label-code-sm text-outline hover:text-on-surface-variant flex items-center justify-center gap-1.5 pt-1" href="#">
+<span class="material-symbols-outlined text-[14px]" data-icon="terminal">terminal</span>
+<span>System Diagnostic</span>
+</a>
+</div>
+</aside>
+<!-- ================= MAIN CONTENT CANVAS ================= -->
+<main class="flex-1 ml-64 p-space-lg lg:p-space-xl flex flex-col gap-space-xl max-w-[1720px] mx-auto w-full">
+<!-- ================= HERO ACTIVE JOB MONITOR ================= -->
+<section class="relative bg-surface-container-low/90 border border-outline-variant/40 rounded-xl p-space-md lg:p-space-lg shadow-md backdrop-blur-xl overflow-hidden">
+<!-- Ambient radial glow behind canvas -->
+<div class="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Top Header of Job Banner -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pb-space-md border-b border-outline-variant/30 relative z-10">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/15 border border-primary/40 text-primary text-label-code-sm font-label-code-sm font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                Rendering In-Progress • 42% Complete
+              </span>
+<span class="text-label-code-sm font-label-code-sm text-outline">Task #NV-89240</span>
+<span class="text-label-code-sm font-label-code-sm bg-surface-container px-2 py-0.5 rounded text-secondary font-mono">1080p 60fps • Remotion Node #2</span>
+</div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight mt-1">
+              Active Render Job: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-on-surface">Bản Hợp Đồng 100 Tỷ - 60 Min Epic Audio</span>
+</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">
+              Current rendering scene: <span class="text-on-surface font-semibold">Scene 04: Liều Thuốc Xoa Dịu</span>
+<span class="font-label-code-md text-primary ml-1">(Frame 34,200 / 90,000)</span>
+</p>
+</div>
+<!-- Quick Job Control Buttons -->
+<div class="flex items-center gap-space-sm self-start lg:self-center">
+<button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 hover:border-outline text-on-surface px-3 py-1.5 rounded-lg text-label-code-md font-label-code-md flex items-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="tune">tune</span>
+<span>Adjust Priority</span>
+</button>
+<button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 hover:border-secondary text-secondary px-3 py-1.5 rounded-lg text-label-code-md font-label-code-md flex items-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-[16px]" data-icon="zoom_in">zoom_in</span>
+<span>Inspect Frame</span>
+</button>
+<button class="bg-surface-container hover:bg-error-container/30 border border-outline-variant/40 hover:border-error text-error px-3.5 py-1.5 rounded-lg text-label-code-md font-label-code-md flex items-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-[16px]" data-icon="pause_circle">pause_circle</span>
+<span>Pause Render</span>
+</button>
+</div>
+</div>
+<!-- Render Linear Progress Track -->
+<div class="py-space-md flex flex-col gap-2 relative z-10">
+<div class="flex justify-between items-center text-label-code-md font-label-code-md">
+<div class="flex items-center gap-space-sm text-on-surface-variant">
+<span>Overall Synthesis Progress</span>
+<span class="text-primary font-bold">42.4%</span>
+<span class="text-outline">|</span>
+<span class="text-secondary">Node Cluster: 4 Worker GPUs</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-outline">Elapsed: 00:13:36</span>
+<span class="text-outline">•</span>
+<span class="text-primary font-semibold">ETA: 00:18:24 remaining</span>
+</div>
+</div>
+<!-- Progress bar with gradient sweep -->
+<div class="w-full bg-surface-container-lowest h-3 rounded-full overflow-hidden p-0.5 border border-outline-variant/30 relative">
+<div class="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full relative overflow-hidden transition-all duration-300" style="width: 42%;">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-sweep"></div>
+</div>
+</div>
+</div>
+<!-- Audio Waveform Visualizer Strip -->
+<div class="bg-surface-container-lowest/80 border border-outline-variant/30 rounded-lg p-space-sm flex flex-col gap-2 mb-space-md relative z-10">
+<div class="flex items-center justify-between text-label-code-sm font-label-code-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="graphic_eq">graphic_eq</span>
+<span class="text-on-surface font-medium">Neural TTS Voice Stem • ElevenLabs Vietnamese Deep Cinema Dub (Master Bus)</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-primary font-mono">-3.2 dB (Optimal Headroom)</span>
+<span class="text-outline font-mono">48.0 kHz • 24-bit PCM</span>
+</div>
+</div>
+<!-- Waveform Canvas Simulation Bars -->
+<div class="h-10 w-full flex items-end gap-1 px-1 py-0.5 overflow-hidden">
+<!-- Simulated Waveform Peak Bars -->
+<div class="w-1 bg-secondary/50 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-5 rounded-t"></div>
+<div class="w-1 bg-secondary h-8 rounded-t"></div>
+<div class="w-1 bg-primary h-6 rounded-t"></div>
+<div class="w-1 bg-primary h-4 rounded-t"></div>
+<div class="w-1 bg-secondary h-9 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-primary h-7 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-5 rounded-t"></div>
+<div class="w-1 bg-secondary/40 h-2 rounded-t"></div>
+<div class="w-1 bg-secondary/80 h-7 rounded-t"></div>
+<div class="w-1 bg-primary h-9 rounded-t"></div>
+<div class="w-1 bg-primary-container h-8 rounded-t"></div>
+<div class="w-1 bg-secondary h-6 rounded-t"></div>
+<div class="w-1 bg-secondary/60 h-4 rounded-t"></div>
+<div class="w-1 bg-secondary/30 h-2 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-5 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-primary h-9 rounded-t"></div>
+<div class="w-1 bg-secondary h-7 rounded-t"></div>
+<div class="w-1 bg-secondary/50 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/80 h-6 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-secondary h-9 rounded-t"></div>
+<div class="w-1 bg-secondary/60 h-5 rounded-t"></div>
+<div class="w-1 bg-secondary/40 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/80 h-7 rounded-t"></div>
+<div class="w-1 bg-primary h-9 rounded-t"></div>
+<div class="w-1 bg-primary-container h-8 rounded-t"></div>
+<div class="w-1 bg-secondary h-6 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-primary h-7 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-4 rounded-t"></div>
+<div class="w-1 bg-secondary/50 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/80 h-7 rounded-t"></div>
+<div class="w-1 bg-primary h-9 rounded-t"></div>
+<div class="w-1 bg-primary-container h-8 rounded-t"></div>
+<div class="w-1 bg-secondary h-5 rounded-t"></div>
+<div class="w-1 bg-secondary/40 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-6 rounded-t"></div>
+<div class="w-1 bg-primary h-9 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-primary h-7 rounded-t"></div>
+<div class="w-1 bg-secondary/50 h-4 rounded-t"></div>
+<div class="w-1 bg-secondary/80 h-6 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-secondary h-8 rounded-t"></div>
+<div class="w-1 bg-secondary/50 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-5 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-9 rounded-t"></div>
+<div class="w-1 bg-secondary h-6 rounded-t"></div>
+<div class="w-1 bg-secondary/40 h-2 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-5 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-primary h-6 rounded-t"></div>
+<div class="w-1 bg-secondary/60 h-4 rounded-t"></div>
+<div class="w-1 bg-secondary/80 h-7 rounded-t"></div>
+<div class="w-1 bg-primary h-9 rounded-t"></div>
+<div class="w-1 bg-primary-container h-10 rounded-t shadow-[0_0_4px_#10b981]"></div>
+<div class="w-1 bg-secondary h-7 rounded-t"></div>
+<div class="w-1 bg-secondary/50 h-3 rounded-t"></div>
+<div class="w-1 bg-secondary/70 h-5 rounded-t"></div>
+<div class="w-1 bg-primary h-8 rounded-t"></div>
+<div class="w-1 bg-primary-container h-8 rounded-t"></div>
+<div class="w-1 bg-secondary h-6 rounded-t"></div>
+<div class="w-1 bg-secondary/40 h-2 rounded-t"></div>
+</div>
+</div>
+<!-- 3-Panel Storyboard Live Preview Strip -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md relative z-10">
+<!-- Panel 1: Scene 03 [Completed] -->
+<div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-space-sm flex flex-col gap-2 hover:border-primary/50 transition-all">
+<div class="flex items-center justify-between">
+<span class="text-label-code-sm font-label-code-sm text-on-surface font-semibold">Scene 03: Đàm Phán Căng Thẳng</span>
+<span class="text-label-code-sm font-label-code-sm text-primary flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                Done (Frame 21,600)
+              </span>
+</div>
+<div class="relative aspect-video rounded overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="A cinematic luxury corporate boardroom illuminated by cold neon office backlights, two corporate adversaries seated across a polished obsidian conference table signing an imposing business contract, high-end dark slate aesthetic with cyan ambient reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg5Wg8ThoqG9J5ob9O3Qpmc7qX1ZlMrFnY0LEqD1IeEMBvTOlYJGg1mP5N1vNXRZj14QYe225PYa4R8FWhUxPZSOSYRefGqUgeQQxiF_DZdqMjWMPezQbb-p53qupIfOI2EioJ4xNc8b5QpxA2jV52ghUvl9qXZ6I1y0UU-jhGPL8nBv5RU8OaQkMGRG_VMzlKK5T1-w5TL0JxLCUBA_nZ3FHTyOcvUepcGmrwxYIniMdxqSosNPFeThYP8U7Rs1VSMnOtkCQ82v0r"/>
+<div class="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-all"></div>
+<div class="absolute bottom-2 left-2 bg-surface-container-lowest/80 text-on-surface px-1.5 py-0.5 rounded text-[10px] font-label-code-sm font-mono backdrop-blur-sm">
+                00:14:20 - 00:20:00
+              </div>
+</div>
+</div>
+<!-- Panel 2: Scene 04 [Current Live Render] -->
+<div class="bg-surface-container-lowest/90 border-2 border-primary/60 rounded-lg p-space-sm flex flex-col gap-2 shadow-[0_0_16px_rgba(78,222,163,0.2)] relative">
+<div class="flex items-center justify-between">
+<span class="text-label-code-sm font-label-code-sm text-primary font-bold">Scene 04: Liều Thuốc Xoa Dịu</span>
+<span class="text-label-code-sm font-label-code-sm text-secondary flex items-center gap-1 animate-pulse font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                LIVE COMPUTE
+              </span>
+</div>
+<div class="relative aspect-video rounded overflow-hidden">
+<img class="w-full h-full object-cover brightness-95" data-alt="A dramatic confrontation in a rain-slicked modern high-rise office at night, neon reflections on wet glass overlooking a cyberpunk metropolis, glowing cyan and emerald highlights reflecting off a high-tech briefcase on the desk, cinematic widescreen frame." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeOZhTkY4KgNRPlgmm6K0XzImHam_bLyUmb8HBMh5qjkNcebq4Orn8At51oLEIHOJLkv-HwE5TgFGFA4BpeH9qlBgpHZ_j9NgLUPNY6eokPzWC4Gk5JPmFwIF0DJDCDEyJzF7-bNq9KKsw8qyapYutp0_1jPAs7kf15nNiPGmWpc85grsK4pJO-x7Z4dvkUZRgjqgsHubPt96kgsB-3l7Z9ObTkLeahBFZcDc2MGNoRmAJJLeyA0WYMc51xFeYP7LI2OU6ZrzJDppV"/>
+<!-- Live glowing ring overlay & frame scan indicator -->
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent flex items-center justify-center">
+<div class="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin flex items-center justify-center">
+<span class="text-[10px] font-label-code-sm font-mono text-primary font-bold">42%</span>
+</div>
+</div>
+<div class="absolute top-2 right-2 bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-[10px] font-label-code-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="memory">memory</span>
+                4090 #1
+              </div>
+<div class="absolute bottom-2 left-2 bg-surface-container-lowest/90 text-primary px-2 py-0.5 rounded text-[10px] font-label-code-sm font-mono backdrop-blur-sm">
+                Pass 3/4 • Remotion FX Layer
+              </div>
+</div>
+</div>
+<!-- Panel 3: Scene 05 [Queued] -->
+<div class="bg-surface-container-lowest/90 border border-outline-variant/30 rounded-lg p-space-sm flex flex-col gap-2 opacity-80 hover:opacity-100 transition-opacity">
+<div class="flex items-center justify-between">
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant font-medium">Scene 05: Thung Lũng Mù Sương</span>
+<span class="text-label-code-sm font-label-code-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="hourglass_empty">hourglass_empty</span>
+                Queued next
+              </span>
+</div>
+<div class="relative aspect-video rounded overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-70" data-alt="A storyboard wireframe blueprint illustration showing a secluded luxury modernist mountain villa in dense evening fog, high-contrast monochrome architectural line art with subtle cyan draft marks and camera movement vectors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHayH8wrfQa3FLdNMhT6e-HevF9vXCbxnVEpvv6zKo3OvktLIpaczFUDrRWefZoqVtGp3IZ63Xn2WAEdIOenBeJ0uF25qs0QVM4dTMmnbNS-7koJCwBoRxLZoYNqngp2wYl3aCXNHTAEaO9sTyKwrpOtyYJ4GMnyrdSa7bDvwqX_TKJmRCHVIS8EH6_KHzfcwjXUhWYUA5wo5HtqjM0hXaZNJSLWBVLZ0zVx6Yqr5DOx4D8pywf6JE4GfzPPpVilKmRcv8yaAyNqvy"/>
+<div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/60">
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant flex items-center gap-1 bg-surface-container px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]" data-icon="pending">pending</span>
+                  Ready on Frame 54,000
+                </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 3 WORKSHOP QUICK LAUNCH BENTO CARDS ================= -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-headline-md font-headline-md text-on-surface font-semibold">Specialized AI Video Workshops</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Launch targeted production pipelines with pre-configured neural models &amp; programmatic timeline layouts.</p>
+</div>
+<span class="text-label-code-sm font-label-code-sm text-primary flex items-center gap-1 cursor-pointer hover:underline">
+<span>Explore all engine presets</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Workshop 1: Fast-News HyperFrames -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-space-lg flex flex-col justify-between hover:border-primary/60 hover:shadow-[0_0_20px_rgba(78,222,163,0.15)] transition-all duration-200 group relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all pointer-events-none"></div>
+<div class="flex flex-col gap-space-md relative z-10">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+<span class="material-symbols-outlined text-[24px]" data-icon="flash_on">flash_on</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="bg-primary/15 text-primary text-[10px] font-label-code-sm font-bold px-2 py-0.5 rounded border border-primary/30 uppercase tracking-wider">HOT PIPELINE</span>
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-label-code-sm px-2 py-0.5 rounded font-mono">9:16 Shorts</span>
+</div>
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold group-hover:text-primary transition-colors">Fast-News HyperFrames</h3>
+<span class="text-label-code-md font-label-code-md text-secondary font-medium">45-65s Viral Shorts</span>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">
+                  Engineered for high-velocity algorithmic channels. Converts breaking RSS feeds into punchy vertical motion videos in under 2 minutes.
+                </p>
+</div>
+<!-- Feature Highlights -->
+<div class="flex flex-col gap-1.5 text-body-sm font-body-sm text-on-surface-variant pt-2 border-t border-outline-variant/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="check">check</span>
+<span>Auto-scripting from RSS &amp; X Trends</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="check">check</span>
+<span>9:16 Auto-framing with kinetic kinetic subtitles</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="check">check</span>
+<span>Dynamic sound FX &amp; beat-synced cuts</span>
+</div>
+</div>
+</div>
+<div class="pt-space-lg relative z-10">
+<button class="w-full bg-surface-container-high hover:bg-primary hover:text-on-primary-container text-primary border border-outline-variant/40 hover:border-transparent font-headline-sm font-semibold text-body-md py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm">
+<span>Launch Fast-News</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Workshop 2: Tech Explainer Remotion -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-space-lg flex flex-col justify-between hover:border-secondary/60 hover:shadow-[0_0_20px_rgba(76,215,246,0.15)] transition-all duration-200 group relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-2xl group-hover:bg-secondary/20 transition-all pointer-events-none"></div>
+<div class="flex flex-col gap-space-md relative z-10">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-secondary group-hover:scale-105 transition-transform shadow-[0_0_10px_rgba(76,215,246,0.2)]">
+<span class="material-symbols-outlined text-[24px]" data-icon="code_blocks">code_blocks</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="bg-secondary/15 text-secondary text-[10px] font-label-code-sm font-bold px-2 py-0.5 rounded border border-secondary/30 uppercase tracking-wider">REACT CODE NLE</span>
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-label-code-sm px-2 py-0.5 rounded font-mono">16:9 &amp; 9:16</span>
+</div>
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold group-hover:text-secondary transition-colors">Tech Explainer Remotion</h3>
+<span class="text-label-code-md font-label-code-md text-secondary font-medium">React Programmatic 16:9 &amp; 9:16</span>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">
+                  Pixel-perfect software breakdowns and technical whitepapers powered by Remotion.dev code sequences with zero render artifacts.
+                </p>
+</div>
+<!-- Feature Highlights -->
+<div class="flex flex-col gap-1.5 text-body-sm font-body-sm text-on-surface-variant pt-2 border-t border-outline-variant/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check">check</span>
+<span>6-beat psychological retention pacing</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check">check</span>
+<span>Code-driven charts &amp; isometric 3D diagrams</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check">check</span>
+<span>Motion vector graphics &amp; screen capture sync</span>
+</div>
+</div>
+</div>
+<div class="pt-space-lg relative z-10">
+<button class="w-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary-container text-secondary border border-outline-variant/40 hover:border-transparent font-headline-sm font-semibold text-body-md py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm">
+<span>Launch Remotion Studio</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Workshop 3: Whiteboard Storyteller -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-space-lg flex flex-col justify-between hover:border-tertiary/60 hover:shadow-[0_0_20px_rgba(208,188,255,0.15)] transition-all duration-200 group relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/10 rounded-full blur-2xl group-hover:bg-tertiary/20 transition-all pointer-events-none"></div>
+<div class="flex flex-col gap-space-md relative z-10">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-tertiary group-hover:scale-105 transition-transform shadow-[0_0_10px_rgba(208,188,255,0.2)]">
+<span class="material-symbols-outlined text-[24px]" data-icon="history_edu">history_edu</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="bg-tertiary/15 text-tertiary text-[10px] font-label-code-sm font-bold px-2 py-0.5 rounded border border-tertiary/30 uppercase tracking-wider">LONG FORM</span>
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-label-code-sm px-2 py-0.5 rounded font-mono">1-Hour Epic</span>
+</div>
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold group-hover:text-tertiary transition-colors">Whiteboard Storyteller</h3>
+<span class="text-label-code-md font-label-code-md text-tertiary font-medium">60-Min Audio Stories &amp; Graphic Novels</span>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">
+                  Full-length cinematic audio drama synthesis. Generates continuous illustrative keyframes, soundscapes, and chaptered timeline cues.
+                </p>
+</div>
+<!-- Feature Highlights -->
+<div class="flex flex-col gap-1.5 text-body-sm font-body-sm text-on-surface-variant pt-2 border-t border-outline-variant/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="check">check</span>
+<span>Deep narrative TTS voice clone &amp; dialogue pacing</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="check">check</span>
+<span>Multi-scene AI doodle art &amp; dynamic sketch reveals</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="check">check</span>
+<span>Ambient soundtrack layering &amp; chapter auto-split</span>
+</div>
+</div>
+</div>
+<div class="pt-space-lg relative z-10">
+<button class="w-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary-container text-tertiary border border-outline-variant/40 hover:border-transparent font-headline-sm font-semibold text-body-md py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm">
+<span>Launch Storyteller</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= VIDEO MANAGEMENT PRODUCTION TABLE ================= -->
+<section class="bg-surface-container-low/80 border border-outline-variant/40 rounded-xl p-space-lg shadow-sm backdrop-blur-md flex flex-col gap-space-md">
+<!-- Table Controls: Header & Filter Tabs -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pb-space-sm border-b border-outline-variant/30">
+<div>
+<h2 class="text-headline-md font-headline-md text-on-surface font-semibold">Recent Video Productions &amp; Queue</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Live computational ledger of generated, rendering, and published channel master files.</p>
+</div>
+<!-- Filter Tabs & Batch Options -->
+<div class="flex flex-wrap items-center gap-2">
+<div class="flex items-center bg-surface-container-lowest p-1 rounded-lg border border-outline-variant/30 text-label-code-md font-label-code-md">
+<button class="bg-surface-container-high text-primary px-3 py-1 rounded font-semibold">All (28)</button>
+<button class="text-on-surface-variant hover:text-on-surface px-3 py-1 rounded transition-colors">Completed</button>
+<button class="text-on-surface-variant hover:text-on-surface px-3 py-1 rounded transition-colors flex items-center gap-1">
+<span>Rendering</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="text-primary font-bold">(2)</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface px-3 py-1 rounded transition-colors">Drafts</button>
+<button class="text-on-surface-variant hover:text-on-surface px-3 py-1 rounded transition-colors">Scheduled</button>
+</div>
+<!-- Export Batch Button -->
+<button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 text-on-surface px-3 py-1.5 rounded-lg text-label-code-md font-label-code-md flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="file_download">file_download</span>
+<span>Export Batch</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 text-label-code-sm font-label-code-sm text-outline uppercase tracking-wider">
+<th class="py-3 px-4">Production Asset</th>
+<th class="py-3 px-4">Duration</th>
+<th class="py-3 px-4">Target Format</th>
+<th class="py-3 px-4">Synthesis State</th>
+<th class="py-3 px-4">Timestamp</th>
+<th class="py-3 px-4 text-right">Pipeline Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 text-body-md font-body-md">
+<!-- Row 1: Active Rendering Job -->
+<tr class="hover:bg-surface-container/40 transition-colors group">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-primary/50">
+<img class="w-full h-full object-cover" data-alt="Dark dramatic video production thumbnail with rain streaking down an illuminated glass window of an office building with Vietnamese drama typography, styled with cold cyan and neon emerald tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3D2HAmwXsBn431X77N6YgmgZZb1nL-FtUEEDrHYwiy4bmBnN6FQtRPSw5rug2KMCxBKjmnpvjQYIx7POZFmJZRxUTk6Pccaz3vPbMmaUnp4_KHqO2LGOgLEFvzmZxucoIY6z-LVxQctGJp2uRHAJvqcZuLVrbGc9FurisjQY7m-Sy1yF6XybgdJxE3Y1RxrcSns24oULZMi25IMPw1Taikb8oLreZkL1kfH4oXbVt8BRGMLmctv7B5Scl_hmpLCEPExDWQ3WSJv-C"/>
+<span class="absolute inset-0 bg-primary/20 animate-pulse"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface group-hover:text-primary transition-colors">Bản Hợp Đồng 100 Tỷ - Tập 1</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant">Full 60m Audio Drama • Remotion Chapter FX</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-label-code-md text-on-surface">01:00:15</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-secondary border border-secondary/30">YouTube (16:9)</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-outline">TikTok (Snippet)</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-label-code-sm text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                    Rendering (42%)
+                  </span>
+</td>
+<td class="py-3.5 px-4 font-label-code-sm text-on-surface-variant">Today 14:20</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded transition-colors" title="Inspect">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container rounded transition-colors" title="Abort">
+<span class="material-symbols-outlined text-[18px]" data-icon="cancel">cancel</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Share">
+<span class="material-symbols-outlined text-[18px]" data-icon="share">share</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: AI Chip Wars -->
+<tr class="hover:bg-surface-container/40 transition-colors group">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Futuristic glowing semiconductor microchip with neon circuit traces running through dark slate silicon wafers, dynamic cyan and emerald laser lighting accents representing artificial intelligence hardware battle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYNCpLXmt5LYkiYW5OkJekMEgHJ9P-He_s0Urx1zhLRkfiLFI6PymiAcPUU5jop80y9Tqe27CKQQ3rzQaGvRtDjGD-tnbWMsRBFpCyOVthmpPKGnTzmtHwgjZ4C1kKk49wIlIuTUQ9s8ZzD2YdT7WdUVhWFkDnccHOoEG82b-zDFLF6ZWgfTqOZHxCVMCaAniCLFGYv3lxCsViEoiZiWMhjGlnYpvQuGNRqSMmR-b6T090xLdn0DmDKMcFxycvqMO1mMi1dLzsEqMA"/>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface group-hover:text-secondary transition-colors">AI Chip Wars: DeepSeek vs Nvidia Breakdown</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant">HyperFrames Short • Kinetic Auto-subtitles</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-label-code-md text-on-surface">00:58s</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-primary border border-primary/30">TikTok (9:16)</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-outline">YT Shorts</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary/10 border border-secondary/30 text-secondary font-label-code-sm text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    Ready to Publish
+                  </span>
+</td>
+<td class="py-3.5 px-4 font-label-code-sm text-on-surface-variant">Today 11:05</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="bg-primary/20 hover:bg-primary text-primary hover:text-on-primary-container px-2.5 py-1 rounded text-label-code-sm font-semibold transition-all">
+                      Publish Now
+                    </button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Preview">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_arrow">play_arrow</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Remotion Tips -->
+<tr class="hover:bg-surface-container/40 transition-colors group">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A clean code editor workspace screen floating in dark space displaying React Remotion code snippets with neon emerald function syntax and cyan timeline graphs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3VXx1o0W4muzi1SBtklWZjterScTD2POqIeL61tpO4inzl_JO2m4pUvfp8xbOZXmDCkx5-K_GgcMZahoPCZ2e33xZBd6ic9tkGLJwhOwHPMUyunaxc22Xw4AzgaamJlnduK6toe-NhdMsp0v8HYOvIJGUqxNJ1ZUS6ROvXRviIzMAEvD6BgtVXMpHMuK7JlGnQc_kG6yL5HEQJfFZWiRmt7BuBvV903DTUlmpD4xjuRlaqvr-RCBeDI6HuQ_qrvboWtaQrXCvZKcm"/>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface group-hover:text-primary transition-colors">10 Mẹo Dùng Remotion Tối Ưu Render Tốc Độ Cao</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant">Tech Explainer 4K • React Motion Vector</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-label-code-md text-on-surface">08:42</td>
+<td class="py-3.5 px-4">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-secondary border border-secondary/30">YouTube (16:9)</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-on-surface-variant font-label-code-sm text-xs">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="check_circle">check_circle</span>
+                    Completed
+                  </span>
+</td>
+<td class="py-3.5 px-4 font-label-code-sm text-on-surface-variant">Yesterday</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="View Analytics">
+<span class="material-symbols-outlined text-[18px]" data-icon="insights">insights</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Re-render">
+<span class="material-symbols-outlined text-[18px]" data-icon="replay">replay</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Detective Story -->
+<tr class="hover:bg-surface-container/40 transition-colors group">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A moody atmospheric illustration of a solitary detective walking with a trenchcoat through a foggy pine forest valley at twilight, misty deep violet and cyan shadows, cinematic graphic novel aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiP6t3urLwSd3nBl8l31RMOx-Y1qh4JXX5FxIaSdbmISbK1UvphrFExIKND9ta-j5tKYZxx4DWD_9yeatGx148a3CBRjIBXIev20Dx9p2uXeXYFEprkOsqC89aBJuFtYqfIaUAKLJ-5En2ECSrwZlY2yAxGIgqaVQRSsz1N49dIG7qE0XIp9ei9R7iFI2M5AQAWn1Nch_wOrsoHwxz6oeNY3QCp4s1j-MHsIcsSaTWiKj10EOPnulCqxKN7T-mCvLUwGDk0lkoyJip"/>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface group-hover:text-tertiary transition-colors">Truyện Trinh Thám: Đêm Định Mệnh Tại Thung Lũng Mây</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant">Audiobook Novel • 14 Chapters Mastered</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-label-code-md text-on-surface">01:14:30</td>
+<td class="py-3.5 px-4">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-tertiary border border-tertiary/30">YouTube Podcast</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-tertiary/10 border border-tertiary/30 text-tertiary font-label-code-sm text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="mic">mic</span>
+                    Audio Mastered
+                  </span>
+</td>
+<td class="py-3.5 px-4 font-label-code-sm text-on-surface-variant">Oct 24</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="bg-surface-container hover:bg-tertiary/20 text-tertiary border border-outline-variant/40 px-2.5 py-1 rounded text-label-code-sm font-semibold transition-all">
+                      Generate Video
+                    </button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Edit Script">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit_note">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Tech News Digest -->
+<tr class="hover:bg-surface-container/40 transition-colors group">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Glowing neural network nodes and synaptic connections pulsing with emerald electricity in a high-tech computational server room, representing breakthroughs in artificial intelligence algorithms." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmo7IxqZTJer1cEVHQIzIPoreiHNj_2dsgJx4f6CdX24ECapBaTqqvCo1VwbOsFhr0RYAE9PB4fKaEm-kxWeWy3IKztkfOkvFiHwCE-TeTR6JBgli7o09XzFmwDoSk6ZqVQYWuPop1LAAnV7ph5Wrut6B_TvBo0ftypLqyxepjIT9DW8uHbWt9S3r7thLNsviTBvNqu5ZmaSwVYJy7zUeDvgRWBDkpPVJccX_5lh21yXAB45CwKQs4RGpcbF0oiqV9t-rs2pqkVJgM"/>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface group-hover:text-primary transition-colors">Tech News Digest: Quantum Leap in Open Source LLMs</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant">Vertical Fast Reel • 9:16 Viral Form</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 font-mono text-label-code-md text-on-surface">00:45s</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-secondary">TikTok</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] font-label-code-sm text-outline">IG Reels</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-on-surface-variant font-label-code-sm text-xs">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="check_circle">check_circle</span>
+                    Completed
+                  </span>
+</td>
+<td class="py-3.5 px-4 font-label-code-sm text-on-surface-variant">Oct 23</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Re-distribute">
+<span class="material-symbols-outlined text-[18px]" data-icon="publish">publish</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="flex items-center justify-between pt-space-xs text-label-code-sm font-label-code-sm text-outline">
+<span>Showing 5 of 28 studio pipelines</span>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-container-highest/50 text-on-surface-variant disabled:opacity-50">Prev</button>
+<button class="px-2 py-1 rounded bg-primary text-on-primary-container font-bold">1</button>
+<button class="px-2 py-1 rounded hover:bg-surface-container text-on-surface-variant">2</button>
+<button class="px-2 py-1 rounded hover:bg-surface-container text-on-surface-variant">3</button>
+<button class="px-2 py-1 rounded hover:bg-surface-container text-on-surface-variant">Next</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

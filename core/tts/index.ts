@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { writeFile, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { execFile } from "node:child_process";
@@ -64,7 +64,7 @@ export async function synthesizeVoice(req: TTSRequest): Promise<TTSResponse> {
   const cachedFilePath = join(CACHE_DIR, `${hash}.mp3`);
   const cachedSrtPath = join(CACHE_DIR, `${hash}.vtt`);
 
-  if (existsSync(cachedFilePath)) {
+  if (existsSync(cachedFilePath) && statSync(cachedFilePath).size > 0) {
     const probe = await getAudioDuration(cachedFilePath, fps);
     return {
       hash,
@@ -96,10 +96,20 @@ export async function synthesizeVoice(req: TTSRequest): Promise<TTSResponse> {
       args.push(`--volume=${volume}`);
     }
 
-    try {
-      await execFileAsync(pythonExe, args);
-    } catch (err: any) {
-      throw new Error(`Edge TTS generation failed: ${err?.stderr || err?.message || err}`);
+    let lastErr: any = null;
+    let success = false;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await execFileAsync(pythonExe, args);
+        success = true;
+        break;
+      } catch (err: any) {
+        lastErr = err;
+        await new Promise((resolve) => setTimeout(resolve, attempt * 1500));
+      }
+    }
+    if (!success) {
+      throw new Error(`Edge TTS generation failed: ${lastErr?.stderr || lastErr?.message || lastErr}`);
     }
   } else {
     throw new Error(`TTS Provider "${provider}" requires external API credentials or is not yet configured.`);

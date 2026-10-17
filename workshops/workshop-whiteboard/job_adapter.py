@@ -49,10 +49,16 @@ def call_core_tts(text: str, voice: str = "vi-VN-NamMinhNeural", rate: str = "+0
         "--volume", volume,
         "--fps", str(fps),
     ]
-    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=False, env=env)
-    if res.returncode != 0:
-        raise RuntimeError(f"Core TTS call failed: {res.stderr or res.stdout}")
-    return json.loads(res.stdout.strip())
+    import time
+    for attempt in range(1, 4):
+        res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", shell=False, env=env)
+        if res.returncode == 0:
+            try:
+                return json.loads(res.stdout.strip())
+            except Exception:
+                pass
+        time.sleep(attempt * 1.5)
+    raise RuntimeError(f"Core TTS call failed after 3 attempts: {res.stderr or res.stdout}")
 
 def call_core_phonetics(text: str) -> str:
     root_dir = Path(__file__).resolve().parent.parent.parent

@@ -1,104 +1,424 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html class="dark" lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OmniVideo Studio - Video Library & Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OmniVideo Studio - Video AI Production Dashboard</title>
+  
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            background: "#0b1326",
+            surface: "#0b1326",
+            "surface-dim": "#0b1326",
+            "surface-container-lowest": "#060e20",
+            "surface-container-low": "#131b2e",
+            "surface-container": "#171f33",
+            "surface-container-high": "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-bright": "#31394d",
+            "on-surface": "#dae2fd",
+            "on-surface-variant": "#bbcabf",
+            outline: "#86948a",
+            "outline-variant": "#3c4a42",
+            primary: "#4edea3",
+            "primary-container": "#10b981",
+            "on-primary": "#003824",
+            "on-primary-container": "#00422b",
+            secondary: "#4cd7f6",
+            "secondary-container": "#03b5d3",
+            "on-secondary": "#003640",
+            "on-secondary-container": "#00424e",
+            tertiary: "#d0bcff",
+            "tertiary-container": "#b090ff",
+            error: "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            headline: ["Plus Jakarta Sans", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+  
+  <!-- Dashboard Custom Styles for Modals & Interactive Elements -->
+  <link rel="stylesheet" href="styles.css"/>
+
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #060e20; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #222a3d; border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3c4a42; }
+    @keyframes sweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+    .animate-sweep { animation: sweep 2.2s infinite ease-in-out; }
+  </style>
 </head>
-<body>
-  <div class="app-container">
-    <!-- Top Header -->
-    <header class="top-nav">
-      <div class="brand">
-        <div class="logo-box">🎬</div>
-        <div class="brand-text">
-          <h1>OmniVideo Studio</h1>
-          <span class="badge-status">● 100% Local · Chi Phí 0đ</span>
+
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-sans overflow-x-hidden selection:bg-primary selection:text-on-primary">
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="docked top-0 z-40 bg-surface-container-low shadow-sm backdrop-blur-md flex justify-between items-center w-full px-6 py-3 h-16 fixed left-0 border-b border-outline-variant/30">
+    <!-- Brand & Live Channel Status -->
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center relative overflow-hidden shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+          <div class="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30"></div>
+          <span class="material-symbols-outlined text-primary text-[22px] relative z-10">videocam</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-lg font-headline font-bold text-primary tracking-tight">OmniVideo Studio</span>
+          <span class="text-xs font-mono text-on-surface-variant flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+            Kênh: Storyverse VN • 100% Local (Chi phí 0đ)
+          </span>
         </div>
       </div>
 
-      <div class="header-stats">
-        <div class="stat-item">
-          <span class="stat-label">Tổng video</span>
-          <span class="stat-value" id="stat-total-videos">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Dung lượng</span>
-          <span class="stat-value" id="stat-total-size">0 MB</span>
-        </div>
+      <!-- Quick Metrics Pill -->
+      <div class="hidden lg:flex items-center gap-4 bg-surface-container-lowest/80 border border-outline-variant/30 px-3.5 py-1.5 rounded-lg text-xs font-mono">
+        <div>Tổng video: <span class="text-primary font-bold" id="stat-total-videos">0</span></div>
+        <span class="text-outline">•</span>
+        <div>Dung lượng: <span class="text-secondary font-bold" id="stat-total-size">0 MB</span></div>
+      </div>
+    </div>
+
+    <!-- Actions & User Profile -->
+    <div class="flex items-center gap-3">
+      <!-- Search Input -->
+      <div class="relative hidden sm:block w-64">
+        <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[18px]">search</span>
+        <input class="w-full bg-surface-container-lowest/90 border border-outline-variant/30 rounded-lg pl-8 pr-3 py-1.5 text-xs font-mono text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 transition-all" id="search-input" placeholder="Tìm kiếm kịch bản, beat..." type="text"/>
       </div>
 
-      <div class="header-actions">
-        <button class="btn btn-primary" id="btn-open-create">
-          <span class="icon">＋</span> Tạo Video Mới
+      <!-- New Video Project Button -->
+      <button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline font-semibold text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-[0_0_16px_rgba(16,185,129,0.35)] active:scale-[0.98] transition-all" id="btn-open-create">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        <span>Tạo Video Mới</span>
+      </button>
+
+      <!-- Refresh Library Button -->
+      <button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors" onclick="loadVideos()" title="Tải lại danh sách">
+        <span class="material-symbols-outlined text-[20px]">refresh</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN LAYOUT WITH SIDEBAR ================= -->
+  <div class="flex pt-16 min-h-screen">
+    
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="docked h-[calc(100vh-4rem)] left-0 top-16 w-64 z-30 fixed bg-surface-container-lowest border-r border-outline-variant/30 shadow-md backdrop-blur-lg flex flex-col justify-between py-4 px-3 custom-scrollbar overflow-y-auto">
+      <div class="flex flex-col gap-4">
+        <div class="px-3 py-1 flex items-center justify-between border-b border-outline-variant/20 pb-3">
+          <div>
+            <h2 class="text-sm font-headline font-bold text-primary">Phân Xưởng Sản Xuất</h2>
+            <p class="text-[11px] font-mono text-on-surface-variant">Pipeline Trực Tuyến</p>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#4edea3]"></span>
+        </div>
+
+        <!-- Filter Tabs / Workshop Selectors -->
+        <nav class="flex flex-col gap-1 filter-tabs">
+          <span class="text-[10px] font-mono text-outline uppercase tracking-wider px-3 pt-1">Bộ Lọc Phân Xưởng</span>
+          
+          <button class="tab-btn active text-left px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs font-semibold" data-workshop="all">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">space_dashboard</span>
+              <span>Tất Cả Video</span>
+            </div>
+            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          </button>
+
+          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="news">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-primary">flash_on</span>
+              <span>Xưởng 1: Tin Tức Shorts</span>
+            </div>
+            <span class="bg-primary/20 text-primary text-[10px] font-mono px-1.5 py-0.5 rounded border border-primary/30 font-bold">9:16</span>
+          </button>
+
+          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="explainer">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-secondary">code_blocks</span>
+              <span>Xưởng 2: Remotion Explainer</span>
+            </div>
+            <span class="bg-secondary/20 text-secondary text-[10px] font-mono px-1.5 py-0.5 rounded border border-secondary/30">React</span>
+          </button>
+
+          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="whiteboard">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-tertiary">history_edu</span>
+              <span>Xưởng 3: Bảng Trắng Vẽ Tay</span>
+            </div>
+            <span class="bg-tertiary/20 text-tertiary text-[10px] font-mono px-1.5 py-0.5 rounded border border-tertiary/30">60m Audio</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Telemetry Widget -->
+      <div class="flex flex-col gap-2 pt-4 border-t border-outline-variant/30">
+        <div class="bg-surface-container-low/90 border border-outline-variant/40 rounded-lg p-3 flex flex-col gap-2">
+          <div class="flex items-center justify-between text-xs font-mono">
+            <span class="text-on-surface-variant flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px] text-primary">memory</span>
+              Độ trễ Engine: 14ms
+            </span>
+            <span class="text-primary font-bold">READY</span>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between text-[11px] font-mono text-outline">
+              <span>Trạng thái Render Engine</span>
+              <span class="text-primary font-semibold">100% Cục bộ</span>
+            </div>
+            <div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full bg-surface-container-high hover:bg-surface-container text-secondary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all" onclick="openCreateModal()">
+          <span class="material-symbols-outlined text-[16px]">terminal</span>
+          <span>Khởi Động Pipeline Mới</span>
         </button>
       </div>
-    </header>
+    </aside>
 
-    <!-- Toolbar & Filters -->
-    <section class="toolbar">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="Tìm kiếm theo tiêu đề, hashtag hoặc nội dung beat...">
-      </div>
+    <!-- ================= MAIN CONTENT CANVAS ================= -->
+    <main class="flex-1 ml-64 p-6 lg:p-8 flex flex-col gap-8 max-w-[1720px] mx-auto w-full">
 
-      <div class="filter-tabs">
-        <button class="tab-btn active" data-workshop="all">Tất Cả</button>
-        <button class="tab-btn" data-workshop="explainer">Xưởng 2 (Explainer)</button>
-        <button class="tab-btn" data-workshop="whiteboard">Xưởng 3 (Bảng Trắng)</button>
-        <button class="tab-btn" data-workshop="news">Xưởng 1 (Tin Tức)</button>
-      </div>
-    </section>
+      <!-- ================= HERO ACTIVE JOB MONITOR ================= -->
+      <section class="relative bg-surface-container-low/90 border border-outline-variant/40 rounded-xl p-5 lg:p-6 shadow-md backdrop-blur-xl overflow-hidden">
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Video Grid -->
-    <main class="content-area">
-      <div class="video-grid" id="video-grid">
-        <!-- Rendered by app.js -->
-        <div class="loading-state">
-          <div class="spinner"></div>
-          <p>Đang tải danh sách kho video...</p>
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30 relative z-10">
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-full bg-primary/15 border border-primary/40 text-primary text-xs font-mono font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                Dự Án 1-Giờ YouTube Sẵn Sàng
+              </span>
+              <span class="text-xs font-mono text-outline">Job #job-hop-dong-100-ty-tong-tai</span>
+              <span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-secondary">1080p 90fps • OpenCV Stream Whiteboard</span>
+            </div>
+
+            <h1 class="text-2xl font-headline font-bold text-on-surface tracking-tight mt-1">
+              Phim Hoạt Cảnh Bảng Trắng: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-on-surface">Bản Hợp Đồng 100 Tỷ (Full 60 Phút)</span>
+            </h1>
+            <p class="text-xs font-mono text-on-surface-variant">
+              Cấu trúc: <span class="text-on-surface font-semibold">9 Phân Cảnh (Chương I → IX) • 27 Beats Lời Thoại • Bút Vẽ Bảng Trắng 90 FPS</span>
+            </p>
+          </div>
+
+          <!-- Quick Controls -->
+          <div class="flex items-center gap-2 self-start lg:self-center">
+            <button class="bg-primary/20 hover:bg-primary hover:text-on-primary-container text-primary border border-primary/40 text-xs font-mono px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm" onclick="triggerRender('job-hop-dong-100-ty-tong-tai')">
+              <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+              <span>Re-render Toàn Bộ 9 Phân Cảnh</span>
+            </button>
+            <button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 text-on-surface text-xs font-mono px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all" onclick="openPlayer('job-hop-dong-100-ty-tong-tai')">
+              <span class="material-symbols-outlined text-[16px] text-secondary">visibility</span>
+              <span>Kiểm Tra Beats</span>
+            </button>
+          </div>
         </div>
-      </div>
+
+        <!-- 3-Panel Storyboard Live Preview Strip -->
+        <div class="mt-4 flex flex-col gap-2 relative z-10">
+          <div class="flex items-center justify-between text-xs font-mono text-outline">
+            <span>Bản Vẽ Minh Họa Độc Quyền Từng Phân Cảnh (Không Trùng Lặp):</span>
+            <span class="text-primary font-semibold">1920x1080 Notion Art • Giấy Kem #F5EBD7</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Panel 1: Scene 01 -->
+            <div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-2.5 flex flex-col gap-2">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-on-surface font-semibold">Chương I: Đêm Mưa Định Mệnh</span>
+                <span class="text-primary flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  Scene 01
+                </span>
+              </div>
+              <div class="relative aspect-video rounded overflow-hidden border border-outline-variant/30">
+                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-01/scene-01.png" alt="Chương I"/>
+              </div>
+            </div>
+
+            <!-- Panel 2: Scene 02 -->
+            <div class="bg-surface-container-lowest/90 border-2 border-primary/60 rounded-lg p-2.5 flex flex-col gap-2 shadow-[0_0_16px_rgba(78,222,163,0.15)]">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-primary font-bold">Chương II: Bản Hợp Đồng 100 Tỷ</span>
+                <span class="text-secondary flex items-center gap-1 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                  Scene 02
+                </span>
+              </div>
+              <div class="relative aspect-video rounded overflow-hidden border border-primary/40">
+                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-02/scene-02.png" alt="Chương II"/>
+              </div>
+            </div>
+
+            <!-- Panel 3: Scene 03 -->
+            <div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-2.5 flex flex-col gap-2">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-on-surface font-semibold">Chương III: Cửa Hào Môn</span>
+                <span class="text-tertiary flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  Scene 03
+                </span>
+              </div>
+              <div class="relative aspect-video rounded overflow-hidden border border-outline-variant/30">
+                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-03/scene-03.png" alt="Chương III"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3 WORKSHOP QUICK CARDS ================= -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Workshop 1 -->
+        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-200">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-primary shadow-[0_0_10px_rgba(78,222,163,0.2)]">
+                <span class="material-symbols-outlined text-[24px]">flash_on</span>
+              </div>
+              <span class="bg-primary/15 text-primary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-primary/30">9:16 SHORTS</span>
+            </div>
+            <div>
+              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 1: Tin Tức HyperFrames</h3>
+              <p class="text-xs text-on-surface-variant mt-1">Xuất video tin tức ngắn 45-60s tốc độ cao, kinetic subtitle tự động, phong cách thời sự quốc tế.</p>
+            </div>
+          </div>
+          <button class="mt-4 w-full bg-surface-container-high hover:bg-primary hover:text-on-primary-container text-primary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('news')">
+            Lọc Kịch Bản Xưởng 1
+          </button>
+        </div>
+
+        <!-- Workshop 2 -->
+        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-secondary/60 transition-all duration-200">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-secondary shadow-[0_0_10px_rgba(76,215,246,0.2)]">
+                <span class="material-symbols-outlined text-[24px]">code_blocks</span>
+              </div>
+              <span class="bg-secondary/15 text-secondary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-secondary/30">REACT 16:9 & 9:16</span>
+            </div>
+            <div>
+              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 2: Remotion Tech Explainer</h3>
+              <p class="text-xs text-on-surface-variant mt-1">Video đồ họa giải thích công nghệ, 6-beat tâm lý học giữ chân người xem, biểu đồ và hiệu ứng chuyển động code.</p>
+            </div>
+          </div>
+          <button class="mt-4 w-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary-container text-secondary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('explainer')">
+            Lọc Kịch Bản Xưởng 2
+          </button>
+        </div>
+
+        <!-- Workshop 3 -->
+        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-tertiary/60 transition-all duration-200">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-tertiary shadow-[0_0_10px_rgba(208,188,255,0.2)]">
+                <span class="material-symbols-outlined text-[24px]">history_edu</span>
+              </div>
+              <span class="bg-tertiary/15 text-tertiary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-tertiary/30">1-HOUR AUDIO</span>
+            </div>
+            <div>
+              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 3: Bảng Trắng Storyteller</h3>
+              <p class="text-xs text-on-surface-variant mt-1">Video audio truyện dài 60 phút, tự động tạo Storyboard 3 ô tranh Notion độc quyền cho từng chương, lồng nhạc nền ducking thông minh.</p>
+            </div>
+          </div>
+          <button class="mt-4 w-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary-container text-tertiary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('whiteboard')">
+            Lọc Kịch Bản Xưởng 3
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= VIDEO LIBRARY & PRODUCTION LEDGER ================= -->
+      <section class="bg-surface-container-low/80 border border-outline-variant/40 rounded-xl p-6 shadow-sm backdrop-blur-md flex flex-col gap-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30">
+          <div>
+            <h2 class="text-xl font-headline font-bold text-on-surface">Kho Dự Án Video Cục Bộ</h2>
+            <p class="text-xs text-on-surface-variant">Quản lý và kích hoạt render toàn bộ các video từ thư mục output/jobs/</p>
+          </div>
+
+          <button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all self-start sm:self-center" onclick="openCreateModal()">
+            <span class="material-symbols-outlined text-[16px]">add</span>
+            <span>+ Thêm Video Mới</span>
+          </button>
+        </div>
+
+        <!-- Video Grid Container (Filled by app.js) -->
+        <div class="video-grid" id="video-grid">
+          <div class="loading-state py-12 text-center text-outline">
+            <div class="spinner mb-2"></div>
+            <p>Đang tải danh sách kho video từ server...</p>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <!-- MODAL: Video Player & Beat Inspector -->
+  <!-- ================= MODAL: VIDEO PLAYER & BEATS ================= -->
   <div class="modal" id="player-modal">
-    <div class="modal-backdrop"></div>
+    <div class="modal-backdrop" onclick="closePlayerModal()"></div>
     <div class="modal-content player-modal-content">
       <div class="modal-header">
-        <div class="header-info">
+        <div class="header-info flex items-center gap-3">
           <span class="badge" id="modal-workshop-badge">XƯỞNG</span>
-          <h2 id="modal-video-title">Tiêu đề video</h2>
+          <h2 id="modal-video-title" class="text-base font-bold">Tiêu đề video</h2>
         </div>
         <button class="btn-close" id="btn-close-player">✕</button>
       </div>
 
       <div class="modal-body player-layout">
-        <div class="player-left">
-          <div class="video-wrapper">
-            <video id="main-video" controls playsinline preload="metadata">
-              Trình duyệt của bạn không hỗ trợ thẻ video.
+        <div class="player-left flex flex-col gap-3">
+          <div class="video-wrapper bg-black rounded-lg overflow-hidden">
+            <video id="main-video" controls playsinline preload="metadata" class="w-full max-h-[500px]">
+              Trình duyệt của bạn không hỗ trợ video.
             </video>
           </div>
-          <div class="player-toolbar">
-            <button class="btn btn-sm btn-outline" id="btn-copy-link">📋 Sao chép link video</button>
-            <a class="btn btn-sm btn-outline" id="btn-download-mp4" download>⬇ Tải MP4</a>
-            <a class="btn btn-sm btn-outline" id="btn-download-srt" download>⬇ Tải SRT</a>
-            <a class="btn btn-sm btn-outline" id="btn-download-json" download>⬇ Tải JSON</a>
+          <div class="player-toolbar flex flex-wrap gap-2">
+            <button class="btn btn-sm btn-outline text-xs" id="btn-copy-link">📋 Sao chép link</button>
+            <a class="btn btn-sm btn-outline text-xs" id="btn-download-mp4" download>⬇ Tải MP4</a>
+            <a class="btn btn-sm btn-outline text-xs" id="btn-download-srt" download>⬇ Tải SRT</a>
+            <a class="btn btn-sm btn-outline text-xs" id="btn-download-json" download>⬇ Tải JSON</a>
           </div>
         </div>
 
-        <div class="player-right">
-          <div class="section-title">
-            <span>Dòng Thời Gian Các Beat (Phân Cảnh)</span>
-            <span class="count-badge" id="beats-count-badge">6 beats</span>
+        <div class="player-right flex flex-col gap-2">
+          <div class="section-title flex items-center justify-between border-b border-outline-variant/30 pb-2">
+            <span class="text-xs font-bold font-mono">Dòng Thời Gian Phân Cảnh (Beats)</span>
+            <span class="count-badge text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-primary" id="beats-count-badge">0 beats</span>
           </div>
-          <div class="beats-timeline" id="beats-timeline">
+          <div class="beats-timeline custom-scrollbar overflow-y-auto max-h-[480px] flex flex-col gap-2 pr-1" id="beats-timeline">
             <!-- Rendered by app.js -->
           </div>
         </div>
@@ -106,132 +426,150 @@
     </div>
   </div>
 
-  <!-- MODAL: Create New Video Job -->
+  <!-- ================= MODAL: CREATE JOB ================= -->
   <div class="modal" id="create-modal">
-    <div class="modal-backdrop"></div>
+    <div class="modal-backdrop" onclick="closeCreateModal()"></div>
     <div class="modal-content form-modal-content">
       <div class="modal-header">
-        <h2>Tạo Kịch Bản Video Mới</h2>
+        <h2 class="text-base font-bold">Tạo Kịch Bản Video Mới</h2>
         <button class="btn-close" id="btn-close-create">✕</button>
       </div>
       <div class="modal-body">
         <form id="create-job-form">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="new-job-id">Mã Job (ID duy nhất, không dấu, viết liền)</label>
-              <input type="text" id="new-job-id" placeholder="vd: job-react-vs-vue-60s" required>
+          <div class="form-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-group flex flex-col gap-1">
+              <label for="new-job-id" class="text-xs font-mono text-on-surface-variant">Mã Job (ID duy nhất, viết liền)</label>
+              <input type="text" id="new-job-id" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface" placeholder="vd: job-react-vs-vue-60s" required/>
             </div>
-            <div class="form-group">
-              <label for="new-title">Tiêu Đề Video</label>
-              <input type="text" id="new-title" placeholder="vd: React vs Vue: Lựa Chọn Nào Cho Năm 2026?" required>
+            <div class="form-group flex flex-col gap-1">
+              <label for="new-title" class="text-xs font-mono text-on-surface-variant">Tiêu Đề Video</label>
+              <input type="text" id="new-title" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface" placeholder="vd: React vs Vue: Lựa Chọn Nào Cho Năm 2026?" required/>
             </div>
-            <div class="form-group">
-              <label for="new-workshop">Chọn Xưởng Sản Xuất</label>
-              <select id="new-workshop">
-                <option value="explainer">Xưởng 2: Explainer Kiến Thức (Remotion 9:16)</option>
-                <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (OpenCV/Python 16:9)</option>
+            <div class="form-group flex flex-col gap-1">
+              <label for="new-workshop" class="text-xs font-mono text-on-surface-variant">Chọn Phân Xưởng</label>
+              <select id="new-workshop" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
+                <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (60m Audio / OpenCV)</option>
+                <option value="explainer">Xưởng 2: Explainer Kiến Thức (Remotion 9:16 & 16:9)</option>
                 <option value="news">Xưởng 1: Tin Tức Đồ Họa Nhanh (HyperFrames 9:16)</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="new-archetype">Archetype Kịch Bản</label>
-              <select id="new-archetype">
+            <div class="form-group flex flex-col gap-1">
+              <label for="new-archetype" class="text-xs font-mono text-on-surface-variant">Archetype Kịch Bản</label>
+              <select id="new-archetype" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
+                <option value="storytelling">Storytelling (Cổ tích, Truyện ngôn tình, Drama 60m)</option>
                 <option value="explainer">Tech Explainer (PAS: Problem - Agitate - Solve)</option>
                 <option value="versus">Versus Battle (So sánh đối đầu A vs B)</option>
-                <option value="storytelling">Storytelling (Cổ tích, Tự sự, Drama)</option>
-                <option value="mythbuster">Mythbuster (Lật tẩy sai lầm phổ biến)</option>
                 <option value="news">Breaking News (Thời sự kim tự tháp ngược)</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="new-voice">Giọng Đọc Mặc Định</label>
-              <select id="new-voice">
-                <option value="vi-VN-NamMinhNeural">Nam Minh (Giọng nam chuẩn công nghệ, dứt khoát)</option>
-                <option value="vi-VN-HoaiMyNeural">Hoài My (Giọng nữ ngọt ngào, truyền cảm, cổ tích)</option>
+            <div class="form-group flex flex-col gap-1">
+              <label for="new-voice" class="text-xs font-mono text-on-surface-variant">Giọng Đọc Mặc Định</label>
+              <select id="new-voice" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
+                <option value="vi-VN-NamMinhNeural">Nam Minh (Giọng nam trầm ấm, dứt khoát)</option>
+                <option value="vi-VN-HoaiMyNeural">Hoài My (Giọng nữ truyền cảm, ngọt ngào)</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="new-platform">Định Dạng Canvas</label>
-              <select id="new-platform">
-                <option value="tiktok">TikTok / Shorts / Reels (Dọc 1080x1920)</option>
-                <option value="youtube">YouTube (Ngang 1920x1080 hoặc 1376x768)</option>
+            <div class="form-group flex flex-col gap-1">
+              <label for="new-platform" class="text-xs font-mono text-on-surface-variant">Tỉ Lệ Khung Hình</label>
+              <select id="new-platform" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
+                <option value="youtube_long">YouTube (Ngang 1920x1080 16:9)</option>
+                <option value="tiktok">TikTok / Shorts / Reels (Dọc 1080x1920 9:16)</option>
               </select>
             </div>
           </div>
 
-          <div class="form-group" style="margin-top: 16px;">
-            <label>Nội Dung Các Beat (Mỗi dòng một câu, hệ thống sẽ tự phân nhịp 6 Beat):</label>
-            <textarea id="new-raw-script" rows="6" placeholder="Câu 1 (Hook): Bạn có biết...&#10;Câu 2 (Problem): Vấn đề lớn nhất là...&#10;Câu 3 (Solution): Giải pháp ở đây là...&#10;Câu 4 (Deep Dive): Cơ chế hoạt động...&#10;Câu 5 (Proof): Kết quả tăng gấp 10 lần...&#10;Câu 6 (CTA): Theo dõi kênh để đón xem video tiếp theo!"></textarea>
+          <div class="form-group flex flex-col gap-1 mt-4">
+            <label class="text-xs font-mono text-on-surface-variant">Nội Dung Kịch Bản (Mỗi dòng một beat hoặc phân đoạn):</label>
+            <textarea id="new-raw-script" rows="6" class="bg-surface-container border border-outline-variant/40 rounded p-3 text-xs text-on-surface font-mono" placeholder="Nhập kịch bản video tại đây..."></textarea>
           </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" id="btn-cancel-create">Hủy</button>
-            <button type="submit" class="btn btn-primary">Lưu Kịch Bản & Sẵn Sàng Render</button>
+          <div class="modal-footer flex items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/30">
+            <button type="button" class="btn btn-outline text-xs px-4 py-2" id="btn-cancel-create">Hủy</button>
+            <button type="submit" class="btn btn-primary text-xs px-4 py-2 bg-primary text-on-primary font-semibold rounded">Lưu Kịch Bản & Tạo Job</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Edit Script & Beat Tuning -->
+  <!-- ================= MODAL: EDIT JOB ================= -->
   <div class="modal" id="edit-modal">
-    <div class="modal-backdrop"></div>
+    <div class="modal-backdrop" onclick="closeEditModal()"></div>
     <div class="modal-content form-modal-content">
       <div class="modal-header">
-        <h2>Chỉnh Sửa Kịch Bản Video</h2>
+        <h2 class="text-base font-bold">Chỉnh Sửa Kịch Bản Video</h2>
         <button class="btn-close" id="btn-close-edit">✕</button>
       </div>
       <div class="modal-body">
         <form id="edit-job-form">
-          <input type="hidden" id="edit-job-id">
-          <div class="form-group">
-            <label for="edit-title">Tiêu Đề Video</label>
-            <input type="text" id="edit-title" required>
+          <input type="hidden" id="edit-job-id"/>
+          <div class="form-group flex flex-col gap-1">
+            <label for="edit-title" class="text-xs font-mono text-on-surface-variant">Tiêu Đề Video</label>
+            <input type="text" id="edit-title" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface" required/>
           </div>
 
-          <div class="section-title" style="margin-top: 20px;">
-            <span>Chỉnh Sửa Từng Beat (Lời thoại, Giọng đọc & Hiệu ứng)</span>
+          <div class="section-title text-xs font-bold font-mono border-b border-outline-variant/30 pb-2 mt-4">
+            Chỉnh Sửa Chi Tiết Từng Beat
           </div>
 
-          <div class="edit-beats-container" id="edit-beats-container">
+          <div class="edit-beats-container flex flex-col gap-3 mt-3 max-h-[360px] overflow-y-auto custom-scrollbar pr-1" id="edit-beats-container">
             <!-- Rendered by app.js -->
           </div>
 
-          <div class="modal-footer" style="margin-top: 24px;">
-            <button type="button" class="btn btn-outline" id="btn-cancel-edit">Hủy</button>
-            <button type="button" class="btn btn-success" id="btn-save-and-render">⚡ Lưu & Re-render Ngay</button>
-            <button type="submit" class="btn btn-primary">Lưu Kịch Bản</button>
+          <div class="modal-footer flex items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/30">
+            <button type="button" class="btn btn-outline text-xs px-4 py-2" id="btn-cancel-edit">Hủy</button>
+            <button type="button" class="btn btn-success text-xs px-4 py-2 bg-secondary text-on-secondary font-semibold rounded" id="btn-save-and-render">⚡ Lưu & Render Ngay</button>
+            <button type="submit" class="btn btn-primary text-xs px-4 py-2 bg-primary text-on-primary font-semibold rounded">Lưu Kịch Bản</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Real-time Render Log / Console -->
+  <!-- ================= MODAL: RENDER SSE TERMINAL ================= -->
   <div class="modal" id="render-modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content console-modal-content">
       <div class="modal-header">
-        <div class="header-info">
-          <span class="badge badge-pulse">● ĐANG RENDER</span>
-          <h2 id="render-modal-title">Tiến trình Render Video</h2>
+        <div class="header-info flex items-center gap-2">
+          <span class="badge badge-pulse text-xs font-mono bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded">● ĐANG RENDER</span>
+          <h2 id="render-modal-title" class="text-sm font-bold font-mono">Tiến trình Render Video</h2>
         </div>
         <button class="btn-close" id="btn-close-render" disabled>✕</button>
       </div>
-      <div class="modal-body">
-        <div class="render-progress-bar-wrap">
-          <div class="render-progress-bar" id="render-progress-bar"></div>
+      <div class="modal-body flex flex-col gap-3">
+        <div class="w-full bg-surface-container-lowest h-3 rounded-full overflow-hidden p-0.5 border border-outline-variant/30">
+          <div class="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full relative overflow-hidden transition-all duration-300" id="render-progress-bar" style="width: 5%;">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-sweep"></div>
+          </div>
         </div>
-        <div class="render-terminal" id="render-terminal">
-          <div class="terminal-line">[SYSTEM] Ket noi Server-Sent Events de stream log truc tiep...</div>
+        <div class="render-terminal bg-surface-container-lowest border border-outline-variant/40 rounded-lg p-3 font-mono text-xs text-on-surface max-h-[320px] overflow-y-auto custom-scrollbar flex flex-col gap-1" id="render-terminal">
+          <div class="text-outline">[SYSTEM] Kết nối Server-Sent Events để theo dõi log render trực tiếp...</div>
         </div>
       </div>
-      <div class="modal-footer" id="render-modal-footer">
-        <span class="render-hint">Quá trình render chạy 100% cục bộ trên CPU/GPU của bạn...</span>
+      <div class="modal-footer flex items-center justify-between text-[11px] font-mono text-outline px-4 py-3 border-t border-outline-variant/30" id="render-modal-footer">
+        <span>Quá trình render chạy 100% cục bộ trên CPU/GPU của bạn...</span>
       </div>
     </div>
   </div>
 
+  <!-- Client JavaScript -->
   <script src="app.js"></script>
+  <script>
+    function filterByWorkshop(ws) {
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.workshop === ws);
+      });
+      currentFilter = ws;
+      renderGrid();
+    }
+    function closePlayerModal() { playerModal.classList.remove("active"); }
+    function closeCreateModal() { createModal.classList.remove("active"); }
+    function closeEditModal() { editModal.classList.remove("active"); }
+    function openCreateModal() {
+      document.getElementById("create-job-form").reset();
+      createModal.classList.add("active");
+    }
+  </script>
 </body>
 </html>

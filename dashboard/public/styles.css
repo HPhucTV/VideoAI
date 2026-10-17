@@ -1,23 +1,24 @@
 :root {
-  --bg-dark: #070a12;
-  --bg-card: #0f1523;
-  --bg-card-hover: #162035;
-  --border: #1e293b;
-  --border-focus: #3b82f6;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
+  --bg-dark: #0b1326;
+  --bg-card: #131b2e;
+  --bg-card-hover: #171f33;
+  --border: #222a3d;
+  --border-focus: #4edea3;
+  --text-main: #dae2fd;
+  --text-muted: #bbcabf;
+  --text-dim: #86948a;
+  --primary: #10b981;
+  --primary-hover: #4edea3;
   --success: #10b981;
-  --danger: #ef4444;
-  --explainer: #8b5cf6;
-  --whiteboard: #f59e0b;
-  --news: #06b6d4;
+  --danger: #ffb4ab;
+  --explainer: #4cd7f6;
+  --whiteboard: #d0bcff;
+  --news: #10b981;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-headline: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -236,8 +237,9 @@ body {
 }
 
 .tab-btn.active {
-  background-color: var(--primary);
-  color: white;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 /* VIDEO GRID */

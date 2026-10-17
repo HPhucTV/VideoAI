@@ -1,0 +1,690 @@
+{
+  "jobId": "job-phe-dan-nghich-thien",
+  "title": "Phế Đan Nghịch Thiên (Tro Tàn Địa Hỏa)",
+  "workshop": "whiteboard",
+  "archetype": "storytelling",
+  "targetPlatform": "youtube_long",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 0.85,
+    "rate": "-15%",
+    "pitch": "-2Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "genre": "Tu tiên, Huyền huyễn, Phản kích, Hắc ám (Dark Fantasy)",
+    "durationExpectedMinutes": 30,
+    "author": "Omni-Director",
+    "characters": [
+      "Lâm Mặc (20 tuổi, Tạp dịch cạo xỉ đan, Trúc Cơ Đỉnh Phong)",
+      "Triệu Vô Cực (hơn 200 tuổi, Chưởng tọa Địa Hỏa Đan Phòng, Kim Đan Sơ Kỳ)",
+      "Sở Thiên Kiêu (22 tuổi, Đệ tử chân truyền, Trúc Cơ Hậu Kỳ)",
+      "Tiểu Thạch Đầu (15 tuổi, Tạp dịch thiếu niên)",
+      "Người Kể Chuyện (Dẫn truyện điện ảnh)",
+      "Chưởng Giáo (Chưởng giáo Thanh Vân Tông)",
+      "Tạp Dịch (Đệ tử tạp dịch Lò Đan)"
+    ],
+    "characters_voice": {
+      "lâm mặc": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-12%",
+        "pitch": "-3Hz",
+        "volume": "+0%"
+      },
+      "mặc ca": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-12%",
+        "pitch": "-3Hz",
+        "volume": "+0%"
+      },
+      "triệu vô cực": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-16%",
+        "pitch": "-6Hz",
+        "volume": "+0%"
+      },
+      "trưởng lão": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-16%",
+        "pitch": "-6Hz",
+        "volume": "+0%"
+      },
+      "sở thiên kiêu": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-2%",
+        "pitch": "+2Hz",
+        "volume": "+0%"
+      },
+      "sở công tử": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-2%",
+        "pitch": "+2Hz",
+        "volume": "+0%"
+      },
+      "tiểu thạch đầu": {
+        "voice": "vi-VN-HoaiMyNeural",
+        "rate": "+0%",
+        "pitch": "+4Hz",
+        "volume": "+0%"
+      },
+      "chưởng giáo": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-18%",
+        "pitch": "-5Hz",
+        "volume": "+0%"
+      },
+      "chấp sự": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-8%",
+        "pitch": "-2Hz",
+        "volume": "+0%"
+      },
+      "tạp dịch": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "+0%",
+        "pitch": "+0Hz",
+        "volume": "+0%"
+      },
+      "người kể chuyện": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-15%",
+        "pitch": "-2Hz",
+        "volume": "+0%"
+      },
+      "dẫn truyện": {
+        "voice": "vi-VN-NamMinhNeural",
+        "rate": "-15%",
+        "pitch": "-2Hz",
+        "volume": "+0%"
+      }
+    },
+    "tags": [
+      "tutien",
+      "huyenhuyen",
+      "phedannghichthien",
+      "whiteboard",
+      "audiodrama",
+      "truyenaudio",
+      "trotandiahoa",
+      "omnivideo"
+    ]
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "scene_01_beat_1",
+      "rawText": "Người Kể Chuyện: Người đời ngước nhìn Thanh Vân Tông, chỉ thấy tiên sơn vạn trượng, ngút ngàn mây trắng lượn quanh những cung điện nguy nga tráng lệ. Từng đàn hạc trắng xòe cánh lướt qua rặng tùng ngàn năm, những đệ tử nội môn khoác trường bào trắng muốt phiêu dật, ngự kiếm phi hành rạch ngang bầu trời xanh thẳm như những vệt sao băng. Nơi đây là thánh địa tu tiên mà hàng ức phàm nhân trong thiên hạ quỳ lạy, khát khao được một lần chạm tay tới ngưỡng cửa trường sinh bất lão, vứt bỏ hồng trần ô trọc.",
+      "visual": {
+        "headline": "Đỉnh Thanh Vân Tráng Lệ",
+        "subhead": "Tiên giới rực rỡ và kiếm quang vạn trượng",
+        "badge": "HỒI I - CẢNH 1: ĐẠI CẢNH THANH VÂN TÔNG & ĐỊA HỎA PHONG",
+        "label": "Thanh Vân Tông ngút ngàn mây phủ và hạc trắng bay lượn",
+        "sceneId": "scene-01",
+        "type": "scene",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_02",
+      "role": "scene_01_beat_2",
+      "rawText": "Người Kể Chuyện: Nhưng không ai biết rằng, ngay dưới chân ngọn tiên sơn vạn kiếp thanh tịnh ấy, máy quay đâm chúc thẳng xuống lòng đất, xuyên qua hàng ngàn trượng đá đen đặc quánh. Nơi đây là Địa Hỏa Đan Phòng, nơi tăm tối và ngột ngạt nhất của Thanh Vân Tông. Không có ánh mặt trời, chỉ có những dòng sông dung nham đỏ rực sùng sục chảy qua các khe nứt, khói độc màu lục bốc lên nghi ngút làm mù mắt người, cùng mùi lưu huỳnh nồng nặc và những tiếng ho sù sụ của những kẻ đang hấp hối.",
+      "visual": {
+        "headline": "Vực Thẳm Địa Hỏa Ngàn Trượng",
+        "subhead": "Máy quay xuyên qua ngàn trượng đá đen đặc",
+        "badge": "HỒI I - CẢNH 1: ĐẠI CẢNH THANH VÂN TÔNG & ĐỊA HỎA PHONG",
+        "label": "Vực sâu Địa Hỏa Đan Phòng rực dung nham và khói độc",
+        "sceneId": "scene-01",
+        "type": "scene",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_03",
+      "role": "scene_01_beat_3",
+      "rawText": "Người Kể Chuyện: Để nâng đỡ đám tiên nhân áo trắng không vướng bụi trần trên chín tầng mây kia, dưới đáy Địa Hỏa Phong sâu ngàn trượng, có hàng trăm kẻ phế vật ngoại môn đang phải dùng chính máu thịt và sinh mệnh của mình để ngày đêm đốt lò, cạo xỉ, chịu đựng đan độc gặm nhấm từng tấc kinh mạch. Giới tu tiên tàn khốc lấy sức mạnh làm tôn chỉ. Kẻ không có linh căn thượng phẩm, ở nơi này mạng sống còn rẻ rúng hơn cỏ rác ven đường.",
+      "visual": {
+        "headline": "Mồ Chôn Những Kẻ Phế Vật",
+        "subhead": "Máu thịt đốt lò nuôi dưỡng tiên môn",
+        "badge": "HỒI I - CẢNH 1: ĐẠI CẢNH THANH VÂN TÔNG & ĐỊA HỎA PHONG",
+        "label": "Hàng trăm tạp dịch cùm xích gầy trơ xương bên lò đan",
+        "sceneId": "scene-01",
+        "type": "character",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_04",
+      "role": "scene_02_beat_1",
+      "rawText": "Người Kể Chuyện: Bên trong Lò Đan Số Chín, cái nóng như thiêu như đốt bốc lên từ thành đỉnh đồng khổng lồ nặng cả vạn cân. Lâm Mặc, thiếu niên hai mươi tuổi, khoác trên mình manh áo vải thô rách bươm lem luốc muội than đen kịt. Cậu chui hẳn người vào bụng lò còn hầm hập lửa đỏ, bàn tay gầy gò cầm một thanh đoản đao cùn gỉ sét, cặm cụi cạo từng mảng xỉ đan đen sì bám chặt vào kim loại. Dưới làn da tái nhợt của cậu, những đường gân màu tím đen chằng chịt nổi lên như rễ cây cổ thụ, dấu hiệu của mười năm đan độc tích tụ đã ngấm sâu vào tủy sống.\nNgười Kể Chuyện: Từng mảng xỉ đen rơi xuống sàn đá nóng bỏng, phát ra những tiếng xèo xèo ghê rợn. Hơi nóng và độc khí bốc lên nghi ngút như muốn thiêu rụi lông mi của cậu. Nhưng đôi mắt Lâm Mặc vẫn mở trừng trừng trong làn khói đen kịt, cẩn thận quan sát từng đường rãnh kim loại bên trong lòng lò.",
+      "visual": {
+        "headline": "Cạo Xỉ Đan Trong Lò Nóng",
+        "subhead": "Lâm Mặc và đôi tay nổi gân độc tím đen",
+        "badge": "HỒI I - CẢNH 2: BÊN TRONG LÒ ĐAN SỐ 9",
+        "label": "Lâm Mặc mặc áo thô rách cạo xỉ đan trong lòng đỉnh đồng",
+        "sceneId": "scene-02",
+        "type": "character",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_05",
+      "role": "scene_02_beat_2",
+      "rawText": "Người Kể Chuyện: Phía ngoài cửa lò, hai tên giám sự vừa lạnh lùng lôi đi một cái xác khô quắt của một đệ tử tạp dịch lò số bốn, quẳng lên xe kéo như vứt bỏ một bao tải rác mục. Tiểu Thạch Đầu, cậu bé mười lăm tuổi mới vào đan phòng, hai chân run lẩy bẩy, hai tay bưng bát nước đục ngầu hớt hải chạy tới trước cửa Lò Số Chín.\nTiểu Thạch Đầu: \"Mặc ca... Lò số bốn lại có người chết rồi! Huynh mau ra ngoài nghỉ một lát đi! Thành lò còn nóng rực thế kia, đan độc bốc lên sẽ ngấm thẳng vào tim mất!\"\nLâm Mặc: \"Xỉ đan không cạo sạch lúc lò còn nóng đỏ, đợi nguội đi sẽ cứng như huyền thiết ngàn năm. Đến lúc đó không hoàn thành chỉ tiêu, roi da của giám sự quất xuống lưng... còn đau buốt hơn đan độc gấp mười lần.\"\nTiểu Thạch Đầu: 'Nhà đệ nghèo lắm, cha mẹ mất sớm trong đợt yêu thú tràn qua làng. Đệ cứ nghĩ vào được Thanh Vân Tông làm tạp dịch là có ngày đổi đời, gửi được bạc về nuôi em gái nhỏ... Nào ngờ ở đây mạng người còn rẻ hơn củi đốt lò. Mặc ca, huynh là người duy nhất coi đệ là con người...'\nNgười Kể Chuyện: Lâm Mặc nhìn khuôn mặt non nớt lấm lem muội than của cậu bé, khẽ thở dài một tiếng, ánh mắt thoáng hiện một tia ấm áp hiếm hoi giữa chốn địa ngục tàn khốc.",
+      "visual": {
+        "headline": "Bát Nước Đục Của Tiểu Thạch Đầu",
+        "subhead": "Mạng người tạp dịch như bao tải rách",
+        "badge": "HỒI I - CẢNH 2: BÊN TRONG LÒ ĐAN SỐ 9",
+        "label": "Tiểu Thạch Đầu bưng bát nước run rẩy trước cửa lò",
+        "sceneId": "scene-02",
+        "type": "scene",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_06",
+      "role": "scene_02_beat_3",
+      "rawText": "Người Kể Chuyện: Đợi Tiểu Thạch Đầu quay lưng đi, Lâm Mặc lặng lẽ khép hờ cửa lò. Trong bóng tối đặc quánh, khóe môi cậu rỉ ra một vệt máu đen sẫm, nhưng ánh mắt cậu lại tĩnh lặng sâu thẳm như mặt hồ đóng băng ngàn năm. Cậu siết chặt viên xỉ đan độc đặc quánh trong lòng bàn tay. Một luồng hắc khí tử độc cuồn cuộn bị vết sẹo giữa lòng bàn tay cậu hút cạn vào trong da thịt. Những đường gân tím trên cánh tay bỗng lóe lên ánh vàng kim rực rỡ rồi nhanh chóng thu liễm lại.\nLâm Mặc: \"Mười năm ròng rã. Ba ngàn sáu trăm năm mươi ngày nuốt phế đan, uống độc hỏa vào người. Người đời luyện đan cầu trường sinh phi thăng... Còn Lâm Mặc ta luyện độc, chỉ cầu gom đủ sức mạnh để có một ngày toàn mạng bước ra khỏi cái địa ngục này!\"\nNgười Kể Chuyện: Độc tố của vạn viên phế đan cổ xưa tích tụ mười năm, kẻ khác chạm vào ắt nát da rữa thịt. Nhưng dưới sự vận chuyển kỳ diệu của Phệ Độc Chuyển Nguyên Quyết, kịch độc chuyển hóa thành một dòng nhiệt lưu ấm áp rót thẳng vào đan điền, tôi luyện xương tủy cậu cứng cáp như huyền thiết.",
+      "visual": {
+        "headline": "Bí Mật Phệ Độc Chuyển Nguyên Quyết",
+        "subhead": "Mười năm nuốt độc cầu một con đường sống",
+        "badge": "HỒI I - CẢNH 2: BÊN TRONG LÒ ĐAN SỐ 9",
+        "label": "Viên phế đan tan biến vào lòng bàn tay Lâm Mặc",
+        "sceneId": "scene-02",
+        "type": "concept",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_07",
+      "role": "scene_03_beat_1",
+      "rawText": "Người Kể Chuyện: RẦM! Cánh cửa đá nặng vạn cân ngăn cách Địa Hỏa Đan Phòng với thế giới bên ngoài đột ngột mở toang. Một luồng kiếm khí buốt giá thấu xương tràn vào như thác lũ, quét sạch toàn bộ khói độc màu lục dạt sang hai bên vách đá. Giữa làn kiếm quang rực rỡ, Sở Thiên Kiêu ung dung bước vào. Hắn mặc trường bào gấm trắng thêu chỉ vàng lộng lẫy, chân không hề chạm đất nửa tấc, xung quanh toàn thân bao bọc một màn linh quang hộ thể màu xanh ngọc bích trong vắt, ngăn cách hoàn toàn với bụi than nhơ bẩn của đan phòng.\nTiếng chuông đồng ngân vang từng hồi dồn dập, hàng trăm tạp dịch đệ tử run rẩy quỳ rạp rạp xuống nền đá nóng rực, không một ai dám ngẩng đầu nhìn thẳng.\nNgười Kể Chuyện: Khí thế của thiên tài Trúc Cơ Hậu Kỳ tỏa ra ngùn ngụt như núi cao sừng sững, đè ép không gian xung quanh vặn vẹo. Đám tạp dịch khốn khổ nằm bẹp dưới đất, lồng ngực bị ép nghẹt đến mức không thở nổi, có kẻ yếu ớt đã bắt đầu nôn ra từng ngụm máu bầm.",
+      "visual": {
+        "headline": "Kiếm Khí Giáng Lâm",
+        "subhead": "Cửa đá mở toang và sự kiêu ngạo của chân truyền",
+        "badge": "HỒI II - CẢNH 3: THIÊN TÀI GIÁNG LÂM",
+        "label": "Sở Thiên Kiêu chân không chạm đất bước vào đại điện",
+        "sceneId": "scene-03",
+        "type": "character",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_08",
+      "role": "scene_03_beat_2",
+      "rawText": "Người Kể Chuyện: Đi cạnh vị thiên tài hai mươi hai tuổi đạt cảnh giới Trúc Cơ Hậu Kỳ là Triệu Vô Cực, Chưởng tọa Địa Hỏa Đan Phòng với nụ cười nịnh nọt lấy lòng. Nhìn thấy Tiểu Thạch Đầu đang ngơ ngác đứng bên lối đi, Sở Thiên Kiêu cau mày ghê tởm, vung nhẹ ống tay áo tạo nên một trận cuồng phong linh lực sắc lẹm, hất văng cậu bé mười lăm tuổi bay thẳng vào vách đá sắc nhọn.\nSở Thiên Kiêu: \"Đám kiến hôi Luyện Khí kỳ bẩn thỉu này thở ra toàn mùi hôi thối của phế đan, làm bẩn cả linh y của ta! Triệu trưởng lão, ông có chắc chắn Cửu Long Huyết Lô ở đây gom đủ hỏa hầu để luyện viên Cửu Chuyển Phá Cảnh Đan cho bản công tử đột phá Kim Đan chứ?\"\nNgười Kể Chuyện: Cú va đập mạnh khiến Tiểu Thạch Đầu hoa mắt chóng mặt, khóe miệng rỉ máu tươi. Nhưng cậu bé không dám kêu một tiếng, chỉ biết ôm đầu run rẩy nép sát vào gờ đá lạnh, sợ hãi trước ánh mắt khinh miệt lạnh lùng như băng của vị thiên tài kiêu ngạo.",
+      "visual": {
+        "headline": "Sự Tàn Bạo Của Kẻ Bề Trên",
+        "subhead": "Tiểu Thạch Đầu bị hất văng vào vách đá",
+        "badge": "HỒI II - CẢNH 3: THIÊN TÀI GIÁNG LÂM",
+        "label": "Sở Thiên Kiêu phất tay áo tạo cuồng phong băng giá",
+        "sceneId": "scene-03",
+        "type": "action",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_09",
+      "role": "scene_03_beat_3",
+      "rawText": "Người Kể Chuyện: Triệu Vô Cực khẽ khom lưng, nụ cười giả tạo trên khuôn mặt già nua nhăn nheo càng thêm phần quỷ quyệt, độc địa. Lão đưa bàn tay gầy guộc vuốt chòm râu dê, ánh mắt đảo qua hàng trăm thân ảnh tạp dịch đang run rẩy quỳ dưới sàn đất.\nTriệu Vô Cực: \"Sở sư điệt cứ việc yên tâm! Lò Cửu Long này thông thẳng với mạch Địa Tâm Hỏa sâu nhất. Hơn nữa... toàn bộ dược liệu quý hiếm và nguồn nguyên liệu phụ trợ đặc biệt mà lão phu dày công chuẩn bị suốt ba năm qua, đêm nay đã hoàn toàn chín muồi. Chỉ cần ngọn lửa bùng lên, Kim Đan của công tử chắc chắn sẽ viên mãn thành hình!\"\nNgười Kể Chuyện: Ánh mắt của Triệu Vô Cực lúc này không phải nhìn những con người bằng xương bằng thịt, mà như một gã đồ tể đang thèm thuồng nhìn bầy gia súc béo tốt chờ ngày đưa lên bàn mổ.\nTriệu Vô Cực: 'Chỉ cần viên đan dược thượng phẩm này xuất thế, không những Sở sư điệt có thể thuận lợi ngưng kết Kim Đan cửu phẩm vô hà, mà lão phu cũng có thể mượn dược lực dư thừa để đột phá bình cảnh trăm năm! Cả ngọn Địa Hỏa Phong này, tất cả đều được vận hành để phục vụ cho sự nghiệp huy hoàng của chúng ta!'",
+      "visual": {
+        "headline": "Ánh Mắt Đồ Tể Của Triệu Vô Cực",
+        "subhead": "Nguyên liệu phụ trợ nuôi dưỡng suốt ba năm",
+        "badge": "HỒI II - CẢNH 3: THIÊN TÀI GIÁNG LÂM",
+        "label": "Triệu Vô Cực nhìn đám tạp dịch như bầy gia súc chờ mổ thịt",
+        "sceneId": "scene-03",
+        "type": "character",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_10",
+      "role": "scene_04_beat_1",
+      "rawText": "Người Kể Chuyện: Khi đám người quyền quý vừa bước lên đài cao, Lâm Mặc nhanh chóng bò tới góc vách đá, đỡ Tiểu Thạch Đầu đang rên rỉ đứng dậy. Khóe trán cậu bé bị rách một mảng lớn, máu tươi nhỏ từng giọt xuống khe nứt của sàn đá. Bất chợt, đồng tử Lâm Mặc co rút kịch liệt. Giọt máu tươi rơi xuống khe đá khắc hoa văn cổ xưa, thay vì bị sức nóng ngàn độ của địa hỏa bốc hơi, lại bị những rãnh trận pháp hút cạn sạch trong chớp mắt! Ngay sau đó, một tia sáng màu đỏ thẫm quái dị như mạch máu người khẽ chớp lên rồi lặn sâu vào lòng đất.\nNgười Kể Chuyện: Lâm Mặc lén nhìn theo những rãnh hoa văn uốn lượn chạy khắp mặt sàn, trong lòng dâng lên một luồng ớn lạnh thấu xương. Đây tuyệt đối không phải trận pháp tụ hỏa luyện đan thông thường của chính đạo danh môn, mà là một nhánh tà trận cổ xưa chuyên dùng để rút cạn nguyên thần và khí huyết của sinh linh làm chất xúc tác.",
+      "visual": {
+        "headline": "Rãnh Đá Hút Cạn Giọt Máu",
+        "subhead": "Lâm Mặc phát hiện trận văn quái dị dưới sàn",
+        "badge": "HỒI II - CẢNH 4: PHÁT HIỆN BẤT THƯỜNG",
+        "label": "Vết máu trên rãnh đá phát ra tia sáng đỏ như máu",
+        "sceneId": "scene-04",
+        "type": "concept",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_11",
+      "role": "scene_04_beat_2",
+      "rawText": "Người Kể Chuyện: Ngay lúc đó, tiếng Triệu Vô Cực từ trên đài cao vang vọng xuống, kèm theo lệnh phong tỏa toàn bộ các cửa thông gió của đan phòng. Các giám sự cầm những khay đồng chứa đầy những viên đan dược màu đỏ sẫm tỏa ra mùi thơm ngào ngạt khác thường, phân phát cho từng đệ tử tạp dịch, tuyên bố đây là linh đan bồi dưỡng đặc biệt do Sở công tử hào phóng ban phát trước đêm đại luyện đan. Đám tạp dịch khốn khổ vì đói khát và kiệt sức mừng rỡ như bắt được vàng, thi nhau nuốt ực vào bụng mà không chút mảy may nghi ngờ.\nNgười Kể Chuyện: 'Uống đi! Uống hết vào! Đây là ân huệ ngập tràn của thiên tài tông môn ban tặng, kẻ nào không uống chính là bất kính với bề trên!' Tiếng quát tháo của đám giám sự tay cầm roi da vang dội khắp bốn phía, ép buộc những bàn tay run rẩy phải vội vã đưa viên đan độc màu đỏ máu vào miệng nuốt chửng.",
+      "visual": {
+        "headline": "Bẫy Linh Đan Màu Đỏ Thẫm",
+        "subhead": "Viên Tịch Cốc Đan ban thưởng của Sở công tử",
+        "badge": "HỒI II - CẢNH 4: PHÁT HIỆN BẤT THƯỜNG",
+        "label": "Triệu Vô Cực ra lệnh phát đan dược cho toàn bộ tạp dịch",
+        "sceneId": "scene-04",
+        "type": "scene",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_12",
+      "role": "scene_04_beat_3",
+      "rawText": "Người Kể Chuyện: Tiểu Thạch Đầu vừa run rẩy cầm viên đan định bỏ vào miệng thì một bàn tay thô ráp như kìm sắt bất ngờ bóp chặt cổ tay cậu bé, hất văng viên linh đan vào góc tối lò đan.\nTiểu Thạch Đầu: \"Mặc ca... đó là linh đan ban thưởng của chân truyền sư huynh mà...\"\nLâm Mặc: \"Đó không phải Tịch Cốc Đan! Trong viên đan đó chứa Huyết Dẫn Thảo ngàn năm và Tỏa Linh Tán cực độc! Uống vào, toàn bộ kinh mạch và đan điền sẽ bị khóa chặt, còn khí huyết toàn thân sẽ sôi trào hóa thành linh dịch tinh khiết nhất. Đêm nay là đêm Huyết Nguyệt trăm năm xuất hiện một lần... Lão già độc ác đó không hề dùng thảo dược để luyện đan. Lão muốn dùng sinh mạng của chín mươi chín con người trong căn phòng này làm thuốc dẫn tế lò!\"\nLâm Mặc: 'Ba năm qua, ta đã âm thầm dùng thanh đoản đao cùn này đào thủng một đường hầm nhỏ thông xuống mạch dung nham ngầm bên dưới Lò Số Chín. Chỉ cần đến giờ Tý khi trận pháp chưa kịp hoàn toàn khép kín, ta sẽ đưa đệ thoát khỏi nơi này, rời xa Thanh Vân Tông vĩnh viễn.'\nTiểu Thạch Đầu gật đầu lia lịa, hai mắt ngấn lệ nhìn người huynh trưởng đáng tin cậy duy nhất của mình.",
+      "visual": {
+        "headline": "Âm Mưu Huyết Dẫn Đêm Huyết Nguyệt",
+        "subhead": "Chín mươi chín sinh mạng làm thuốc dẫn tế lô",
+        "badge": "HỒI II - CẢNH 4: PHÁT HIỆN BẤT THƯỜNG",
+        "label": "Lâm Mặc bóp chặt cổ tay hất văng viên đan độc",
+        "sceneId": "scene-04",
+        "type": "character",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_13",
+      "role": "scene_05_beat_1",
+      "rawText": "Người Kể Chuyện: Đúng giờ Tý, bóng đêm ngoài kia chuyển sang một màu đỏ rực ma quái. Từ giếng trời khổng lồ thông thẳng lên đỉnh núi lửa, một luồng ánh sáng huyết nguyệt đỏ như máu tươi chiếu thẳng xuống đỉnh Cửu Long Lô đặt sừng sững giữa trung tâm đại điện. Trên đài cao, Triệu Vô Cực nở nụ cười dữ tợn, hai tay bắt pháp quyết phức tạp. ẦM ẦM! Tám lá phù lục Kim Đan bay vút ra, dán chặt lên cánh cửa đá duy nhất của Địa Hỏa Phòng, hoàn toàn phong tỏa mọi đường sống. Toàn bộ sàn đá dưới chân bừng sáng rực rỡ những đường vân trận pháp đỏ ngầu như một biển máu cuộn trào.\nNgười Kể Chuyện: Ánh trăng Huyết Nguyệt chiếu rọi qua giếng trời tròn xoe, tựa như một con mắt đỏ ngầu khổng lồ của hung thần thượng cổ đang mở to nhìn trừng trừng xuống đáy vực thẳm. Sức ép từ trận pháp Kim Đan khiến không khí trở nên đặc quánh như vũng bùn lầy, mỗi một hơi thở đều nặng nhọc và buốt rát như nuốt phải mảnh thủy tinh vụn.",
+      "visual": {
+        "headline": "Huyết Nguyệt Giờ Tý",
+        "subhead": "Tám tầng phù lục phong ấn lối thoát duy nhất",
+        "badge": "HỒI III - CẢNH 5: ĐẠI TRẬN KHỞI ĐỘNG",
+        "label": "Ánh trăng máu chiếu thẳng xuống đỉnh Cửu Long Huyết Lô",
+        "sceneId": "scene-05",
+        "type": "scene",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_14",
+      "role": "scene_05_beat_2",
+      "rawText": "Người Kể Chuyện: Chín đầu rồng bằng đồng cổ xưa trên thân lò đan bất chợt phát ra những tiếng gầm rú xé rách màng nhĩ. Đan độc bên trong cơ thể những tạp dịch đã nuốt viên đan lúc chiều phát tác dữ dội. Họ ngã lăn ra đất, ôm ngực quằn quại gào thét trong đau đớn cùng cực. Da thịt họ khô quắt lại với tốc độ mắt thường cũng có thể nhìn thấy, từng dòng tinh huyết đỏ thắm bốc hơi thành những dải sương máu cuồn cuộn bay thẳng lên không trung, bị chín miệng rồng hút trọn vào bụng lò.\nTạp Dịch: \"Trưởng lão! Ngài đã hứa chỉ cần chúng con canh lửa hết năm nay sẽ cho vào ngoại môn mà! Tại sao... tại sao lại giết chúng con tàn nhẫn như vậy?!\"\nNgười Kể Chuyện: 'Cứu con với! Mẹ ơi... cứu con!' Tiếng gào khóc ai oán vang vọng khắp đại điện tối tăm. Những cơ thể từng là thanh niên trai tráng giờ đây co rúm lại như những cành củi khô mục nát dưới nắng hè gay gắt. Từng sợi tơ máu li ti đỏ rực bị hút ra từ lỗ chân lông, xoáy tròn thành những dải lụa huyết sắc bay lượn trên không trung rồi bị nuốt chửng vào chín miệng rồng thao thiết bằng đồng.",
+      "visual": {
+        "headline": "Bi Kịch Khô Quắt Thành Huyết Vụ",
+        "subhead": "Chín đầu rồng gầm rú nuốt trọn tinh huyết tạp dịch",
+        "badge": "HỒI III - CẢNH 5: ĐẠI TRẬN KHỞI ĐỘNG",
+        "label": "Các tạp dịch gào thét quằn quại cơ thể teo tóp lại",
+        "sceneId": "scene-05",
+        "type": "action",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_15",
+      "role": "scene_05_beat_3",
+      "rawText": "Người Kể Chuyện: Trước cảnh tượng địa ngục trần gian đầy máu và tiếng la khóc xé lòng, Sở Thiên Kiêu ngồi xếp bằng trên đài cao vẫn bình thản nâng chén trà linh dược lên nhấp từng ngụm nhỏ, phong thái thanh tao thoát tục nhưng lời thốt ra lại lạnh lùng tàn nhẫn đến thấu xương.\nSở Thiên Kiêu: \"Thiên tư hạ đẳng ngu dốt, cả đời các ngươi cũng không thể vượt qua nổi Luyện Khí tầng bốn. Dù có sống thêm vài chục năm nữa thì cũng chỉ làm lãng phí linh khí của trời đất Thanh Vân. Hôm nay được hóa thành một phần tinh huyết trong viên Kim Đan của bản công tử, đó chính là phúc phận tu hành tám kiếp của đám kiến hôi các ngươi!\"\nNgười Kể Chuyện: Sở Thiên Kiêu khẽ lắc nhẹ chén trà ngọc bích, nhìn ngắm những dải sương máu cuồn cuộn bay vào lò đan với vẻ mặt thưởng thức như đang chiêm ngưỡng một bức tranh thủy mặc tuyệt tác. Đối với một thiên tài đỉnh phong đứng trên đỉnh cao quyền lực, mạng sống của hàng trăm tạp dịch chỉ là những viên sỏi lót đường cho con đường trường sinh bất tử của hắn mà thôi.",
+      "visual": {
+        "headline": "Sự Tàn Nhẫn Của Chính Đạo",
+        "subhead": "Sở Thiên Kiêu ung dung nhấp chén trà ngon",
+        "badge": "HỒI III - CẢNH 5: ĐẠI TRẬN KHỞI ĐỘNG",
+        "label": "Sở Thiên Kiêu ngồi xếp bằng coi mạng người như cỏ rác",
+        "sceneId": "scene-05",
+        "type": "character",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_16",
+      "role": "scene_06_beat_1",
+      "rawText": "Người Kể Chuyện: Giữa lúc đại điện hỗn loạn tiếng gào khóc, Lâm Mặc nắm chặt tay Tiểu Thạch Đầu, kéo cậu bé lùi dần về phía góc khuất của Lò Số Chín. Ở đó có một lối thoát hiểm ngầm dẫn thẳng xuống mạch dung nham sâu dưới lòng đất mà Lâm Mặc đã âm thầm dùng đao cùn đào bới suốt ba năm qua. Thế nhưng, giữa một biển người đang bốc lên huyết vụ đỏ rực, việc hai người Lâm Mặc không hề phát ra sương máu đã lập tức lọt vào mắt của hai tên chấp sự Trúc Cơ Sơ Kỳ đang đứng canh gác trận pháp.\nNgười Kể Chuyện: 'Đứng lại! Đám sâu bọ kia, đại trận huyết tế đang vận hành, ai cho phép các ngươi lén lút trốn chạy?!' Hai tên chấp sự gầm lên dữ tợn, linh lực Trúc Cơ Sơ Kỳ bùng phát cuốn theo gió lốc bụi than mù mịt, phong tỏa hoàn toàn lối đi hẹp dẫn về phía sau Lò Số Chín.",
+      "visual": {
+        "headline": "Lối Thoát Bị Phát Hiện",
+        "subhead": "Lâm Mặc kéo Tiểu Thạch Đầu chạy về Lò Số Chín",
+        "badge": "HỒI III - CẢNH 6: SỰ HY SINH VÀ THỨC TỈNH",
+        "label": "Hai tên chấp sự Trúc Cơ chặn đường tẩu thoát",
+        "sceneId": "scene-06",
+        "type": "action",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_17",
+      "role": "scene_06_beat_2",
+      "rawText": "Người Kể Chuyện: \"Hai tên phế vật kia, muốn chạy trốn sao?\" Tên chấp sự gầm lên, vung tay phóng xuất thanh phi kiếm sắc bén rít gió xé không khí lao thẳng tới gáy Lâm Mặc. Trong tích tắc ngàn cân treo sợi tóc, để không bại lộ tu vi thật trước mắt Triệu Vô Cực, Lâm Mặc nghiêng người né tránh. Nhưng cậu không ngờ rằng, Tiểu Thạch Đầu đã bất thần lao cả thân hình nhỏ bé ra phía sau lưng cậu. PHẬP! Mũi phi kiếm lạnh buốt đâm xuyên qua lồng ngực gầy guộc của cậu bé. Máu tươi trào ra ướt đẫm vạt áo rách của Lâm Mặc.\nTiểu Thạch Đầu: \"Mặc ca... đệ không có linh căn tốt... đệ không thể bước ra ngoài ngắm thế giới được rồi... Huynh... huynh phải sống... phải lên đỉnh Thanh Vân ngắm mặt trời rực rỡ thay phần đệ...\"\nNgười Kể Chuyện: Bàn tay nhỏ bé của cậu bé buông thõng xuống nền đá lạnh. Đôi mắt trong veo từ từ khép lại.\nNgười Kể Chuyện: Thanh phi kiếm lạnh buốt găm sâu vào da thịt non nớt. Thân hình nhỏ nhắn của Tiểu Thạch Đầu mềm nhũn ra, gục đầu vào vai Lâm Mặc. Máu từ miệng cậu bé trào ra ướt đẫm cả lồng ngực gầy guộc. Cậu dùng chút tàn lực cuối cùng siết chặt lấy bàn tay Lâm Mặc, khóe môi khẽ mỉm cười thanh thản vì đã cứu được người huynh trưởng thân yêu nhất trần đời.",
+      "visual": {
+        "headline": "Tiểu Thạch Đầu Ngã Xuống",
+        "subhead": "Tấm lưng nhỏ bé chắn phi kiếm cho huynh trưởng",
+        "badge": "HỒI III - CẢNH 6: SỰ HY SINH VÀ THỨC TỈNH",
+        "label": "Tiểu Thạch Đầu gục ngã trong vòng tay Lâm Mặc",
+        "sceneId": "scene-06",
+        "type": "character",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_18",
+      "role": "scene_06_beat_3",
+      "rawText": "Người Kể Chuyện: Toàn bộ không gian như ngưng đọng lại trong ba giây tĩnh lặng đến rợn người. Lâm Mặc từ từ đặt thi thể Tiểu Thạch Đầu xuống một góc lò sạch sẽ. Cậu đứng dậy, tiếng xương khớp toàn thân kêu răng rắc ròn rã như sấm rền giữa trời quang. Tên chấp sự cười gằn, phóng tiếp một thanh phi kiếm thượng phẩm nhắm thẳng vào mi tâm cậu. Nhưng khi mũi kiếm chỉ còn cách trán Lâm Mặc đúng một tấc, nó đột ngột khựng lại giữa hư không! Lâm Mặc chỉ đưa hai ngón tay đen sạm vì muội than lên, kẹp chặt lấy lưỡi kiếm. RẮC! Thanh phi kiếm thượng phẩm vỡ đôi như một cành củi khô mục nát!\nLâm Mặc: \"Chính đạo các ngươi... luyện đan bằng máu thịt của đồng môn. Vậy thì đêm nay, Lâm Mặc ta lấy mạng của toàn bộ lũ súc sinh các ngươi... để tế lò!\"\nNgười Kể Chuyện: Nhìn đứa em nhỏ trút hơi thở cuối cùng trong lòng mình, một sợi dây xích vô hình trói buộc tâm cảnh của Lâm Mặc suốt mười năm qua bỗng chốc đứt phăng! Đôi mắt cậu đỏ ngầu rực lửa hận thù, sát khí đậm đặc ngưng tụ thành thực chất khiến nhiệt độ xung quanh lò đan hạ xuống điểm đóng băng. Cậu bóp nát thanh phi kiếm thép trong sự ngỡ ngàng tột độ của kẻ địch.",
+      "visual": {
+        "headline": "Hai Ngón Tay Bẻ Gãy Phi Kiếm",
+        "subhead": "Cơn thịnh nộ bùng phát sau mười năm ẩn nhẫn",
+        "badge": "HỒI III - CẢNH 6: SỰ HY SINH VÀ THỨC TỈNH",
+        "label": "Lâm Mặc bẻ đôi phi kiếm thượng phẩm như cành củi khô",
+        "sceneId": "scene-06",
+        "type": "action",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_19",
+      "role": "scene_07_beat_1",
+      "rawText": "Người Kể Chuyện: XOẸT! Lâm Mặc vung tay xé toạc tấm áo tạp dịch rách nát. Trên lồng ngực và cánh tay rắn rỏi của cậu, hàng vạn đường kinh mạch màu đen tím bỗng bừng sáng rực rỡ, chuyển hóa thành màu tử kim chói lòa như thần giáp! Khí tức Luyện Khí tầng ba của kẻ phế vật bỗng chốc bùng nổ như đê vỡ ngàn năm: Luyện Khí tầng chín... Trúc Cơ Sơ Kỳ... Trúc Cơ Trung Kỳ... Trúc Cơ Đại Viên Mãn đỉnh phong! Hai tên chấp sự chưa kịp thốt lên một tiếng kêu cứu thì một luồng hắc hỏa tử độc từ lòng bàn tay Lâm Mặc đã quét qua, thiêu rụi cả xác lẫn hồn phách của chúng thành tro bụi trong chớp mắt!\nNgười Kể Chuyện: Vạn đạo vân độc tử kim trên cơ thể Lâm Mặc bừng sáng chói lọi, chiếu rọi cả góc tối đại điện. Khí tức Trúc Cơ Đại Viên Mãn bộc phát làm cuốn tung toàn bộ muội than và xỉ đan dưới đất bay lên trời như một trận bão đen. Hai tên chấp sự đứng đối diện bị áp lực linh hồn nghiền nát, cả người run rẩy không sao nhấc nổi một ngón tay trước khi bị ngọn lửa đen nuốt chửng hoàn toàn.",
+      "visual": {
+        "headline": "Khí Tức Bùng Nổ Vỡ Đê",
+        "subhead": "Trúc Cơ Đại Viên Mãn và vạn đường vân tử kim",
+        "badge": "HỒI IV - CẢNH 7: TRẢM SÁT THIÊN TÀI",
+        "label": "Lâm Mặc xé toạc áo rách giải phóng toàn bộ khí tức",
+        "sceneId": "scene-07",
+        "type": "character",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_20",
+      "role": "scene_07_beat_2",
+      "rawText": "Người Kể Chuyện: Sở Thiên Kiêu trên đài cao kinh hãi bật dậy, khuôn mặt tuấn tú vặn vẹo vì sững sờ và nhục nhã.\nSở Thiên Kiêu: \"Ngươi dám che giấu tu vi trong cấm địa?! Nhưng dù là Trúc Cơ Viên Mãn thì một tên tạp dịch hèn mọn làm sao chống lại được Thanh Vân Kiếm Quyết của bản công tử! Chết đi!\"\nNgười Kể Chuyện: Sở Thiên Kiêu rút bảo kiếm gia truyền, chém ra chín đạo kiếm ảnh xanh biếc như chín con thanh long xé toạc hư không giáng xuống. Đối mặt với kiếm chiêu tuyệt đỉnh, Lâm Mặc không hề lùi bước. Cậu dậm chân nứt toác mặt đất, tung một quyền hủy thiên diệt địa: Phệ Độc Chưởng - Vạn Đan Phần Thiên! Mười năm độc tố của hàng vạn viên phế đan cô đọng lại nổ tung, biến thành biển lửa đen ngòm ăn mòn toàn bộ kiếm khí, khiến thanh bảo kiếm thượng phẩm của Sở Thiên Kiêu mục nát gãy vụn ngay giữa không trung!\nNgười Kể Chuyện: 'ẦM ẦM ẦM!' Tiếng va chạm giữa Phệ Độc Chưởng và chín đạo kiếm ảnh vang lên như tiếng sét đánh ngang tai. Ngọn lửa độc đen tuyền bùng lên ngùn ngụt, nuốt chửng toàn bộ kiếm khí sắc bén của môn phái chính đạo. Linh bảo thượng phẩm mà phụ thân Sở Thiên Kiêu ban tặng bắt đầu nứt toác từng vết rạn, linh quang hộ thể bị ăn mòn rỉ sét trong chớp mắt, biến thành những mảnh sắt vụn rơi rụng lả tả.",
+      "visual": {
+        "headline": "Phệ Độc Chưởng - Vạn Đan Phần Thiên",
+        "subhead": "Mười năm độc tố ăn mòn Thanh Vân Kiếm Quyết",
+        "badge": "HỒI IV - CẢNH 7: TRẢM SÁT THIÊN TÀI",
+        "label": "Nắm đấm hắc hỏa đập tan chín đạo kiếm ảnh của Sở Thiên Kiêu",
+        "sceneId": "scene-07",
+        "type": "action",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_21",
+      "role": "scene_07_beat_3",
+      "rawText": "Người Kể Chuyện: \"Đây là tà thuật gì?! Phụ thân ta là Đại Trưởng lão nội môn, ngươi dám...\" Sở Thiên Kiêu hoảng loạn tháo lui, nhưng Lâm Mặc đã áp sát như một bóng ma tử thần. Bàn tay phủ đầy hắc hỏa của cậu xuyên thẳng qua lớp linh quang hộ thể, bóp nghẹt lấy yết hầu của vị thiên tài, nhấc bổng hắn lên giữa không trung.\nLâm Mặc: \"Lúc nãy ngươi vừa dõng dạc nói... được hóa thành một phần của lò đan là phúc phận tu tám kiếp của phế vật chúng ta mà?\"\nNgười Kể Chuyện: Dứt lời, Lâm Mặc vung mạnh cánh tay, ném thẳng Sở Thiên Kiêu vào trong miệng Cửu Long Huyết Lô đang sôi sục lửa đỏ. Tiếng gào thét kinh hoàng thảm thiết của vị thiên tài kiêu ngạo vang lên vài giây rồi hoàn toàn tắt lịm trong ngọn lửa thiêu đốt tinh huyết.\nNgười Kể Chuyện: 'Không! Cha ta sẽ giết ngươi... Cả nhà ngươi sẽ chết không có chỗ chôn...' Sở Thiên Kiêu giãy giụa tuyệt vọng trong bàn tay thép của Lâm Mặc, hai chân đạp loạn xạ giữa không trung. Nhưng câu trả lời đáp lại hắn chỉ là ánh mắt lạnh lùng như nhìn một xác chết của Lâm Mặc, cùng cú ném dứt khoát đẩy thẳng hắn vào lòng chảo lửa đỏ rực của Cửu Long Lô.",
+      "visual": {
+        "headline": "Ném Thiên Tài Vào Lò Luyện Đan",
+        "subhead": "Phúc phận hóa thành Kim Đan trong Cửu Long Lô",
+        "badge": "HỒI IV - CẢNH 7: TRẢM SÁT THIÊN TÀI",
+        "label": "Lâm Mặc bóp nghẹt cổ Sở Thiên Kiêu quẳng vào miệng lò lửa",
+        "sceneId": "scene-07",
+        "type": "action",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_22",
+      "role": "scene_08_beat_1",
+      "rawText": "Người Kể Chuyện: \"Tiểu súc sinh to gan! Ngươi dám hủy đan dược của ta, giết hại đệ tử chân truyền của bản tông!\" Triệu Vô Cực gầm lên như dã thú phát điên. Cảnh giới Kim Đan Sơ Kỳ của lão bùng phát toàn diện, uy áp kinh hoàng khiến toàn bộ cột đá chống đỡ đại điện nứt toác từng mảng lớn. Một viên Kim Đan màu vàng kim hư ảo lơ lửng sau lưng lão, phóng ra những luồng linh lực cuồng bạo, điều khiển chín con rồng lửa khổng lồ từ miệng lò Cửu Long gầm thét lao bổ về phía Lâm Mặc.\nKhoảng cách giữa Trúc Cơ và Kim Đan là một vực thẳm mênh mông không thể vượt qua. Sức nóng và uy áp khủng khiếp ép Lâm Mặc lùi lại ba bước, khóe môi trào ra máu tươi, lớp da trên cánh tay nứt nẻ rỉ máu.\nNgười Kể Chuyện: Tiếng gầm của Triệu Vô Cực làm rung chuyển cả ngọn núi Địa Hỏa. Cột đá khổng lồ dày cả trượng nứt toác đổ sụp xuống, đất đá rơi rào rào như mưa. Uy áp của một vị tu sĩ Kim Đan chân chính đè nặng lên từng tấc da thịt Lâm Mặc, khiến máu tươi từ các vết nứt trên người cậu bắn ra thành từng tia đỏ thẫm.",
+      "visual": {
+        "headline": "Cơn Điên Cuồng Của Triệu Vô Cực",
+        "subhead": "Uy áp Kim Đan Sơ Kỳ triệu hồi chín rồng lửa",
+        "badge": "HỒI IV - CẢNH 8: TỬ CHIẾN KIM ĐAN",
+        "label": "Kim Đan hư ảnh lơ lửng sau lưng Triệu Vô Cực ép nứt cột đá",
+        "sceneId": "scene-08",
+        "type": "character",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_23",
+      "role": "scene_08_beat_2",
+      "rawText": "Người Kể Chuyện: Thế nhưng, đối mặt với cái chết cận kề, Lâm Mặc không hề nao núng mà nở một nụ cười ngạo nghễ, lạnh lẽo.\nLâm Mặc: \"Triệu Vô Cực! Ngươi làm Chưởng tọa Địa Hỏa Phòng suốt một trăm năm, nhưng đã bao giờ ngươi chịu hạ mình chui vào đáy lò cạo từng mảng xỉ đan bẩn thỉu chưa? Ngươi thực sự tưởng Cửu Long Huyết Lô này là của ngươi sao?!\"\nNgười Kể Chuyện: Lâm Mặc cắn rách đầu lưỡi, phun một ngụm máu độc đen tuyền xuống sàn, hai tay đập mạnh xuống trận pháp dưới chân Lò Số Chín! Suốt mười năm làm nô lệ cạo xỉ ở chín mươi chín lò phụ, Lâm Mặc đã dùng chính máu độc và linh hồn mình âm thầm khắc họa Nghịch Chuyển Phệ Chủ Trận vào từng chân lò! ẦM! Chín con rồng lửa đang lao tới bỗng khựng lại giữa không trung, toàn bộ ngọn lửa đỏ rực chuyển sang màu tím đen ma quái của vạn độc, rồi quay ngoắt đầu lại lao vào cắn xé chính Triệu Vô Cực!\nTriệu Vô Cực: \"Không thể nào! Mạch Địa Hỏa ngàn năm tại sao lại nghe lệnh của ngươi?! Trong lửa... trong lửa có độc!\"\nNgười Kể Chuyện: 'Ngươi nghĩ ta cạo xỉ mười năm chỉ là làm việc nô dịch vô nghĩa sao?' Lâm Mặc cười vang giữa sấm sét. Máu độc của cậu ngấm sâu vào từng mạch trận cổ xưa dưới đáy chín mươi chín lò phụ, biến toàn bộ trận pháp điều khiển địa hỏa của Triệu Vô Cực thành một cạm bẫy phản phệ kinh thiên động địa! Chín con rồng lửa gầm rú xé rách màng nhĩ, hung hãn quay ngoắt đầu lại lao vào xé nát lớp linh thuẫn của chính chủ nhân.",
+      "visual": {
+        "headline": "Cú Lật Kèo: Nghịch Chuyển Phệ Chủ Trận",
+        "subhead": "Mười năm cạo xỉ khắc ấn độc huyết vào 99 chân lò",
+        "badge": "HỒI IV - CẢNH 8: TỬ CHIẾN KIM ĐAN",
+        "label": "Chín con rồng lửa đổi màu tím đen quay đầu cắn xé chủ nhân",
+        "sceneId": "scene-08",
+        "type": "concept",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_24",
+      "role": "scene_08_beat_3",
+      "rawText": "Người Kể Chuyện: \"Từ mười năm phế đan độc hại mà ngươi bắt ta cạo mỗi ngày đấy! Mọi thứ rác rưởi ngươi chà đạp dưới chân, hôm nay sẽ đích thân tiễn ngươi xuống hoàng tuyền!\" Lâm Mặc đạp lên hư không, bước đi giữa biển lửa màu tím đen. Cậu vung hai tay, hợp nhất toàn bộ độc hỏa trong đại điện thành một thanh Cự Kiếm màu đen tím khổng lồ dài mười trượng rực sáng rực rỡ, chém thẳng xuống đỉnh đầu lão trưởng lão gian ác!\nOÀNH! Tiếng nổ kinh thiên động địa vang lên xé toạc cả lòng núi. Viên Kim Đan mà Triệu Vô Cực dày công tu luyện hơn hai trăm năm vỡ vụn thành trăm ngàn mảnh sáng. Thân xác của lão trưởng lão bị độc hỏa thiêu rụi thành tro bụi ngay trên đài cao.\nNgười Kể Chuyện: Thanh Cự Kiếm mười trượng ngưng tụ toàn bộ hận thù và độc tính mười năm rạch một đường đen ngòm giữa hư không, chém thẳng xuống đỉnh đầu Triệu Vô Cực. Không gian như vỡ vụn trước nhát chém long trời lở đất. Tiếng nổ đanh gọn vang lên khi viên Kim Đan hai trăm năm của lão trưởng lão bị bổ đôi, thiêu đốt toàn bộ sinh lực của lão thành một bãi tro tàn đen ngòm.",
+      "visual": {
+        "headline": "Cự Kiếm Trảm Nát Kim Đan",
+        "subhead": "Thân xác lão trưởng lão tan thành tro bụi",
+        "badge": "HỒI IV - CẢNH 8: TỬ CHIẾN KIM ĐAN",
+        "label": "Lâm Mặc vung thanh cự kiếm mười trượng chém nát Kim Đan",
+        "sceneId": "scene-08",
+        "type": "action",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_25",
+      "role": "scene_09_beat_1",
+      "rawText": "Người Kể Chuyện: Sau tiếng nổ vang dội trời đất, đại điện Địa Hỏa Phòng sụp đổ một nửa, đất đá rơi rụng ngổn ngang. Bên trong lòng chiếc đỉnh Cửu Long Lô bị xé toạc, một viên đan dược màu đỏ tím to bằng nắm tay từ từ bay lơ lửng lên không trung. Viên đan tỏa ra mùi hương kỳ dị ngạt ngào và nguồn linh lực cuồng bạo chưa từng thấy trong nhân gian. Đó là sự dung hợp hoàn hảo giữa tinh huyết thuần khiết của thiên tài Sở Thiên Kiêu, toàn bộ mảnh vỡ tu vi Kim Đan của Triệu Vô Cực và vạn độc chi hỏa mười năm của Lâm Mặc.\nNgười Kể Chuyện: Mùi hương kỳ dị lan tỏa khắp đại điện, làm dịu đi mùi máu tanh nồng nặc. Viên đan dược xoay tròn chậm rãi giữa không trung, hấp thụ toàn bộ tinh hoa linh khí còn sót lại của đất trời.",
+      "visual": {
+        "headline": "Viên Đan Dược Dị Bảo Xuất Thế",
+        "subhead": "Tinh huyết thiên tài và mảnh vỡ Kim Đan kết tụ",
+        "badge": "HỒI V - CẢNH 9: LUYỆN HÓA KIM ĐAN",
+        "label": "Viên đan đỏ tím to bằng nắm tay tỏa hào quang ngút trời",
+        "sceneId": "scene-09",
+        "type": "concept",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_26",
+      "role": "scene_09_beat_2",
+      "rawText": "Người Kể Chuyện: Không một chút do dự hay sợ hãi, Lâm Mặc vươn bàn tay đầy vết sẹo chụp lấy viên đan nóng rực như than hồng, nuốt thẳng vào bụng. Dược lực cuồng bạo như sông cuộn biển gầm lập tức tràn ngập khắp tứ chi bách mạch. Khí tức của cậu điên cuồng dâng trào, phá vỡ xiềng xích cuối cùng của phàm nhân. Trong đan điền của Lâm Mặc, một viên Độc Hỏa Kim Đan màu tím đen hoàn mỹ lấp lánh chính thức ngưng tụ thành hình!\nNgười Kể Chuyện: Dược lực cuồng bạo nóng như nham thạch chảy dọc theo kinh mạch, gột rửa toàn bộ tạp chất trong cơ thể cậu, tôi luyện đan điền thành một hồ chứa linh lực tử kim sắc rực rỡ vô biên.",
+      "visual": {
+        "headline": "Nuốt Đan Đột Phá Cảnh Giới",
+        "subhead": "Độc Hỏa Kim Đan chính thức ngưng tụ trong đan điền",
+        "badge": "HỒI V - CẢNH 9: LUYỆN HÓA KIM ĐAN",
+        "label": "Lâm Mặc nuốt chửng viên linh đan nóng bỏng",
+        "sceneId": "scene-09",
+        "type": "character",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_27",
+      "role": "scene_09_beat_3",
+      "rawText": "Người Kể Chuyện: OÀNH! Một cột sáng màu tử kim rực rỡ từ trên người Lâm Mặc bắn thẳng lên trần hang, phá nát lớp đá đen dày ngàn trượng của Địa Hỏa Phong, tạo thành một lỗ hổng khổng lồ thông thẳng lên trời xanh. Toàn bộ núi non của Thanh Vân Tông rung chuyển dữ dội, báo hiệu sự ra đời của một cỗ sức mạnh nghịch thiên xuất thế từ đống tro tàn.\nNgười Kể Chuyện: Cột sáng tím vàng xuyên thẳng qua tầng mây trên đỉnh núi cao, báo hiệu cho toàn thể tu chân giới biết rằng một con quái vật sinh ra từ tro tàn và kịch độc đã chính thức thức tỉnh.",
+      "visual": {
+        "headline": "Cột Sáng Xuyên Thủng Vòm Đá",
+        "subhead": "Phá tan ngàn trượng đá đen thông lên trời cao",
+        "badge": "HỒI V - CẢNH 9: LUYỆN HÓA KIM ĐAN",
+        "label": "Cột sáng tử kim bắn thẳng lên trời làm rung chuyển tiên môn",
+        "sceneId": "scene-09",
+        "type": "action",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_28",
+      "role": "scene_10_beat_1",
+      "rawText": "Người Kể Chuyện: Đỉnh Địa Hỏa Phong sụp đổ hoàn toàn giữa thanh thiên bạch nhật, khói bụi bốc lên ngút ngàn tầng mây. Hàng trăm đệ tử nội môn và các vị trưởng lão quyền uy của Thanh Vân Tông ngự kiếm bay tới bao vây kín mít miệng hố sâu thẳm. Từ dưới vực sâu ngập tràn tro tàn và dung nham đỏ lửa, Lâm Mặc bình thản bước từng bước trên hư không đi lên. Trên lưng cậu cõng thi thể của Tiểu Thạch Đầu được bọc cẩn thận trong một tấm áo choàng sạch sẽ. Bàn tay phải của cậu cầm nửa mảnh lệnh bài Chưởng tọa vỡ nát của Triệu Vô Cực.\nChưởng Giáo: \"Nghiệt súc to gan! Kẻ nào dám hủy hoại Địa Hỏa Đan Phòng, sát hại trưởng lão và đệ tử chân truyền của bản tông?!\"\nNgười Kể Chuyện: Từng bước chân của Lâm Mặc đạp lên hư không vững chãi như dẫm lên bậc thang vô hình, dáng dấp kiêu hãnh bất khuất giữa hàng ngàn mũi kiếm đang nhắm vào mình.",
+      "visual": {
+        "headline": "Bước Lên Từ Đáy Vực Thẳm",
+        "subhead": "Cõng thi thể Tiểu Thạch Đầu bước đi trên hư không",
+        "badge": "HỒI V - CẢNH 10: ÁNH BÌNH MINH TRÊN ĐỈNH THANH VÂN",
+        "label": "Lâm Mặc bước lên miệng hố giữa sự bao vây của ngàn kiếm tu",
+        "sceneId": "scene-10",
+        "type": "character",
+        "region": {
+          "x": 100,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_29",
+      "role": "scene_10_beat_2",
+      "rawText": "Người Kể Chuyện: Lần đầu tiên sau mười năm tăm tối, ánh mặt trời bình minh rực rỡ chiếu rọi lên khuôn mặt góc cạnh, phong trần và ánh mắt kiên định của người thiếu niên. Lâm Mặc lạnh lùng ném nửa mảnh lệnh bài xuống đáy vực sâu.\nLâm Mặc: \"Tạp dịch Lò Số Chín - Lâm Mặc! Hôm nay ta trả lại áo tạp dịch, xóa sổ Địa Hỏa Phong nhơ bẩn khỏi thế gian! Từ nay về sau, Thanh Vân Tông các ngươi nợ ta một mạng người! Đợi ngày ta bước lên cảnh giới Nguyên Anh, ta sẽ quay lại ngọn núi này... tính sổ cả gốc lẫn lãi với các ngươi!\"\nNgười Kể Chuyện: Mảnh lệnh bài Chưởng tọa rơi tòm xuống vực sâu dung nham, tan biến vĩnh viễn như lời đoạn tuyệt dứt khoát với mười năm làm nô dịch tủi nhục.",
+      "visual": {
+        "headline": "Món Nợ Một Mạng Người",
+        "subhead": "Ném lệnh bài vỡ và lời thề Nguyên Anh ngày trở lại",
+        "badge": "HỒI V - CẢNH 10: ÁNH BÌNH MINH TRÊN ĐỈNH THANH VÂN",
+        "label": "Lâm Mặc đối mặt chưởng giáo dưới ánh bình minh rực rỡ",
+        "sceneId": "scene-10",
+        "type": "action",
+        "region": {
+          "x": 680,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    },
+    {
+      "id": "beat_30",
+      "role": "scene_10_beat_3",
+      "rawText": "Người Kể Chuyện: Vút! Dứt lời, Lâm Mặc hóa thành một đạo lưu quang màu tử kim xé rách không gian, đâm thủng đại trận hộ sơn của Thanh Vân Tông, bay thẳng về phía chân trời xa xăm trước sự sững sờ kinh hãi của hàng ngàn tu sĩ.\nChân tiên không sinh ra từ lầu son gác tía tráng lệ. Kẻ bước ra từ đống tro tàn dưới đáy lò đan, mới là kẻ hiểu rõ nhất... ngọn lửa nào mới thực sự có thể thiêu rụi cả bầu trời!\nNgười Kể Chuyện: Ánh sáng bình minh rực rỡ soi sáng con đường thênh thang phía trước, mở ra một trang sử mới đầy kiêu hùng cho kẻ nghịch thiên đoạt mệnh.",
+      "visual": {
+        "headline": "Ngọn Lửa Thiêu Rụi Bầu Trời",
+        "subhead": "Lưu quang tử kim xé toạc hộ sơn đại trận",
+        "badge": "HỒI V - CẢNH 10: ÁNH BÌNH MINH TRÊN ĐỈNH THANH VÂN",
+        "label": "Đạo quang tử kim bay vút về phía chân trời xa thẳm",
+        "sceneId": "scene-10",
+        "type": "scene",
+        "region": {
+          "x": 1260,
+          "y": 80,
+          "width": 550,
+          "height": 920
+        }
+      }
+    }
+  ]
+}
