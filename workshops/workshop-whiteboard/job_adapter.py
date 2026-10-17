@@ -451,7 +451,7 @@ def convert_job_to_whiteboard(job_path: str, output_dir: str):
         for local_idx, beat in enumerate(scene_beats, start=1):
             raw_text = beat.get("rawText", "")
             beat_voice = beat.get("voice") or {}
-            explicit_speaker = beat.get("speaker")
+            explicit_speaker = beat.get("speaker") or (beat.get("voice") or {}).get("speaker")
 
             if explicit_speaker:
                 segments = [{"speaker": explicit_speaker, "text": raw_text}]
