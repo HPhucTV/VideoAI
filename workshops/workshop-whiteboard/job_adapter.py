@@ -97,7 +97,7 @@ def extract_characters_from_metadata(metadata: dict | None) -> list[str]:
     return list(dict.fromkeys(known))
 
 def resolve_speaker_voice(speaker_name: str, job_meta: dict | None = None, default_voice_config: dict | None = None) -> dict:
-    name_clean = speaker_name.lower().strip()
+    name_clean = speaker_name.lower().strip() if speaker_name else ""
 
     if job_meta and "characters_voice" in job_meta:
         chars_voice = job_meta["characters_voice"]
@@ -113,38 +113,47 @@ def resolve_speaker_voice(speaker_name: str, job_meta: dict | None = None, defau
             if k_lower in name_clean or name_clean in k_lower:
                 return v
 
-    default_rate = default_voice_config.get("rate", "-4%") if default_voice_config else "-4%"
+    default_rate = default_voice_config.get("rate", "+25%") if default_voice_config else "+25%"
     default_pitch = default_voice_config.get("pitch", "+0Hz") if default_voice_config else "+0Hz"
     default_volume = default_voice_config.get("volume", "+0%") if default_voice_config else "+0%"
 
-    # Female voice (Hạ Vi, Nhược Hy, etc.)
-    if any(k in name_clean for k in ["hạ vi", "ha vi", "nhược hy", "nhuoc hy", "nữ", "female", "cô gái", "bà", "mẹ"]):
+    # 1. Dẫn truyện (Narrator)
+    if any(w in name_clean for w in ["narrator", "kể chuyện", "người kể", "dẫn truyện"]):
+        return {
+            "voice": default_voice_config.get("voiceId", "vi-VN-NamMinhNeural") if default_voice_config else "vi-VN-NamMinhNeural",
+            "rate": default_rate,
+            "pitch": default_pitch,
+            "volume": default_volume,
+        }
+
+    # 2. Phản diện già / Trưởng lão (chứa "trưởng lão", "lão", "chưởng môn", "ma đầu", "tộc trưởng")
+    if any(k in name_clean for k in ["trưởng lão", "lão", "chưởng môn", "ma đầu", "tộc trưởng"]):
+        return {
+            "voice": "vi-VN-NamMinhNeural",
+            "rate": "+10%",
+            "pitch": "-6Hz",
+            "volume": default_volume,
+        }
+
+    # 3. Thanh niên ngạo mạn (chứa "thiếu gia", "công tử", "chân truyền", "đệ tử")
+    if any(k in name_clean for k in ["thiếu gia", "công tử", "chân truyền", "đệ tử"]):
+        return {
+            "voice": "vi-VN-NamMinhNeural",
+            "rate": "+25%",
+            "pitch": "+3Hz",
+            "volume": default_volume,
+        }
+
+    # 4. Nữ giới / Thiếu niên (chứa "nữ", "cô", "nàng", "muội", "tiểu", "thiếu niên")
+    if any(k in name_clean for k in ["nữ", "cô", "nàng", "muội", "tiểu", "thiếu niên"]):
         return {
             "voice": "vi-VN-HoaiMyNeural",
-            "rate": default_rate,
-            "pitch": "+0Hz",
-            "volume": default_volume,
-        }
-
-    # Male boss / cold / deep voice (Đình Phong, Cảnh Thâm, etc.)
-    if any(k in name_clean for k in ["đình phong", "dinh phong", "cảnh thâm", "canh tham", "tổng tài", "chủ tịch", "boss"]):
-        return {
-            "voice": "vi-VN-NamMinhNeural",
-            "rate": default_rate,
-            "pitch": "-5Hz",
-            "volume": default_volume,
-        }
-
-    # Assistant / younger male voice (Kiên, Giang Thừa, etc.)
-    if any(k in name_clean for k in ["kiên", "kien", "giang thừa", "giang thua", "trợ lý", "tro ly"]):
-        return {
-            "voice": "vi-VN-NamMinhNeural",
-            "rate": "+0%",
+            "rate": "+20%",
             "pitch": "+2Hz",
             "volume": default_volume,
         }
 
-    # Default Narrator voice
+    # 5. Fallback Narrator voice
     return {
         "voice": default_voice_config.get("voiceId", "vi-VN-NamMinhNeural") if default_voice_config else "vi-VN-NamMinhNeural",
         "rate": default_rate,

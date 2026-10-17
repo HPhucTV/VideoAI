@@ -102,22 +102,32 @@ def test_parse_dialogue_no_dialogue_defaults_to_narrator():
     assert segments[0]["text"] == text
 
 
-def test_resolve_speaker_voice():
-    # Female voice
-    hawi_cfg = resolve_speaker_voice("Hạ Vi")
-    assert hawi_cfg["voice"] == "vi-VN-HoaiMyNeural"
+def test_resolve_speaker_voice_roles():
+    meta = {
+        "characters_voice": {
+            "lâm mặc": {"voice": "vi-VN-NamMinhNeural", "rate": "+20%", "pitch": "-3Hz"}
+        }
+    }
+    # Khớp override từ metadata
+    v_hero = resolve_speaker_voice("Lâm Mặc", job_meta=meta)
+    assert v_hero["pitch"] == "-3Hz"
+    assert v_hero["rate"] == "+20%"
 
-    # Male boss voice (deeper pitch)
-    boss_cfg = resolve_speaker_voice("Đình Phong")
-    assert boss_cfg["voice"] == "vi-VN-NamMinhNeural"
-    assert boss_cfg["pitch"] == "-5Hz"
+    # Trưởng lão phản diện (preset role)
+    v_elder = resolve_speaker_voice("Triệu Trưởng Lão")
+    assert v_elder["pitch"] == "-6Hz"
+    assert v_elder["rate"] == "+10%"
 
-    # Assistant voice (higher pitch, faster rate)
-    kien_cfg = resolve_speaker_voice("Trợ lý Kiên")
-    assert kien_cfg["voice"] == "vi-VN-NamMinhNeural"
-    assert kien_cfg["pitch"] == "+2Hz"
+    # Nữ nhân / thiếu niên (preset role)
+    v_girl = resolve_speaker_voice("Tiểu Thạch Đầu")
+    assert v_girl["voice"] == "vi-VN-HoaiMyNeural"
 
-    # Narrator voice (calm, slightly slower)
-    narr_cfg = resolve_speaker_voice("narrator")
-    assert narr_cfg["voice"] == "vi-VN-NamMinhNeural"
-    assert narr_cfg["rate"] == "-4%"
+    # Thanh niên ngạo mạn (preset role)
+    v_young = resolve_speaker_voice("Sở Công Tử")
+    assert v_young["pitch"] == "+3Hz"
+    assert v_young["rate"] == "+25%"
+
+    # Narrator mặc định cho storytelling là +25%
+    v_narrator = resolve_speaker_voice("Người Kể Chuyện")
+    assert v_narrator["rate"] == "+25%"
+
