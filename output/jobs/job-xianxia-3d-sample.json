@@ -1,0 +1,43 @@
+{
+  "jobId": "job-xianxia-3d-sample",
+  "title": "Thần Kiếm Xuất Thế 3D",
+  "workshop": "blender",
+  "archetype": "storytelling",
+  "targetPlatform": "youtube_long",
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "rate": "+25%",
+    "pitch": "+0Hz",
+    "volume": "+0%"
+  },
+  "metadata": {
+    "channel": "OmniVideo 3D Studio",
+    "characters": ["Lâm Mặc", "Người Kể Chuyện"],
+    "characters_voice": {
+      "lâm mặc": { "voice": "vi-VN-NamMinhNeural", "rate": "+20%", "pitch": "-3Hz" },
+      "người kể chuyện": { "voice": "vi-VN-NamMinhNeural", "rate": "+25%", "pitch": "+0Hz" }
+    }
+  },
+  "beats": [
+    {
+      "id": "beat_01",
+      "role": "hook_teaser",
+      "speaker": "Lâm Mặc",
+      "rawText": "Vạn kiếm quy tông! Hôm nay ta sẽ phá vỡ phong ấn thần kiếm này!",
+      "cues": { "camera": "zoom_in_punch" }
+    },
+    {
+      "id": "beat_02",
+      "role": "hook_intro",
+      "speaker": "Người Kể Chuyện",
+      "rawText": "Thần kiếm thức tỉnh, kiếm khí ngút trời rung chuyển cả tiên môn tam đại giới!",
+      "cues": { "camera": "pan_right" }
+    }
+  ]
+}
