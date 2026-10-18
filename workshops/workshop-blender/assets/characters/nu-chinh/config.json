@@ -1,0 +1,14 @@
+{
+  "id": "nu-chinh",
+  "name": "Thanh Y Tiên Tử (Vân Hy)",
+  "role": "heroine",
+  "model_file": "model.glb",
+  "default_scale": 0.95,
+  "height_meters": 1.65,
+  "default_pose": "talking",
+  "voice_preset": {
+    "voice": "vi-VN-HoaiMyNeural",
+    "rate": "+25%",
+    "pitch": "+0Hz"
+  }
+}

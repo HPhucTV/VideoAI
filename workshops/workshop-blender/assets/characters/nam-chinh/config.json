@@ -1,0 +1,14 @@
+{
+  "id": "nam-chinh",
+  "name": "Thiếu Niên Kiếm Khách (Lâm Mặc)",
+  "role": "hero",
+  "model_file": "model.glb",
+  "default_scale": 1.0,
+  "height_meters": 1.74,
+  "default_pose": "hands_clasped_back",
+  "voice_preset": {
+    "voice": "vi-VN-NamMinhNeural",
+    "rate": "+20%",
+    "pitch": "-3Hz"
+  }
+}
