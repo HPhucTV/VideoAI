@@ -239,9 +239,17 @@ def load_and_setup_character(
 
     armature_obj = next((o for o in imported_objs if o.type == "ARMATURE"), None)
     face_obj = next(
-        (o for o in imported_objs if o.type == "MESH" and ("face" in o.name.lower() or (o.data and o.data.shape_keys))),
+        (o for o in imported_objs if o.type == "MESH" and ("face" in o.name.lower() or "head" in o.name.lower() or (o.data and o.data.shape_keys))),
         None,
     )
+
+    # Remove non-humanoid accessory props if present (e.g. robotic arm pack on avatar)
+    for o in imported_objs:
+        if "robo" in o.name.lower():
+            try:
+                bpy.data.objects.remove(o, do_unlink=True)
+            except Exception:
+                pass
 
     if armature_obj:
         armature_obj.location = location
@@ -395,7 +403,7 @@ def setup_scene_and_character(spec: dict | None = None) -> tuple[bpy.types.Objec
     if shots and isinstance(shots, list) and len(shots) > 0 and isinstance(shots[0], dict):
         primary_model_id = shots[0].get("character_model") or "nam-chinh"
 
-    armature_obj, face_obj = load_and_setup_character(primary_model_id, location=(0.0, -2.1, 1.0), rotation=(0.0, 0.0, math.pi))
+    armature_obj, face_obj = load_and_setup_character(primary_model_id, location=(0.0, -2.1, 1.0), rotation=(0.0, 0.0, 0.0))
 
     if spec:
         setup_character_animation(armature_obj, face_obj, spec)

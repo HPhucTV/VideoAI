@@ -33,14 +33,23 @@ BONE_ALIASES: dict[str, list[str]] = {
     "J_Bip_C_Chest": ["chest", "spine_02", "spine.002"],
     "J_Bip_C_UpperChest": ["upperchest", "upper_chest", "spine_03"],
     "J_Bip_C_Neck": ["neck"],
-    "J_Bip_C_Head": ["head"],
+    "J_Bip_C_Head": ["head", "head 1"],
     "J_Bip_L_UpperArm": ["upperarm_l", "upper_arm.l", "arm_l", "leftupperarm"],
     "J_Bip_R_UpperArm": ["upperarm_r", "upper_arm.r", "arm_r", "rightupperarm"],
-    "J_Bip_L_LowerArm": ["lowerarm_l", "lower_arm.l", "forearm_l", "leftlowerarm"],
-    "J_Bip_R_LowerArm": ["lowerarm_r", "lower_arm.r", "forearm_r", "rightlowerarm"],
+    "J_Bip_L_LowerArm": ["lowerarm_l", "lower_arm.l", "forearm_l", "forearm.l", "leftlowerarm"],
+    "J_Bip_R_LowerArm": ["lowerarm_r", "lower_arm.r", "forearm_r", "forearm.r", "rightlowerarm"],
     "J_Bip_L_Hand": ["hand_l", "hand.l", "wrist_l", "lefthand"],
     "J_Bip_R_Hand": ["hand_r", "hand.r", "wrist_r", "righthand"],
 }
+
+ALIAS_TO_CANONICAL: dict[str, str] = {}
+for canonical_bone, aliases_list in BONE_ALIASES.items():
+    ALIAS_TO_CANONICAL[canonical_bone.lower()] = canonical_bone
+    ALIAS_TO_CANONICAL[canonical_bone.lower().replace("-", "_").replace(" ", "_")] = canonical_bone
+    for alias_name in aliases_list:
+        ALIAS_TO_CANONICAL[alias_name.lower()] = canonical_bone
+        ALIAS_TO_CANONICAL[alias_name.lower().replace("-", "_").replace(" ", "_")] = canonical_bone
+
 
 # Base Euler rotations (XYZ order in radians) for VRoid bones
 _RAW_POSE_ROTATIONS: dict[str, dict[str, tuple[float, float, float]]] = {
@@ -259,12 +268,18 @@ def apply_pose_to_armature(
         if bone.name in rotations:
             rot = rotations[bone.name]
         else:
-            # 2. Normalized match (lowercase, clean symbols)
-            b_clean = bone.name.lower().replace("-", "_").replace(" ", "_")
-            for k, v in rotations.items():
-                if k.lower().replace("-", "_").replace(" ", "_") == b_clean:
-                    rot = v
-                    break
+            # 2. Match via alias dictionary
+            b_low = bone.name.lower()
+            b_clean = b_low.replace("-", "_").replace(" ", "_")
+            canonical = ALIAS_TO_CANONICAL.get(b_low) or ALIAS_TO_CANONICAL.get(b_clean)
+            if canonical and canonical in rotations:
+                rot = rotations[canonical]
+            else:
+                # 3. Fallback scan
+                for k, v in rotations.items():
+                    if k.lower().replace("-", "_").replace(" ", "_") == b_clean:
+                        rot = v
+                        break
 
         if rot is None:
             continue
