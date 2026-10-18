@@ -18,6 +18,17 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
+current_dir = Path(__file__).resolve().parent
+if str(current_dir) not in sys.path:
+    sys.path.insert(0, str(current_dir))
+
+try:
+    from pose_engine import map_beat_to_pose
+except ImportError:
+    from workshops.workshop_blender.pose_engine import map_beat_to_pose
+
+FEMALE_INDICATORS = ("tiên tử", "nữ", "muội", "cô", "nàng", "vân hy")
+
 NARRATOR_ALIASES = {"người kể chuyện", "dẫn truyện", "kể chuyện", "narrator"}
 REPORTING_VERBS = {
     "nói", "hỏi", "gầm lên", "quát", "đáp", "nghĩ",
@@ -114,6 +125,29 @@ def resolve_camera_action(cues: dict | None, role: str) -> str:
     role_key = (role or "").strip().lower()
     return ROLE_CAMERA_MAP.get(role_key, "static")
 
+def resolve_character_model(speaker: str | None, character_models: dict | None = None) -> str:
+    """
+    Xác định model ID cho nhân vật (ví dụ: 'nam-chinh', 'nu-chinh')
+    dựa trên cấu hình metadata.character_models hoặc suy luận ngữ nghĩa từ tên/vai.
+    """
+    if not speaker:
+        return "nam-chinh"
+
+    spk_norm = str(speaker).strip().lower()
+
+    # 1. Tra cứu cấu hình tường minh từ metadata
+    if character_models and isinstance(character_models, dict):
+        for k, v in character_models.items():
+            if k.strip().lower() == spk_norm:
+                return v
+
+    # 2. Heuristic phát hiện nhân vật nữ
+    if any(ind in spk_norm for ind in FEMALE_INDICATORS):
+        return "nu-chinh"
+
+    # 3. Fallback mặc định cho nam chính / người kể chuyện / nhân vật nam
+    return "nam-chinh"
+
 def build_blender_timeline_spec(
     job_dict: dict,
     audio_durations: dict[str, float],
@@ -127,6 +161,7 @@ def build_blender_timeline_spec(
     res = [canvas.get("width", 1280), canvas.get("height", 720)]
     metadata = job_dict.get("metadata") or {}
     known_speakers = metadata.get("characters", [])
+    char_models_map = metadata.get("character_models", {})
 
     current_frame = 1
     shots = []
@@ -141,6 +176,8 @@ def build_blender_timeline_spec(
         spk, clean = sanitize_dialogue_text(beat.get("rawText", ""), known_speakers)
         speaker = beat.get("speaker") or spk or "Người Kể Chuyện"
         cam_act = resolve_camera_action(beat.get("cues"), beat.get("role", ""))
+        char_model = resolve_character_model(speaker, char_models_map)
+        char_pose = map_beat_to_pose(beat.get("role", ""), speaker)
 
         shot = {
             "id": beat_id,
@@ -152,6 +189,8 @@ def build_blender_timeline_spec(
             "start_frame": start_f,
             "end_frame": end_f,
             "camera_action": cam_act,
+            "character_model": char_model,
+            "character_pose": char_pose,
         }
         shots.append(shot)
         current_frame = end_f + 1

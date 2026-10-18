@@ -5,7 +5,11 @@ from pathlib import Path
 wb_dir = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(wb_dir))
 
-from job_adapter import build_blender_timeline_spec, resolve_camera_action
+from job_adapter import (
+    build_blender_timeline_spec,
+    resolve_camera_action,
+    resolve_character_model,
+)
 
 def test_resolve_camera_action_mapping():
     # Khớp từ visual cues
@@ -20,12 +24,41 @@ def test_resolve_camera_action_mapping():
     assert resolve_camera_action(None, "climax") == "dolly_in"
     assert resolve_camera_action(None, "scene_01") == "static"
 
+def test_resolve_character_model():
+    # 1. Explicit mapping from character_models dict
+    models_map = {
+        "Lâm Mặc": "nam-chinh",
+        "Vân Hy": "nu-chinh",
+    }
+    assert resolve_character_model("Lâm Mặc", models_map) == "nam-chinh"
+    assert resolve_character_model("lâm mặc", models_map) == "nam-chinh"
+    assert resolve_character_model("Vân Hy", models_map) == "nu-chinh"
+    assert resolve_character_model("vân hy", models_map) == "nu-chinh"
+
+    # 2. Heuristic detection when not in dict or dict is empty/None
+    assert resolve_character_model("Thanh Y Tiên Tử") == "nu-chinh"
+    assert resolve_character_model("Thanh Y Tiên Tử", {}) == "nu-chinh"
+    assert resolve_character_model("Vân Hy", {}) == "nu-chinh"
+    assert resolve_character_model("Tiểu muội", None) == "nu-chinh"
+    assert resolve_character_model("Nữ hiệp", None) == "nu-chinh"
+    assert resolve_character_model("Cô nương", None) == "nu-chinh"
+
+    # Fallback to nam-chinh for narrator and male speakers
+    assert resolve_character_model("Người Kể Chuyện") == "nam-chinh"
+    assert resolve_character_model("Người Kể Chuyện", models_map) == "nam-chinh"
+    assert resolve_character_model("Sư huynh", None) == "nam-chinh"
+    assert resolve_character_model("", None) == "nam-chinh"
+    assert resolve_character_model(None, None) == "nam-chinh"
+
 def test_build_blender_timeline_spec():
     job_dict = {
         "jobId": "job-3d-test",
         "canvas": {"width": 1280, "height": 720, "fps": 30},
         "metadata": {
-            "characters": ["Lâm Mặc", "Người Kể Chuyện"]
+            "characters": ["Lâm Mặc", "Người Kể Chuyện"],
+            "character_models": {
+                "Lâm Mặc": "nam-chinh"
+            }
         },
         "beats": [
             {
@@ -67,6 +100,8 @@ def test_build_blender_timeline_spec():
     assert s1["start_frame"] == 1
     assert s1["end_frame"] == 96 # 3.2 * 30
     assert s1["clean_text"] == "Ta không phục!" # Đã lọc sạch tên vai
+    assert s1["character_model"] == "nam-chinh"
+    assert s1["character_pose"] in ["swordsman_ready", "cast_spell"]
     
     # Shot 2
     s2 = spec["shots"][1]
@@ -75,3 +110,5 @@ def test_build_blender_timeline_spec():
     assert s2["start_frame"] == 97
     assert s2["end_frame"] == 180
     assert s2["clean_text"] == "Chào mừng đạo hữu."
+    assert s2["character_model"] == "nam-chinh"
+    assert s2["character_pose"] == "hands_clasped_back"
