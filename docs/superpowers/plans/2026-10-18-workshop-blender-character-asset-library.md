@@ -25,73 +25,11 @@
 - Create: `workshops/workshop-blender/assets/characters/LICENSES.md`
 - Create Test: `workshops/workshop-blender/tests/test_character_assets.py`
 
-- [ ] **Step 1: Viết test kiểm tra tính toàn vẹn của Character Asset Library**
-
-Tạo `workshops/workshop-blender/tests/test_character_assets.py`:
-```python
-import pytest
-import json
-from pathlib import Path
-
-repo_root = Path(__file__).resolve().parent.parent.parent.parent
-chars_dir = repo_root / "workshops" / "workshop-blender" / "assets" / "characters"
-
-def test_character_library_structure():
-    assert chars_dir.exists(), "Thư mục characters phải tồn tại"
-    
-    # Kiểm tra nhân vật Nam Chính
-    hero_dir = chars_dir / "nam-chinh"
-    assert hero_dir.exists()
-    cfg_file = hero_dir / "config.json"
-    assert cfg_file.exists()
-    with open(cfg_file, "r", encoding="utf-8") as f:
-        cfg = json.load(f)
-        assert cfg["id"] == "nam-chinh"
-        assert cfg["role"] == "hero"
-        assert "default_scale" in cfg
-        assert "model_file" in cfg
-
-def test_character_licenses_exist():
-    lic_file = chars_dir / "LICENSES.md"
-    assert lic_file.exists()
-    content = lic_file.read_text(encoding="utf-8")
-    assert "VRoid" in content or "CC0" in content
-```
-
-- [ ] **Step 2: Chạy test để xác nhận FAIL**
-
-```powershell
-workshops/workshop-whiteboard/.venv/Scripts/python.exe -m pytest workshops/workshop-blender/tests/test_character_assets.py
-```
-
-- [ ] **Step 3: Viết `scripts/download-character-assets.ps1` và các file `config.json`**
-
-Tải và lưu trữ model `.glb` vào `workshops/workshop-blender/assets/characters/nam-chinh/model.glb` và tạo `config.json`:
-```json
-{
-  "id": "nam-chinh",
-  "name": "Thiếu Niên Kiếm Khách (Lâm Mặc)",
-  "role": "hero",
-  "model_file": "model.glb",
-  "default_scale": 1.0,
-  "height_meters": 1.74,
-  "default_pose": "hands_clasped_back",
-  "voice_preset": {
-    "voice": "vi-VN-NamMinhNeural",
-    "rate": "+20%",
-    "pitch": "-3Hz"
-  }
-}
-```
-Tạo `LICENSES.md` ghi nhận giấy phép mở cho các mô hình avatar 3D mẫu.
-
-- [ ] **Step 4: Chạy lại test xác nhận PASS 100%**
-
-```powershell
-workshops/workshop-whiteboard/.venv/Scripts/python.exe -m pytest workshops/workshop-blender/tests/test_character_assets.py
-```
-
-- [ ] **Step 5: Git commit**
+- [x] **Step 1: Viết test kiểm tra tính toàn vẹn của Character Asset Library**
+- [x] **Step 2: Chạy test để xác nhận FAIL**
+- [x] **Step 3: Viết `scripts/download-character-assets.ps1` và các file `config.json`**
+- [x] **Step 4: Chạy lại test xác nhận PASS 100%**
+- [x] **Step 5: Git commit**
 
 ```bash
 git add scripts/download-character-assets.ps1 workshops/workshop-blender/assets/characters/ workshops/workshop-blender/tests/test_character_assets.py
@@ -106,7 +44,7 @@ git commit -m "feat(blender): scaffold 3D character asset library and model down
 - Create: `workshops/workshop-blender/pose_engine.py`
 - Create Test: `workshops/workshop-blender/tests/test_pose_engine.py`
 
-- [ ] **Step 1: Viết failing test cho `pose_engine.py`**
+- [x] **Step 1: Viết failing test cho `pose_engine.py`**
 
 Tạo `workshops/workshop-blender/tests/test_pose_engine.py`:
 ```python
@@ -135,13 +73,13 @@ def test_get_pose_bone_rotations():
     assert arm_rot is not None
 ```
 
-- [ ] **Step 2: Chạy test để xác nhận FAIL**
+- [x] **Step 2: Chạy test để xác nhận FAIL**
 
 ```powershell
 workshops/workshop-whiteboard/.venv/Scripts/python.exe -m pytest workshops/workshop-blender/tests/test_pose_engine.py
 ```
 
-- [ ] **Step 3: Cài đặt `workshops/workshop-blender/pose_engine.py`**
+- [x] **Step 3: Cài đặt `workshops/workshop-blender/pose_engine.py`**
 
 Triển khai:
 - `map_beat_to_pose(role: str, speaker: str) -> str`: Ánh xạ vai trò và tên nhân vật sang các tư thế: `cast_spell`, `swordsman_ready`, `hands_clasped_back`, `talking`, `idle_stand`.
@@ -149,13 +87,13 @@ Triển khai:
 - `apply_pose_to_armature(armature_obj, pose_name: str, keyframe: int | None = None)`: Hàm gọi trong Blender để nạp rotation và gán keyframe.
 - `apply_blink_keyframes(face_obj, start_frame: int, end_frame: int, fps: int = 30)`: Tự động lặp lại chu kỳ chớp mắt (cứ 3-4 giây chớp 1 lần khoảng 4-6 frames) bằng shape key `target_0` hoặc `blink`.
 
-- [ ] **Step 4: Chạy lại test xác nhận PASS 100%**
+- [x] **Step 4: Chạy lại test xác nhận PASS 100%**
 
 ```powershell
 workshops/workshop-whiteboard/.venv/Scripts/python.exe -m pytest workshops/workshop-blender/tests/test_pose_engine.py
 ```
 
-- [ ] **Step 5: Git commit**
+- [x] **Step 5: Git commit**
 
 ```bash
 git add workshops/workshop-blender/pose_engine.py workshops/workshop-blender/tests/test_pose_engine.py
