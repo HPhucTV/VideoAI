@@ -84,9 +84,21 @@ desktop.ini
 *.sln
 *.sw?
 
+# 3D Assets (heavy binaries)
+*.glb
+*.gltf
+*.fbx
+*.obj
+*.vrm
+workshops/workshop-blender/assets/characters/**/*.glb
+workshops/workshop-blender/assets/characters/**/*.vrm
+!workshops/workshop-blender/assets/characters/**/config.json
+!workshops/workshop-blender/assets/characters/**/LICENSES.md
+
 # Logs & Diagnostics
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
