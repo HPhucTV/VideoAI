@@ -294,7 +294,7 @@ def export_3d_video(
     if not job_file:
         raise FileNotFoundError(f"Job file not found for: {job_path_or_id}")
 
-    with open(job_file, "r", encoding="utf-8") as f:
+    with open(job_file, "r", encoding="utf-8-sig") as f:
         job_dict = json.load(f)
 
     job_id = job_dict.get("jobId") or job_file.stem

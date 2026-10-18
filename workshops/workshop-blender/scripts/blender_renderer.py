@@ -86,7 +86,8 @@ def parse_args():
         add_help=True
     )
     parser.add_argument("--spec", type=str, required=True, help="Path to timeline spec JSON file")
-    parser.add_argument("--output", type=str, required=True, help="Path to output video file (.mp4)")
+    parser.add_argument("--output", type=str, required=True, help="Path to output video file (.mp4) or image (.png)")
+    parser.add_argument("--render-frame", type=int, default=None, help="Render a single frame as image/video instead of full animation")
     parser.add_argument("--dry-run", action="store_true", help="Setup scene and camera without rendering animation")
 
     if "-h" in argv or "--help" in argv:
@@ -190,7 +191,7 @@ def create_standin_character(location=(0.0, -2.1, 1.0)):
 def load_and_setup_character(
     model_id: str = "nam-chinh",
     location: tuple[float, float, float] = (0.0, -2.1, 1.0),
-    rotation: tuple[float, float, float] = (0.0, 0.0, 0.0),
+    rotation: tuple[float, float, float] = (0.0, 0.0, math.pi),
 ) -> tuple[bpy.types.Object | None, bpy.types.Object | None]:
     """
     Resolves asset path and loads a rigged humanoid 3D character (.glb) into Blender.
@@ -225,7 +226,7 @@ def load_and_setup_character(
     config_path = char_dir / "config.json"
     if config_path.is_file():
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, "r", encoding="utf-8-sig") as f:
                 cfg = json.load(f)
                 scale = float(cfg.get("default_scale", 1.0))
         except Exception as e:
@@ -244,6 +245,7 @@ def load_and_setup_character(
 
     if armature_obj:
         armature_obj.location = location
+        armature_obj.rotation_mode = "XYZ"
         armature_obj.rotation_euler = rotation
         armature_obj.scale = (scale, scale, scale)
         print(f"[OK] Character armature '{armature_obj.name}' placed at {location} with scale {scale}.")
@@ -256,12 +258,16 @@ def load_and_setup_character(
 def setup_character_animation(armature_obj, face_obj, spec: dict):
     """
     Keyframes character poses per shot and sets up procedural blinking.
+    Keyframes pose at BOTH start_frame and end_frame so the character holds posture
+    throughout each shot without drifting.
     """
     if armature_obj:
         shots = spec.get("shots", [])
         supported = set(get_supported_poses())
+        total_frames = int(spec.get("total_frames", 90))
         if not shots:
             apply_pose_to_armature(armature_obj, "idle_stand", keyframe=1)
+            apply_pose_to_armature(armature_obj, "idle_stand", keyframe=total_frames)
         else:
             for shot in shots:
                 char_pose = shot.get("character_pose") or "idle_stand"
@@ -269,8 +275,11 @@ def setup_character_animation(armature_obj, face_obj, spec: dict):
                     print(f"[WARN] Unsupported pose '{char_pose}', falling back to 'idle_stand'.", file=sys.stderr)
                     char_pose = "idle_stand"
                 start_frame = int(shot.get("start_frame", 1))
+                end_frame = int(shot.get("end_frame", start_frame))
                 modified = apply_pose_to_armature(armature_obj, char_pose, keyframe=start_frame)
-                print(f"[INFO] Shot {shot.get('id', '?')}: Applied pose '{char_pose}' at frame {start_frame} ({len(modified)} bones modified).")
+                if end_frame != start_frame:
+                    apply_pose_to_armature(armature_obj, char_pose, keyframe=end_frame)
+                print(f"[INFO] Shot {shot.get('id', '?')}: Applied pose '{char_pose}' at frames {start_frame}-{end_frame} ({len(modified)} bones modified).")
 
     target_face = face_obj or armature_obj
     if target_face:
@@ -350,10 +359,18 @@ def setup_scene_and_character(spec: dict | None = None) -> tuple[bpy.types.Objec
         emission_strength=8.0
     )
 
-    # 4. Octagonal Altar Base (r=4.0), Mid (r=3.2), Core (r=1.6)
+    # 4. Octagonal Altar Base (r=4.0), Mid (r=3.2), Core (r=1.6) with gold boundary rims & glowing jade ring
     add_cylinder("Altar_Base", radius=4.0, depth=0.5, location=(0.0, 0.0, 0.25), vertices=8, material=dark_stone)
+    add_cylinder("Altar_BaseRim", radius=4.06, depth=0.06, location=(0.0, 0.0, 0.51), vertices=8, material=ancient_gold)
+
     add_cylinder("Altar_Mid", radius=3.2, depth=0.5, location=(0.0, 0.0, 0.75), vertices=8, material=dark_stone)
+    add_cylinder("Altar_MidRim", radius=3.25, depth=0.06, location=(0.0, 0.0, 1.01), vertices=8, material=ancient_gold)
+
     add_cylinder("Altar_Core", radius=1.6, depth=0.5, location=(0.0, 0.0, 1.25), vertices=8, material=dark_stone)
+    # Decorative glowing jade ring around Altar Core
+    add_cylinder("Altar_JadeRing", radius=1.75, depth=0.08, location=(0.0, 0.0, 1.05), vertices=16, material=spirit_aura)
+    # Center runic disc under Divine Sword
+    add_cylinder("Altar_CenterRune", radius=0.6, depth=0.02, location=(0.0, 0.0, 1.51), vertices=16, material=spirit_aura)
 
     # 5. Four Warding Pillars with Spirit Aura orbs
     pillar_coords = [(-2.2, -2.2), (2.2, -2.2), (-2.2, 2.2), (2.2, 2.2)]
@@ -378,37 +395,93 @@ def setup_scene_and_character(spec: dict | None = None) -> tuple[bpy.types.Objec
     if shots and isinstance(shots, list) and len(shots) > 0 and isinstance(shots[0], dict):
         primary_model_id = shots[0].get("character_model") or "nam-chinh"
 
-    armature_obj, face_obj = load_and_setup_character(primary_model_id, location=(0.0, -2.1, 1.0), rotation=(0.0, 0.0, 0.0))
+    armature_obj, face_obj = load_and_setup_character(primary_model_id, location=(0.0, -2.1, 1.0), rotation=(0.0, 0.0, math.pi))
 
     if spec:
         setup_character_animation(armature_obj, face_obj, spec)
 
-    # 8. 3-Point Cinematic Lighting
-    # MoonKey (cool blue moonlight angled downwards)
+    # 8. Professional 4-Point Cinematic Lighting Rig
+    # 8.1 MoonKey (Sun light): deep mystic indigo/cool blue, energy ~3.5
     moon_light = bpy.data.lights.new(name="MoonKey", type="SUN")
-    moon_light.energy = 4.5
-    moon_light.color = (0.4, 0.65, 1.0)
+    moon_light.energy = 3.5
+    moon_light.color = (0.35, 0.55, 0.95)
     moon_obj = bpy.data.objects.new("MoonKey", moon_light)
     moon_obj.location = (4.0, -5.0, 10.0)
     sun_dir = SCENE_TARGET - mathutils.Vector((4.0, -5.0, 10.0))
     moon_obj.rotation_euler = sun_dir.to_track_quat("-Z", "Y").to_euler()
     bpy.context.scene.collection.objects.link(moon_obj)
 
-    # WarmFill (warm ambient fill light from opposite angle)
-    fill_light = bpy.data.lights.new(name="WarmFill", type="POINT")
-    fill_light.energy = 400.0
-    fill_light.color = (1.0, 0.75, 0.45)
-    fill_obj = bpy.data.objects.new("WarmFill", fill_light)
-    fill_obj.location = (-5.0, -3.0, 4.0)
-    bpy.context.scene.collection.objects.link(fill_obj)
+    # 8.2 PortraitKey (Spot light placed close to character front-high-left)
+    # Location: (-0.8, -3.8, 2.7), directed towards (0.0, -2.1, 2.1) (character head/face)
+    # Energy: ~100W, Color: Soft warm ivory (1.0, 0.95, 0.90) with soft radius 0.2m
+    # Flattering anime face shading and bright specular highlights in the eyes.
+    portrait_light = bpy.data.lights.new(name="PortraitKey", type="SPOT")
+    portrait_light.energy = 100.0
+    portrait_light.color = (1.0, 0.95, 0.90)
+    if hasattr(portrait_light, "spot_size"):
+        portrait_light.spot_size = math.radians(45.0)
+    if hasattr(portrait_light, "spot_blend"):
+        portrait_light.spot_blend = 0.35
+    if hasattr(portrait_light, "shadow_soft_size"):
+        portrait_light.shadow_soft_size = 0.2
+    if hasattr(portrait_light, "radius"):
+        portrait_light.radius = 0.2
+    portrait_obj = bpy.data.objects.new("PortraitKey", portrait_light)
+    portrait_obj.location = (-0.8, -3.8, 2.7)
+    char_face_target = mathutils.Vector((0.0, -2.1, 2.1))
+    portrait_dir = char_face_target - mathutils.Vector((-0.8, -3.8, 2.7))
+    portrait_obj.rotation_euler = portrait_dir.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.collection.objects.link(portrait_obj)
 
-    # AuraLight (radiant cyan light emanating from divine sword)
-    aura_light = bpy.data.lights.new(name="AuraLight", type="POINT")
-    aura_light.energy = 350.0
-    aura_light.color = (0.1, 0.85, 1.0)
-    aura_obj = bpy.data.objects.new("AuraLight", aura_light)
-    aura_obj.location = (0.0, 0.0, 2.5)
-    bpy.context.scene.collection.objects.link(aura_obj)
+    # 8.3 CharacterRim (Cool cyan/azure backlight from behind-right)
+    # Location: (1.2, -1.0, 3.0), pointing down-forward at character's shoulders and hair.
+    # Energy: ~150W, Color: Brilliant cyan/azure (0.3, 0.8, 1.0).
+    # Creates an ethereal spiritual aura contour (tiên khí) on hair tips and shoulders.
+    rim_light = bpy.data.lights.new(name="CharacterRim", type="SPOT")
+    rim_light.energy = 150.0
+    rim_light.color = (0.3, 0.8, 1.0)
+    if hasattr(rim_light, "spot_size"):
+        rim_light.spot_size = math.radians(60.0)
+    if hasattr(rim_light, "spot_blend"):
+        rim_light.spot_blend = 0.4
+    if hasattr(rim_light, "shadow_soft_size"):
+        rim_light.shadow_soft_size = 0.15
+    if hasattr(rim_light, "radius"):
+        rim_light.radius = 0.15
+    rim_obj = bpy.data.objects.new("CharacterRim", rim_light)
+    rim_obj.location = (1.2, -1.0, 3.0)
+    char_shoulder_target = mathutils.Vector((0.0, -2.1, 1.9))
+    rim_dir = char_shoulder_target - mathutils.Vector((1.2, -1.0, 3.0))
+    rim_obj.rotation_euler = rim_dir.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.collection.objects.link(rim_obj)
+
+    # 8.4 SwordAura (Point light at Divine Sword)
+    # Center (0.0, 0.0, 2.8), radiant cyan emission (0.05, 0.9, 1.0), energy ~300W with shadow clip.
+    sword_light = bpy.data.lights.new(name="SwordAura", type="POINT")
+    sword_light.energy = 300.0
+    sword_light.color = (0.05, 0.9, 1.0)
+    if hasattr(sword_light, "shadow_soft_size"):
+        sword_light.shadow_soft_size = 0.25
+    if hasattr(sword_light, "radius"):
+        sword_light.radius = 0.25
+    if hasattr(sword_light, "cutoff_distance"):
+        sword_light.use_custom_distance = True
+        sword_light.cutoff_distance = 6.0
+    sword_obj = bpy.data.objects.new("SwordAura", sword_light)
+    sword_obj.location = (0.0, 0.0, 2.8)
+    bpy.context.scene.collection.objects.link(sword_obj)
+
+    # 8.5 WarmFill (Soft warm ambient fill from opposite side)
+    warm_light = bpy.data.lights.new(name="WarmFill", type="POINT")
+    warm_light.energy = 120.0
+    warm_light.color = (1.0, 0.8, 0.55)
+    if hasattr(warm_light, "shadow_soft_size"):
+        warm_light.shadow_soft_size = 0.4
+    if hasattr(warm_light, "radius"):
+        warm_light.radius = 0.4
+    warm_obj = bpy.data.objects.new("WarmFill", warm_light)
+    warm_obj.location = (3.5, -4.5, 3.0)
+    bpy.context.scene.collection.objects.link(warm_obj)
 
 
 def set_camera_interpolation(cam_obj, interpolation="BEZIER"):
@@ -489,9 +562,9 @@ def setup_camera_and_animate(spec: dict):
     return cam_obj
 
 
-def configure_render_settings(spec: dict, output_path: str):
+def configure_render_settings(spec: dict, output_path: str, render_frame: int | None = None):
     """
-    Configures render engine, resolution, fps, frame range, and FFMPEG video output.
+    Configures render engine, resolution, fps, frame range, and FFMPEG video or image output.
     """
     scene = bpy.context.scene
 
@@ -500,6 +573,13 @@ def configure_render_settings(spec: dict, output_path: str):
         scene.render.engine = "BLENDER_EEVEE_NEXT"
     except Exception:
         scene.render.engine = "BLENDER_EEVEE"
+
+    # Enable EEVEE Next raytracing/shadows if available
+    if hasattr(scene, "eevee"):
+        if hasattr(scene.eevee, "use_raytracing"):
+            scene.eevee.use_raytracing = True
+        if hasattr(scene.eevee, "use_shadows"):
+            scene.eevee.use_shadows = True
 
     # 2. Resolution & FPS
     res = spec.get("resolution", [1280, 720])
@@ -513,19 +593,26 @@ def configure_render_settings(spec: dict, output_path: str):
     total_frames = int(spec.get("total_frames", 30))
     scene.frame_end = max(1, total_frames)
 
-    # 4. Output filepath & FFMPEG H.264 MP4 settings
+    # 4. Output filepath & image / video settings
     out_file = Path(output_path).resolve()
     out_file.parent.mkdir(parents=True, exist_ok=True)
     scene.render.filepath = str(out_file)
 
-    # In Blender 5.0+, media_type must be set to 'VIDEO' to enable video container formats
-    if hasattr(scene.render.image_settings, "media_type"):
-        scene.render.image_settings.media_type = "VIDEO"
+    is_image = out_file.suffix.lower() in [".png", ".jpg", ".jpeg"] or (render_frame is not None and out_file.suffix.lower() not in [".mp4", ".mov", ".mkv"])
 
-    scene.render.image_settings.file_format = "FFMPEG"
-    scene.render.ffmpeg.format = "MPEG4"
-    scene.render.ffmpeg.codec = "H264"
-    scene.render.ffmpeg.constant_rate_factor = "HIGH"
+    if is_image:
+        if hasattr(scene.render.image_settings, "media_type"):
+            scene.render.image_settings.media_type = "IMAGE"
+        scene.render.image_settings.file_format = "PNG" if out_file.suffix.lower() != ".jpg" and out_file.suffix.lower() != ".jpeg" else "JPEG"
+    else:
+        # In Blender 5.0+, media_type must be set to 'VIDEO' to enable video container formats
+        if hasattr(scene.render.image_settings, "media_type"):
+            scene.render.image_settings.media_type = "VIDEO"
+
+        scene.render.image_settings.file_format = "FFMPEG"
+        scene.render.ffmpeg.format = "MPEG4"
+        scene.render.ffmpeg.codec = "H264"
+        scene.render.ffmpeg.constant_rate_factor = "HIGH"
 
 
 def main():
@@ -536,7 +623,7 @@ def main():
         print(f"[ERROR] Spec file not found: {spec_path}", file=sys.stderr)
         sys.exit(1)
 
-    with open(spec_path, "r", encoding="utf-8") as f:
+    with open(spec_path, "r", encoding="utf-8-sig") as f:
         spec = json.load(f)
 
     print(f"[INFO] Initializing scene and character...")
@@ -546,15 +633,23 @@ def main():
     setup_camera_and_animate(spec)
 
     print(f"[INFO] Configuring render settings (resolution={spec.get('resolution')}, total_frames={spec.get('total_frames')})...")
-    configure_render_settings(spec, args.output)
+    configure_render_settings(spec, args.output, render_frame=args.render_frame)
 
     if args.dry_run:
         print(f"[OK] Dry-run completed successfully. Scene configured, rendering skipped.")
         return
 
-    print(f"[INFO] Starting Blender animation rendering to: {args.output}")
-    bpy.ops.render.render(animation=True)
-    print(f"[OK] Animation render completed: {args.output}")
+    is_still = args.render_frame is not None or args.output.lower().endswith((".png", ".jpg", ".jpeg"))
+    if is_still:
+        target_f = args.render_frame if args.render_frame is not None else 1
+        bpy.context.scene.frame_set(target_f)
+        print(f"[INFO] Rendering still frame {target_f} to: {args.output}")
+        bpy.ops.render.render(write_still=True)
+        print(f"[OK] Still frame {target_f} render completed: {args.output}")
+    else:
+        print(f"[INFO] Starting Blender animation rendering to: {args.output}")
+        bpy.ops.render.render(animation=True)
+        print(f"[OK] Animation render completed: {args.output}")
 
 
 if __name__ == "__main__":

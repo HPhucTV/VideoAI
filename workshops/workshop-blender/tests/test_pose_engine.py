@@ -158,3 +158,47 @@ def test_apply_blink_keyframes_mock():
 
     # Test alias apply_blink_keyframes
     assert apply_blink_keyframes == apply_blink_keyframes_to_mesh
+
+
+def test_apply_blink_keyframes_bilateral_priority():
+    # When both bilateral and unilateral shape keys exist, only bilateral should be keyed
+    kb_bilateral = MagicMock()
+    kb_bilateral.name = "Fcl_EYE_Close"
+    kb_bilateral.value = 0.0
+
+    kb_left = MagicMock()
+    kb_left.name = "Blink_L"
+    kb_left.value = 0.0
+
+    kb_right = MagicMock()
+    kb_right.name = "Blink_R"
+    kb_right.value = 0.0
+
+    mock_mesh = MagicMock()
+    mock_mesh.data.shape_keys.key_blocks = [kb_bilateral, kb_left, kb_right]
+
+    result = apply_blink_keyframes_to_mesh(mock_mesh, start_frame=1, end_frame=150, fps=30)
+    assert result == ["Fcl_EYE_Close"]
+    assert kb_bilateral.keyframe_insert.called
+    assert not kb_left.keyframe_insert.called
+    assert not kb_right.keyframe_insert.called
+
+
+def test_apply_blink_keyframes_unilateral_fallback():
+    # When only unilateral shape keys exist, both left and right should be keyed
+    kb_left = MagicMock()
+    kb_left.name = "Blink_L"
+    kb_left.value = 0.0
+
+    kb_right = MagicMock()
+    kb_right.name = "Blink_R"
+    kb_right.value = 0.0
+
+    mock_mesh = MagicMock()
+    mock_mesh.data.shape_keys.key_blocks = [kb_left, kb_right]
+
+    result = apply_blink_keyframes_to_mesh(mock_mesh, start_frame=1, end_frame=150, fps=30)
+    assert set(result) == {"Blink_L", "Blink_R"}
+    assert kb_left.keyframe_insert.called
+    assert kb_right.keyframe_insert.called
+

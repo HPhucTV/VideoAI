@@ -333,20 +333,36 @@ def apply_blink_keyframes_to_mesh(
             continue
         key_blocks = getattr(shape_keys, "key_blocks", [])
 
+        bilateral_candidates = []
+        unilateral_candidates = []
+
         for kb in key_blocks:
             name_lower = kb.name.lower()
+            is_unilateral = any(
+                tag in name_lower
+                for tag in ("_l", "_r", ".l", ".r", "-l", "-r", "left", "right")
+            )
             is_blink = (
                 "fcl_eye_close" in name_lower
-                or "blink" in name_lower
-                or name_lower == "target_0"
                 or "eye_close" in name_lower
+                or name_lower == "target_0"
+                or "blink" in name_lower
             )
             if is_blink:
-                for frame, val in keyframes:
-                    kb.value = val
-                    if hasattr(kb, "keyframe_insert"):
-                        kb.keyframe_insert(data_path="value", frame=frame)
-                modified_keys.append(kb.name)
+                if is_unilateral:
+                    unilateral_candidates.append(kb)
+                else:
+                    bilateral_candidates.append(kb)
+
+        # Prioritize bilateral shape keys to avoid double eyelid deformation
+        target_kbs = bilateral_candidates if bilateral_candidates else unilateral_candidates
+
+        for kb in target_kbs:
+            for frame, val in keyframes:
+                kb.value = val
+                if hasattr(kb, "keyframe_insert"):
+                    kb.keyframe_insert(data_path="value", frame=frame)
+            modified_keys.append(kb.name)
 
     return modified_keys
 
