@@ -108,29 +108,29 @@ git commit -m "feat(blender): implement pose_engine for humanoid armature posing
 - Modify: `workshops/workshop-blender/job_adapter.py`
 - Modify Test: `workshops/workshop-blender/tests/test_blender_adapter.py`
 
-- [ ] **Step 1: Cập nhật unit test yêu cầu spec chứa thông tin model và pose**
+- [x] **Step 1: Cập nhật unit test yêu cầu spec chứa thông tin model và pose**
 
 Thêm assertions trong `test_blender_adapter.py` xác nhận mỗi shot trong `spec["shots"]` có trường `character_model` (ví dụ `"nam-chinh"`) và `character_pose` (ví dụ `"cast_spell"` hoặc `"hands_clasped_back"`).
 
-- [ ] **Step 2: Chạy test để xác nhận FAIL**
+- [x] **Step 2: Chạy test để xác nhận FAIL**
 
 ```powershell
 workshops/workshop-whiteboard/.venv/Scripts/python.exe -m pytest workshops/workshop-blender/tests/test_blender_adapter.py
 ```
 
-- [ ] **Step 3: Cập nhật `workshops/workshop-blender/job_adapter.py`**
+- [x] **Step 3: Cập nhật `workshops/workshop-blender/job_adapter.py`**
 
 - Đọc `character_models = metadata.get("character_models", {})`.
 - Ánh xạ speaker của beat sang character model tương ứng (mặc định fallback về `"nam-chinh"` nếu là nam hoặc không tìm thấy).
 - Gọi `map_beat_to_pose(beat.get("role", ""), speaker)` để xác định `character_pose` cho từng shot.
 
-- [ ] **Step 4: Chạy lại test xác nhận PASS 100%**
+- [x] **Step 4: Chạy lại test xác nhận PASS 100%**
 
 ```powershell
 workshops/workshop-whiteboard/.venv/Scripts/python.exe -m pytest workshops/workshop-blender/tests/test_blender_adapter.py
 ```
 
-- [ ] **Step 5: Git commit**
+- [x] **Step 5: Git commit**
 
 ```bash
 git add workshops/workshop-blender/job_adapter.py workshops/workshop-blender/tests/test_blender_adapter.py
@@ -144,7 +144,7 @@ git commit -m "feat(blender): add character model resolution and shot pose mappi
 **Files:**
 - Modify: `workshops/workshop-blender/scripts/blender_renderer.py`
 
-- [ ] **Step 1: Cập nhật `blender_renderer.py` tích hợp import GLB nhân vật thực**
+- [x] **Step 1: Cập nhật `blender_renderer.py` tích hợp import GLB nhân vật thực**
 
 - Thay thế hàm dựng hình trụ thô bằng hàm `load_and_setup_character(model_id: str, location: tuple)`:
   + Tìm file `model.glb` trong `assets/characters/<model_id>/model.glb`.
@@ -155,14 +155,14 @@ git commit -m "feat(blender): add character model resolution and shot pose mappi
   + Tại `start_frame` của từng shot, đặt keyframe góc xoay xương cánh tay/thân người khớp với `shot["character_pose"]`.
   + Gán keyframe chớp mắt tự nhiên trên mesh `Face` để nhân vật sống động như thật.
 
-- [ ] **Step 2: Kiểm tra chạy thử nghiệm headless renderer**
+- [x] **Step 2: Kiểm tra chạy thử nghiệm headless renderer**
 
 Chạy script với cờ `--dry-run` để đảm bảo code nạp model và gắn keyframe chạy trơn tru:
 ```powershell
 & "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b -P workshops/workshop-blender/scripts/blender_renderer.py -- --spec test_spec.json --output test_out.mp4 --dry-run
 ```
 
-- [ ] **Step 3: Git commit**
+- [x] **Step 3: Git commit**
 
 ```bash
 git add workshops/workshop-blender/scripts/blender_renderer.py

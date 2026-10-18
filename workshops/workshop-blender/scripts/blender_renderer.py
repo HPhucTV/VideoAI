@@ -27,6 +27,25 @@ except ImportError:
     print("[ERROR] Script must be executed inside Blender's embedded Python environment.", file=sys.stderr)
     sys.exit(1)
 
+# Add workshop-blender root to sys.path for pose_engine imports
+SCRIPT_DIR = Path(__file__).resolve().parent
+WB_ROOT = SCRIPT_DIR.parent
+if str(WB_ROOT) not in sys.path:
+    sys.path.insert(0, str(WB_ROOT))
+
+try:
+    from pose_engine import (
+        apply_pose_to_armature,
+        apply_blink_keyframes_to_mesh,
+        get_supported_poses,
+    )
+except ImportError:
+    from workshops.workshop_blender.pose_engine import (
+        apply_pose_to_armature,
+        apply_blink_keyframes_to_mesh,
+        get_supported_poses,
+    )
+
 # Preset camera positions for dynamic shot choreography
 CAMERA_POSITIONS = {
     "dolly_in": {
@@ -47,8 +66,8 @@ CAMERA_POSITIONS = {
     },
 }
 
-# Focal target for camera view (centered between character and divine sword)
-SCENE_TARGET = mathutils.Vector((0.0, -0.6, 2.0))
+# Focal target for camera view (tracks character upper body and face)
+SCENE_TARGET = mathutils.Vector((0.0, -1.8, 2.1))
 
 
 def parse_args():
@@ -158,7 +177,113 @@ def add_cube(name, scale, location, rotation=(0.0, 0.0, 0.0), material=None):
     return obj
 
 
-def setup_scene_and_character():
+def create_standin_character(location=(0.0, -2.1, 1.0)):
+    """Creates a basic geometric stand-in when 3D asset is not found."""
+    char_robe = create_material("Standin_Robe", base_color=(0.03, 0.08, 0.22, 1.0), roughness=0.75)
+    char_skin = create_material("Standin_Skin", base_color=(0.85, 0.70, 0.58, 1.0), roughness=0.55)
+    x, y, z = location
+    add_cylinder("Standin_Body", radius=0.32, depth=1.5, location=(x, y, z + 0.75), material=char_robe)
+    add_sphere("Standin_Head", radius=0.2, location=(x, y, z + 1.7), material=char_skin)
+    return None, None
+
+
+def load_and_setup_character(
+    model_id: str = "nam-chinh",
+    location: tuple[float, float, float] = (0.0, -2.1, 1.0),
+    rotation: tuple[float, float, float] = (0.0, 0.0, 0.0),
+) -> tuple[bpy.types.Object | None, bpy.types.Object | None]:
+    """
+    Resolves asset path and loads a rigged humanoid 3D character (.glb) into Blender.
+    Applies initial position, rotation, and scaling from character config.
+    Returns (armature_obj, face_obj).
+    """
+    model_name = (model_id or "nam-chinh").strip()
+    char_dir = WB_ROOT / "assets" / "characters" / model_name
+    glb_path = None
+
+    if (char_dir / "model.glb").is_file():
+        glb_path = char_dir / "model.glb"
+    elif (char_dir / "seed.glb").is_file():
+        glb_path = char_dir / "seed.glb"
+    elif char_dir.is_dir():
+        cand_glbs = sorted(list(char_dir.glob("*.glb")))
+        if cand_glbs:
+            glb_path = cand_glbs[0]
+
+    if not glb_path or not glb_path.is_file():
+        fallback_path = WB_ROOT / "assets" / "characters" / "nam-chinh" / "model.glb"
+        if fallback_path.is_file():
+            print(f"[WARN] Character '{model_name}' not found at {char_dir}. Falling back to default 'nam-chinh'.", file=sys.stderr)
+            glb_path = fallback_path
+            char_dir = fallback_path.parent
+
+    if not glb_path or not glb_path.is_file():
+        print(f"[WARN] No 3D model found for character '{model_name}'. Falling back to geometric stand-in.", file=sys.stderr)
+        return create_standin_character(location=location)
+
+    scale = 1.0
+    config_path = char_dir / "config.json"
+    if config_path.is_file():
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+                scale = float(cfg.get("default_scale", 1.0))
+        except Exception as e:
+            print(f"[WARN] Could not parse config {config_path}: {e}", file=sys.stderr)
+
+    pre_objs = set(bpy.data.objects)
+    print(f"[INFO] Importing 3D character asset: {glb_path} (scale={scale})...")
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    imported_objs = [o for o in bpy.data.objects if o not in pre_objs]
+
+    armature_obj = next((o for o in imported_objs if o.type == "ARMATURE"), None)
+    face_obj = next(
+        (o for o in imported_objs if o.type == "MESH" and ("face" in o.name.lower() or (o.data and o.data.shape_keys))),
+        None,
+    )
+
+    if armature_obj:
+        armature_obj.location = location
+        armature_obj.rotation_euler = rotation
+        armature_obj.scale = (scale, scale, scale)
+        print(f"[OK] Character armature '{armature_obj.name}' placed at {location} with scale {scale}.")
+    else:
+        print(f"[WARN] No ARMATURE found in imported objects for '{model_name}'.", file=sys.stderr)
+
+    return armature_obj, face_obj
+
+
+def setup_character_animation(armature_obj, face_obj, spec: dict):
+    """
+    Keyframes character poses per shot and sets up procedural blinking.
+    """
+    if armature_obj:
+        shots = spec.get("shots", [])
+        supported = set(get_supported_poses())
+        if not shots:
+            apply_pose_to_armature(armature_obj, "idle_stand", keyframe=1)
+        else:
+            for shot in shots:
+                char_pose = shot.get("character_pose") or "idle_stand"
+                if char_pose not in supported:
+                    print(f"[WARN] Unsupported pose '{char_pose}', falling back to 'idle_stand'.", file=sys.stderr)
+                    char_pose = "idle_stand"
+                start_frame = int(shot.get("start_frame", 1))
+                modified = apply_pose_to_armature(armature_obj, char_pose, keyframe=start_frame)
+                print(f"[INFO] Shot {shot.get('id', '?')}: Applied pose '{char_pose}' at frame {start_frame} ({len(modified)} bones modified).")
+
+    target_face = face_obj or armature_obj
+    if target_face:
+        total_frames = int(spec.get("total_frames", 90))
+        fps = int(spec.get("fps", 30))
+        blink_keys = apply_blink_keyframes_to_mesh(target_face, start_frame=1, end_frame=total_frames, fps=fps)
+        if blink_keys:
+            print(f"[INFO] Applied procedural blink keyframes to shape keys: {blink_keys}")
+        else:
+            print(f"[INFO] Procedural blinking checked ({total_frames} frames, {fps} fps).")
+
+
+def setup_scene_and_character(spec: dict | None = None) -> tuple[bpy.types.Object | None, bpy.types.Object | None]:
     """
     Cleans up old scene data and creates:
     - Dark mystical world background
@@ -166,14 +291,16 @@ def setup_scene_and_character():
     - 3-tier octagonal stone altar
     - 4 warding stone pillars with glowing spirit orbs
     - Divine Sword embedded at altar center
-    - Taoist Monk character standing before the altar with hands clasped behind back
+    - High-fidelity rigged humanoid character with dynamic poses and blinks
     - 3-point cinematic lighting (MoonKey, WarmFill, AuraLight)
     """
-    # 1. Clear old meshes, lights, cameras, materials
+    # 1. Clear old meshes, lights, cameras, materials, armatures
     for obj in list(bpy.data.objects):
         bpy.data.objects.remove(obj, do_unlink=True)
     for mesh in list(bpy.data.meshes):
         bpy.data.meshes.remove(mesh, do_unlink=True)
+    for arm in list(bpy.data.armatures):
+        bpy.data.armatures.remove(arm, do_unlink=True)
     for mat in list(bpy.data.materials):
         bpy.data.materials.remove(mat, do_unlink=True)
     for light in list(bpy.data.lights):
@@ -222,24 +349,6 @@ def setup_scene_and_character():
         emission_color=(0.0, 0.9, 1.0, 1.0),
         emission_strength=8.0
     )
-    char_skin = create_material(
-        "CharSkin",
-        base_color=(0.85, 0.70, 0.58, 1.0),
-        metallic=0.0,
-        roughness=0.55
-    )
-    char_robe = create_material(
-        "CharRobe",
-        base_color=(0.03, 0.08, 0.22, 1.0),
-        metallic=0.05,
-        roughness=0.75
-    )
-    char_hair = create_material(
-        "CharHair",
-        base_color=(0.02, 0.02, 0.025, 1.0),
-        metallic=0.1,
-        roughness=0.6
-    )
 
     # 4. Octagonal Altar Base (r=4.0), Mid (r=3.2), Core (r=1.6)
     add_cylinder("Altar_Base", radius=4.0, depth=0.5, location=(0.0, 0.0, 0.25), vertices=8, material=dark_stone)
@@ -263,19 +372,16 @@ def setup_scene_and_character():
     # - Pommel
     add_sphere("DivineSword_Pommel", radius=0.09, location=(0.0, 0.0, 4.08), material=spirit_aura)
 
-    # 7. Character: Taoist Monk standing before altar with hands clasped behind back
-    # Ground at character position on Mid tier is z = 1.0
-    char_y = -2.3
-    add_cylinder("Char_RobeLower", radius=0.32, depth=0.9, location=(0.0, char_y, 1.45), material=char_robe)
-    add_cube("Char_Chest", scale=(0.52, 0.32, 0.65), location=(0.0, char_y, 2.15), material=char_robe)
-    add_cylinder("Char_Neck", radius=0.08, depth=0.15, location=(0.0, char_y, 2.52), material=char_skin)
-    add_sphere("Char_Head", radius=0.18, location=(0.0, char_y, 2.72), material=char_skin)
-    add_cylinder("Char_HairBun", radius=0.09, depth=0.15, location=(0.0, char_y, 2.92), material=char_hair)
-    add_cylinder("Char_HairPin", radius=0.015, depth=0.35, location=(0.0, char_y, 2.92), rotation=(0.0, math.radians(90), 0.0), material=ancient_gold)
-    # Arms and hands clasped behind back
-    add_cylinder("Char_LeftArm", radius=0.07, depth=0.45, location=(-0.20, char_y + 0.12, 1.95), rotation=(math.radians(30), math.radians(20), 0.0), material=char_robe)
-    add_cylinder("Char_RightArm", radius=0.07, depth=0.45, location=(0.20, char_y + 0.12, 1.95), rotation=(math.radians(30), math.radians(-20), 0.0), material=char_robe)
-    add_sphere("Char_HandsClasped", radius=0.09, location=(0.0, char_y + 0.16, 1.82), material=char_skin)
+    # 7. Character: High-fidelity rigged humanoid character standing before altar
+    shots = spec.get("shots", []) if spec else []
+    primary_model_id = "nam-chinh"
+    if shots and isinstance(shots, list) and len(shots) > 0 and isinstance(shots[0], dict):
+        primary_model_id = shots[0].get("character_model") or "nam-chinh"
+
+    armature_obj, face_obj = load_and_setup_character(primary_model_id, location=(0.0, -2.1, 1.0), rotation=(0.0, 0.0, 0.0))
+
+    if spec:
+        setup_character_animation(armature_obj, face_obj, spec)
 
     # 8. 3-Point Cinematic Lighting
     # MoonKey (cool blue moonlight angled downwards)
@@ -434,7 +540,7 @@ def main():
         spec = json.load(f)
 
     print(f"[INFO] Initializing scene and character...")
-    setup_scene_and_character()
+    setup_scene_and_character(spec)
 
     print(f"[INFO] Setting up camera animation for {len(spec.get('shots', []))} shots...")
     setup_camera_and_animate(spec)
