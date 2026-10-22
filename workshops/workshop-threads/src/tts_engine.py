@@ -122,6 +122,10 @@ SLANG_DICTIONARY = [
     (r"\bgen\s*z\b|\bgenz\b", "gien zi"),
 
     # Viết tắt thông dụng mạng xã hội
+    (r"\bhđqt\b|\bhdqt\b", "hội đồng quản trị"),
+    (r"\bbcuoi\b|\bbuonc\b", "buồn cười"),
+    (r"\bvc\b|\bvch\b", "vãi chưởng"),
+    (r"\btr\s+ơi\b|\btr\s+oi\b", "trời ơi"),
     (r"\bko\b|\bk\b|\bhok\b", "không"),
     (r"\bđc+\b|\bdc+\b", "được"),
     (r"\bđag\b", "đang"),

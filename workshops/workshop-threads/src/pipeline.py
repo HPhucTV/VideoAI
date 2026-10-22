@@ -9,6 +9,7 @@ import glob
 import json
 import logging
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -223,9 +224,10 @@ def build_threads_video(
     if publish_youtube:
         try:
             from scripts.youtube_publisher import upload_unlisted_video
-            post_title = post.get("content", "Câu chuyện Threads viral")
-            video_title = f"{post_title[:60]} #Shorts #Threads"
-            desc = f"{post_title}\n\nTheo dõi kênh @HanShin-g8i để nghe thêm nhiều câu chuyện hay!\n#HanShin #Threads #Shorts"
+            raw_title = post.get("content", "Câu chuyện Threads viral").replace("\n", " ").strip()
+            clean_title = re.sub(r"\s+", " ", raw_title)
+            video_title = f"{clean_title[:60]} #Shorts #Threads"
+            desc = f"{post.get('content', '')}\n\nTheo dõi kênh @HanShin-g8i để nghe thêm nhiều câu chuyện hay!\n#HanShin #Threads #Shorts"
             tags = ["HanShin", "Threads", "Shorts", "Reddit", "Drama", "Story"]
 
             youtube_result = upload_unlisted_video(
