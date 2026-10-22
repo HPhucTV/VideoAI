@@ -103,9 +103,43 @@ def render_card(
         elif post_image_url.startswith("http://") or post_image_url.startswith("https://"):
             post_media_html = f'<div class="post-media-container"><img class="post-media-img" src="{post_image_url}" alt="media" /></div>'
 
-    # 3. Badge Đang trả lời (Reply badge)
+    # 3. Badge Reply & Nested Parent Context (Cây hội thoại phân nhánh)
     reply_badge_html = ""
-    if is_reply_to:
+    nested_parent_html = ""
+    if parent_context and isinstance(parent_context, dict):
+        p_user = html.escape(parent_context.get("username", "author"))
+        p_time = html.escape(parent_context.get("time", "1 ngày"))
+        p_snippet = html.escape(parent_context.get("content", ""))
+        if len(p_snippet) > 85:
+            p_snippet = p_snippet[:82] + "..."
+        p_snippet = p_snippet.replace("\n", " ")
+
+        p_avatar = parent_context.get("avatar_url")
+        if p_avatar and os.path.exists(p_avatar):
+            p_avatar_src = f"file:///{Path(p_avatar).resolve().as_posix()}"
+            p_avatar_tag = f'<img class="parent-avatar" src="{p_avatar_src}" alt="p_avatar" />'
+        elif p_avatar and (p_avatar.startswith("http://") or p_avatar.startswith("https://")):
+            p_avatar_tag = f'<img class="parent-avatar" src="{p_avatar}" alt="p_avatar" />'
+        else:
+            p_avatar_tag = f'<div class="parent-avatar-fallback">{p_user[0].upper()}</div>'
+
+        nested_parent_html = f"""
+        <div class="nested-parent">
+          <div class="parent-left">
+            {p_avatar_tag}
+            <div class="thread-line"></div>
+          </div>
+          <div class="parent-body">
+            <div class="parent-top">
+              <span class="parent-username">{p_user}</span>
+              <span class="dot">•</span>
+              <span class="parent-time">{p_time}</span>
+            </div>
+            <div class="parent-snippet">{p_snippet}</div>
+          </div>
+        </div>
+        """
+    elif is_reply_to:
         reply_badge_html = f'<div class="reply-badge">Đang trả lời <span class="reply-target">@{html.escape(is_reply_to)}</span></div>'
 
     # 4. Brand Header (Đỉnh Video - Watermark nhận diện kênh)
@@ -231,6 +265,74 @@ def render_card(
     color: {text_color};
   }}
 
+  /* Cây hội thoại Threads (Nested Parent Thread) */
+  .nested-parent {{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 4px;
+    position: relative;
+  }}
+  .parent-left {{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 44px;
+    flex-shrink: 0;
+  }}
+  .parent-avatar {{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }}
+  .parent-avatar-fallback {{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #333639;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+  }}
+  .thread-line {{
+    width: 2px;
+    flex-grow: 1;
+    min-height: 24px;
+    background: #383b40;
+    border-radius: 2px;
+    margin-top: 6px;
+    margin-bottom: -6px;
+  }}
+  .parent-body {{
+    flex-grow: 1;
+    padding-top: 2px;
+    padding-bottom: 10px;
+  }}
+  .parent-top {{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }}
+  .parent-username {{
+    font-size: 16px;
+    font-weight: 700;
+    color: {user_color};
+  }}
+  .parent-time {{
+    color: {muted_color};
+    font-size: 13px;
+  }}
+  .parent-snippet {{
+    font-size: 16px;
+    color: {muted_color};
+    line-height: 1.35;
+    word-break: break-word;
+  }}
+
   /* Hàng tác giả trên cùng */
   .card-top {{
     display: flex;
@@ -354,6 +456,8 @@ def render_card(
   {brand_header_html}
 
   <div class="threads-card">
+    {nested_parent_html}
+
     <div class="card-top">
       <div class="user-info">
         {avatar_html}

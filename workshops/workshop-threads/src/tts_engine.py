@@ -220,6 +220,82 @@ def normalize_slang(text: str) -> str:
     return unicodedata.normalize("NFC", normalized)
 
 
+def detect_emotion(text: str) -> dict:
+    """
+    Phân tích ngữ cảnh câu thoại để xác định sắc thái cảm xúc,
+    tự động điều biến cao độ (pitch), tốc độ (rate) và lựa chọn sound effect (SFX) phù hợp:
+    - shock: Bất ngờ, ngạc nhiên, cảm thán mạnh -> vine_boom.wav, rate: +28%, pitch: +2Hz
+    - question: Băn khoăn, nghi vấn, hoang mang -> huh.wav, rate: +22%, pitch: +1Hz
+    - sad: Than thở, đau đớn, bất lực, buồn bã -> whoosh.wav, rate: +18%, pitch: -3Hz
+    - aha: Phát hiện, ngộ ra, đồng tình -> ding.wav, rate: +25%, pitch: +0Hz
+    - neutral: Mặc định -> pop.wav, rate: +25%, pitch: +0Hz
+    """
+    t_lower = text.lower()
+
+    # 1. Shock / Dramatic Impact
+    shock_keywords = [
+        "má ơi", "y chang", "vãi", "trời ơi", "vcl", "vch", "sốc",
+        "duma", "đuma", "bất ngờ", "đột nhiên", "tốc xích", "kinh khủng"
+    ]
+    if any(k in t_lower for k in shock_keywords) or (("má" in t_lower or "y chang" in t_lower) and "!" in text):
+        return {
+            "emotion": "shock",
+            "rate": "+28%",
+            "pitch": "+2Hz",
+            "sfx": "vine_boom.wav",
+            "shake": True,
+        }
+
+    # 2. Confusion / Quizzical
+    question_keywords = [
+        "là sao", "hổng", "chật vật", "không hiểu", "quên sạch",
+        "sao lại", "quăng", "bỏ đi", "chịu luôn", "ngáo", "lú"
+    ]
+    if any(k in t_lower for k in question_keywords) or "?" in text:
+        return {
+            "emotion": "question",
+            "rate": "+22%",
+            "pitch": "+1Hz",
+            "sfx": "huh.wav",
+            "shake": False,
+        }
+
+    # 3. Lament / Sadness / Despair
+    sad_keywords = [
+        "đau", "khóc", "rớt", "thảm", "bất công", "bcvl", "kiệt sức", "toang", "xu cà na"
+    ]
+    if any(k in t_lower for k in sad_keywords) or "..." in text or "💔" in text:
+        return {
+            "emotion": "sad",
+            "rate": "+18%",
+            "pitch": "-3Hz",
+            "sfx": "whoosh.wav",
+            "shake": False,
+        }
+
+    # 4. Insight / Idea / Aha
+    aha_keywords = [
+        "chuẩn", "chính xác", "bí quyết", "hiểu rồi", "nhớ rồi", "ra rồi", "hay quá"
+    ]
+    if any(k in t_lower for k in aha_keywords):
+        return {
+            "emotion": "aha",
+            "rate": "+25%",
+            "pitch": "+0Hz",
+            "sfx": "ding.wav",
+            "shake": False,
+        }
+
+    # 5. Neutral
+    return {
+        "emotion": "neutral",
+        "rate": "+25%",
+        "pitch": "+0Hz",
+        "sfx": "pop.wav",
+        "shake": False,
+    }
+
+
 def get_audio_duration(audio_path: str | Path) -> float:
     """Đo thời lượng file audio chính xác bằng ffprobe."""
     cmd = [
@@ -238,20 +314,23 @@ async def _synthesize_async(
     out_file: str | Path,
     voice: str = "vi-VN-NamMinhNeural",
     rate: str = "+25%",
+    pitch: str = "+0Hz",
 ) -> None:
     voices_to_try = [voice, "vi-VN-NamMinhNeural", "vi-VN-HoaiMyNeural"]
     rates_to_try = [rate, "+25%", "+0%"]
+    pitches_to_try = [pitch, "+0Hz"]
 
     for v in dict.fromkeys(voices_to_try):
         for r in dict.fromkeys(rates_to_try):
-            for attempt in range(1, 4):
-                try:
-                    communicate = edge_tts.Communicate(text, v, rate=r)
-                    await communicate.save(str(out_file))
-                    if Path(out_file).exists() and Path(out_file).stat().st_size > 500:
-                        return
-                except Exception:
-                    await asyncio.sleep(0.5 * attempt)
+            for p in dict.fromkeys(pitches_to_try):
+                for attempt in range(1, 4):
+                    try:
+                        communicate = edge_tts.Communicate(text, v, rate=r, pitch=p)
+                        await communicate.save(str(out_file))
+                        if Path(out_file).exists() and Path(out_file).stat().st_size > 500:
+                            return
+                    except Exception:
+                        await asyncio.sleep(0.5 * attempt)
 
     raise RuntimeError(f"Edge-TTS failed to synthesize text: {text[:50]}...")
 
@@ -263,6 +342,7 @@ def synthesize_speech(
     rate: str = "+25%",
     pitch: str = "+0Hz",
     apply_slang_norm: bool = True,
+    auto_emotion: bool = False,
 ) -> float:
     """
     Sinh file âm thanh Edge-TTS tiếng Việt chuẩn 48kHz.
@@ -273,6 +353,11 @@ def synthesize_speech(
 
     tts_text = normalize_slang(text) if apply_slang_norm else unicodedata.normalize("NFC", text.strip())
 
-    asyncio.run(_synthesize_async(tts_text, out_path, voice=voice, rate=rate))
+    if auto_emotion:
+        emo = detect_emotion(text)
+        rate = emo.get("rate", rate)
+        pitch = emo.get("pitch", pitch)
+
+    asyncio.run(_synthesize_async(tts_text, out_path, voice=voice, rate=rate, pitch=pitch))
 
     return get_audio_duration(out_path)

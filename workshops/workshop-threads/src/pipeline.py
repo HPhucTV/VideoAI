@@ -29,7 +29,7 @@ _SFX_POP = _ASSETS_DIR / "sfx" / "pop.wav"
 _BGM_DIR = _ASSETS_DIR / "bgm"
 _CACHE_DIR = _WORKSHOP_DIR / "cache"
 
-from tts_engine import synthesize_speech
+from tts_engine import synthesize_speech, detect_emotion
 from card_engine import render_card
 from compositor import make_threads_video
 from scraper import cache_media
@@ -47,14 +47,16 @@ def build_threads_video(
     bgm_path: Optional[str | Path] = None,
     default_male_voice: str = "vi-VN-NamMinhNeural",
     default_female_voice: str = "vi-VN-HoaiMyNeural",
+    enable_spring_pop: bool = True,
+    enable_karaoke: bool = True,
     publish_youtube: bool = False,
     privacy: str = "unlisted",
 ) -> Dict[str, Any]:
     """
     Quy trình sản xuất tự động toàn diện Xưởng 5:
-    1. Sinh TTS giọng đọc đối thoại tiếng Việt (NamMinh / HoaiMy + Slang Normalizer).
-    2. Render các thẻ Threads / HanShin chuẩn PNG trong suốt 1080x1920.
-    3. Ghép video nền gameplay + âm thanh pop + thẻ bài viết.
+    1. Phân tích cảm xúc & Sinh TTS giọng đọc đối thoại tiếng Việt (NamMinh / HoaiMy + Slang + Emotion Pitch Modulation).
+    2. Render các thẻ Threads / HanShin chuẩn PNG trong suốt (Nested Threads View + AMOLED #101010).
+    3. Ghép video nền gameplay + Smart Emotional SFX (Vine Boom, Huh, Pop, Whoosh) + hiệu ứng nảy Spring Pop + Karaoke Highlight.
     4. Xuất video MP4 chuẩn định dạng TikTok/Reels/Shorts.
     5. Tùy chọn đẩy lên YouTube kênh HanShin qua Cổng 7.
     """
@@ -72,7 +74,6 @@ def build_threads_video(
     if background_path and Path(background_path).exists():
         bg_video = Path(background_path).resolve()
     else:
-        # Ưu tiên minecraft_parkour.mp4 hoặc video gameplay
         mc_candidates = list(_BG_DIR.glob("*minecraft*.mp4")) or list(_BG_DIR.glob("*parkour*.mp4"))
         if mc_candidates:
             bg_video = mc_candidates[0]
@@ -94,12 +95,19 @@ def build_threads_video(
     post_tts = post.get("tts_content", post_content)
     post_audio = session_cache / "post_voice.mp3"
 
-    logger.info("Sinh âm thanh cho Post chính...")
+    post_emo = detect_emotion(post_content)
+    post_rate = post.get("rate", post_emo.get("rate", "+25%"))
+    post_pitch = post.get("pitch", post_emo.get("pitch", "+0Hz"))
+    post_sfx = post.get("sfx", post_emo.get("sfx", "pop.wav"))
+    post_shake = post.get("shake", post_emo.get("shake", False))
+
+    logger.info("Sinh âm thanh cho Post chính (Emotion: %s, Rate: %s, Pitch: %s)...", post_emo["emotion"], post_rate, post_pitch)
     post_dur = synthesize_speech(
         text=post_tts,
         out_file=post_audio,
         voice=post_voice,
-        rate="+25%",
+        rate=post_rate,
+        pitch=post_pitch,
     )
 
     # Cache avatar & post media
@@ -124,22 +132,38 @@ def build_threads_video(
         "card_png": str(post_card_png),
         "audio_mp3": str(post_audio),
         "duration": post_dur,
+        "text": post_tts,
+        "sfx": post_sfx,
+        "shake": post_shake,
     })
 
-    # 3. Xử lý chuỗi bình luận (Comments)
+    # 3. Xử lý chuỗi bình luận (Comments) với Nested Parent Thread UI
+    parent_ctx = {
+        "username": post.get("username", "threads_user"),
+        "time": post.get("time", "1 ngày"),
+        "content": post_content,
+        "avatar_url": avatar_cached,
+    }
+
     comments = thread_data.get("comments", [])
     for idx, c in enumerate(comments):
-        # Đan xen giọng đọc để tạo cảm giác đối thoại sinh động
         c_voice = c.get("voice", default_female_voice if idx % 2 == 0 else default_male_voice)
         c_content = c.get("content", "")
         c_tts = c.get("tts_content", c_content)
         c_audio = session_cache / f"comment_{idx}_voice.mp3"
 
+        c_emo = detect_emotion(c_content)
+        c_rate = c.get("rate", c_emo.get("rate", "+25%"))
+        c_pitch = c.get("pitch", c_emo.get("pitch", "+0Hz"))
+        c_sfx = c.get("sfx", c_emo.get("sfx", "pop.wav"))
+        c_shake = c.get("shake", c_emo.get("shake", False))
+
         c_dur = synthesize_speech(
             text=c_tts,
             out_file=c_audio,
             voice=c_voice,
-            rate="+25%",
+            rate=c_rate,
+            pitch=c_pitch,
         )
 
         c_avatar_cached = cache_media(c.get("avatar_url"), session_cache / "avatars", prefix=f"c_{idx}_avatar")
@@ -154,7 +178,7 @@ def build_threads_video(
             likes=str(c.get("likes", "45")),
             comments=str(c.get("comments", "3")),
             reposts=str(c.get("reposts", "1")),
-            is_reply_to=post.get("username"),
+            parent_context=parent_ctx,
             theme=theme,
         )
 
@@ -162,6 +186,9 @@ def build_threads_video(
             "card_png": str(c_card_png),
             "audio_mp3": str(c_audio),
             "duration": c_dur,
+            "text": c_tts,
+            "sfx": c_sfx,
+            "shake": c_shake,
         })
 
     # 4. Lắp ráp video hoàn chỉnh
@@ -175,7 +202,7 @@ def build_threads_video(
         if bgm_files:
             bgm_selected = bgm_files[0]
 
-    logger.info("Ghép nối video hoàn chỉnh qua FFmpeg...")
+    logger.info("Ghép nối video hoàn chỉnh qua FFmpeg (Spring Pop & Karaoke Subtitles)...")
     make_threads_video(
         background_path=bg_video,
         segments=segments,
@@ -185,6 +212,8 @@ def build_threads_video(
         width=1080,
         height=1920,
         pause_between=0.35,
+        enable_spring_pop=enable_spring_pop,
+        enable_karaoke=enable_karaoke,
     )
 
     logger.info("🎉 Video thành phẩm đã sẵn sàng: %s", final_video_path)

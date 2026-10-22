@@ -5,7 +5,7 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
 
 ---
 
-## 🏛 HỆ THỐNG 4 PHÂN XƯỞNG SẢN XUẤT (WORKSHOPS)
+## 🏛 HỆ THỐNG 5 PHÂN XƯỞNG SẢN XUẤT (WORKSHOPS)
 
 1. **Xưởng 1: Tin Tức & Đồ Họa Nhanh (`workshops/workshop-news`)**
    - Format: 9:16 Dọc @ 30 FPS. Công nghệ: HyperFrames (HTML/CSS/GSAP).
@@ -16,6 +16,9 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
 4. **Xưởng 4: Phim Điện Ảnh 3D & Donghua (`workshops/workshop-cinematic`)**
    - Format: 16:9 Ngang (1920x1080) @ 60 FPS hoặc 24/30 FPS điện ảnh.
    - Công nghệ: FastAPI FlowKit daemon, Google Imagen 3, Google Veo 2, Microsoft Edge-TTS Vietnamese Neural, FFmpeg Master Assembly.
+5. **Xưởng 5: Threads & Social Drama (`workshops/workshop-threads`)**
+   - Format: 9:16 Dọc @ 60 FPS (1080x1920 Shorts/Reels/TikTok).
+   - Công nghệ: Headless Chrome Native Screenshot, Microsoft Edge-TTS Vietnamese Neural + Slang & Phonetic Normalizer, FFmpeg Compositor (Minecraft/GTA5 gameplay + SFX Pop + Lo-fi BGM).
 
 ---
 
@@ -127,6 +130,48 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
 > 1. **Bắt buộc tự động chụp màn hình (Headless Browser Screenshot):** Khi nhận link bài báo hoặc GitHub repo, hệ thống phải mở trình duyệt ngầm (Puppeteer/Playwright) chụp lại giao diện thực tế (Header, số Stars/Forks, bảng tính năng, diagram).
 > 2. **Render tài liệu mẫu thành ảnh sắc nét:** Nếu repo có file PDF/LaTeX mẫu (CV, báo cáo), phải bóc tách render trang 1 thành ảnh để minh họa trực quan.
 > 3. **Trình diễn qua khung Mockup thiết bị:** Tư liệu thực tế phải được đặt trong khung Browser Frame, Laptop 3D hoặc Mobile Mockup (chiếm 45-50% khung hình), không để ảnh chìm sau lớp nền tối mờ.
+
+---
+
+## 📱 NGUYÊN TẮC BẮT BUỘC CHO VIDEO THREADS (XƯỞNG 5 — NATIVE SCREENSHOT & AUDIO PURIFIER)
+
+> ⚠️ **MANDATORY POLICY FOR WORKSHOP 5 (THREADS & SOCIAL DRAMA):**
+> Video Threads phải tái hiện 100% cảm giác "Chụp màn hình điện thoại nguyên bản" (Native Mobile App Screenshot) từ các bài đăng viral, tuyệt đối cấm tạo cảm giác đồ họa 3D render giả tạo hoặc phát âm ngọng tiếng Anh.
+
+### 6 Quy Tắc Bất Di Bất Dịch Của Xưởng 5:
+
+1. **QUY TẮC CHUẨN DARK MODE AMOLED (#101010) & KÍCH THƯỚC PIXEL-PERFECT (CẤM THẺ TRẮNG PHỒNG TO GIẢ LẬP):**
+   - **Mặc định 100% video Threads sử dụng Dark Mode AMOLED (`#101010`)**: Viền sắc nét mỏng `1px solid #282828`, bo góc thanh thoát `18px`, chiều rộng chuẩn `820px` (chiếm ~76% chiều ngang khung hình 1080px), padding `22px 24px`.
+   - **TUYỆT ĐỐI CẤM** dùng thẻ nền trắng bệch (`#ffffff`) hoặc kích thước phồng to `880px` bo tròn `32px` kiểu render 3D làm người xem cảm giác như dán miếng bìa PowerPoint lên video game.
+   - **Typography tự nhiên chuẩn San Francisco / Segoe UI**: Cỡ chữ `24px`, độ dày chữ vừa phải (`font-weight: 400 - 500`), khoảng cách dòng `line-height: 1.45`, không in đậm toàn bộ văn bản.
+   - **Đầy đủ chi tiết UI Threads gốc**: Avatar 44px tròn, Username bold, chấm tròn `•`, thời gian đăng (vd: `21 giờ`), **nút 3 chấm `···` ở góc phải**, logo Threads và hàng 4 icon vector chính hãng (Tim, Bình luận, Repost xoay vòng, Máy bay chia sẻ).
+
+2. **QUY TẮC BẮT BUỘC DÙNG AVATAR THẬT & ẢNH GỐC (PHƯƠNG PHÁP A2 — CẤM FALLBACK CHỮ CÁI):**
+   - **Bắt buộc tải và sử dụng 100% Avatar thật** của chủ bài viết VÀ của từng người bình luận từ CDN Instagram (`scontent.cdninstagram.com`).
+   - **TUYỆT ĐỐI CẤM** fallback sang hình tròn màu có chữ cái đầu (như K, P, T,...) vì làm video trông giả tạo và mất độ uy tín của bài thảo luận thật.
+   - **Ảnh Meme đính kèm**: Phải giữ nguyên tỉ lệ aspect ratio tự nhiên của ảnh gốc, đặt trong khung bo góc `14px` có viền `1px solid rgba(255, 255, 255, 0.12)`.
+
+3. **QUY TẮC BỘ LỌC DỌN SẠCH 100% ICON RÁC & PHIÊN ÂM NGỮ ÂM TIẾNG ANH (AUDIO PURIFIER):**
+   - **Lọc sạch 100% icon rác trước khi đưa vào Edge-TTS**: Loại bỏ toàn bộ các ký tự mặt cười ASCII (`=)))`, `:)))`, `:>`, `^^`, `:3`, `:v`, `xD`, `T_T`...) và Unicode emoji để tránh giọng đọc đọc lỗi tên ký hiệu hoặc chắp vá thô kệch.
+   - **Phiên âm ngữ âm các thuật ngữ tiếng Anh / viết tắt mạng xã hội**:
+     - `teamwork` / `taowork` $\rightarrow$ *"tim quớc"*, `gánh team` $\rightarrow$ *"gánh tim"*, `teammate` $\rightarrow$ *"tim mét"*.
+     - `deadline` $\rightarrow$ *"đét lai"*, `slide` $\rightarrow$ *"xờ lai"*, `project` $\rightarrow$ *"pờ rô dếch"*, `presentation` $\rightarrow$ *"p-re zen"*.
+     - `leader` $\rightarrow$ *"lít đờ"*, `mentor` $\rightarrow$ *"men tò"*, `toxic` $\rightarrow$ *"tốc xích"*, `drama` $\rightarrow$ *"đra ma"*, `flex` $\rightarrow$ *"phờ lếch"*.
+     - `tsv` $\rightarrow$ *"tân sinh viên"*, `dh` $\rightarrow$ *"đại học"*, `sv` $\rightarrow$ *"sinh viên"*, `clb` $\rightarrow$ *"câu lạc bộ"*.
+     - `Tsb` $\rightarrow$ *"trời đất ơi"*, `đag` $\rightarrow$ *"đang"*, `đc` / `đccc` $\rightarrow$ *"được"*, `điii` $\rightarrow$ *"đi"*, `uh` $\rightarrow$ *"ừ"*.
+   - **Bảo toàn văn bản hiển thị (Visual Text)**: Văn bản hiển thị trên thẻ card giữ nguyên vẹn 100% nguyên gốc của tác giả (kể cả icon và tiếng lóng), chỉ có âm thanh TTS là được chuẩn hóa phát âm.
+
+4. **QUY TẮC CĂN GIỮA ĐỐI XỨNG TUYỆT ĐỐI CHO AVATAR WATERMARK KÊNH (ĐỘ LỆCH TÂM 0.0PX):**
+   - Ảnh Avatar kênh trên đỉnh canvas (`y ≈ 130px`) phải được trích xuất chính xác theo tọa độ tâm đối xứng từ ảnh gốc kênh YouTube kèm mặt nạ tròn alpha, đảm bảo vòng tròn viền trắng và logo kênh hoàn toàn đồng tâm (sai số lệch tâm $0.0px$), tuyệt đối không để xảy ra vệt khuyết đen hoặc cắt lẹm logo.
+
+5. **QUY TẮC CÂY HỘI THOẠI (NESTED THREAD VIEW), SPRING POP & KARAOKE HIGHLIGHT:**
+   - **Nested Thread View**: Các bình luận luôn hiển thị bài viết chính thu nhỏ ở phía trên kết nối bằng **đường kẻ dọc xám (Thread Connector Line)** chạy thẳng từ avatar tác giả xuống avatar người bình luận, tái hiện 100% cấu trúc phản hồi gốc của ứng dụng Threads.
+   - **Spring Pop-in Physics**: Thẻ bài viết khi xuất hiện nảy lên với phương trình dao động tắt dần vật lý (`y = center + 35*exp(-14*t)*cos(18*t)`), tạo cảm giác nảy lò xo mượt mà chuẩn ứng dụng iOS, kết hợp micro-shake khi có cảm thán mạnh.
+   - **Dynamic Word-by-Word Karaoke Highlight**: Phụ đề chạy chữ tự động tô sáng màu Vàng chanh / Cyan neon theo từng từ giọng đọc lướt qua ở góc dưới màn hình, tối đa hóa Retention Rate người xem.
+
+6. **QUY TẮC BỘ ÂM THANH BIỂU CẢM (SMART EMOTIONAL SFX & VOICE MODULATION):**
+   - **Smart Emotional SFX**: Tự động nhận diện ngữ cảnh câu thoại để kích hoạt âm thanh phù hợp: *Vine Boom* (cảm thán giật gân, bàng hoàng), *Huh?* (thắc mắc, khó hiểu, quên bài), *Whoosh* (than thở, bất lực, buồn bã), *Ding* (bí quyết, sáng suốt), và *Pop* (chuyển cảnh tiêu chuẩn).
+   - **Emotion Pitch & Rate Modulation**: Tự động điều chỉnh cao độ và nhịp đọc theo cảm xúc câu thoại (kịch tính tăng tốc + nâng cao độ, than thở hạ giọng trầm ấm và chậm rãi).
 
 ---
 
