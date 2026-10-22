@@ -109,7 +109,7 @@ def make_threads_video(
     height: int = 1920,
     pause_between: float = 0.35,
     enable_spring_pop: bool = True,
-    enable_karaoke: bool = True,
+    enable_karaoke: bool = False,
 ) -> Path:
     """
     Render video Threads hoàn chỉnh 9:16:

@@ -164,10 +164,10 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
 4. **QUY TẮC CĂN GIỮA ĐỐI XỨNG TUYỆT ĐỐI CHO AVATAR WATERMARK KÊNH (ĐỘ LỆCH TÂM 0.0PX):**
    - Ảnh Avatar kênh trên đỉnh canvas (`y ≈ 130px`) phải được trích xuất chính xác theo tọa độ tâm đối xứng từ ảnh gốc kênh YouTube kèm mặt nạ tròn alpha, đảm bảo vòng tròn viền trắng và logo kênh hoàn toàn đồng tâm (sai số lệch tâm $0.0px$), tuyệt đối không để xảy ra vệt khuyết đen hoặc cắt lẹm logo.
 
-5. **QUY TẮC CÂY HỘI THOẠI (NESTED THREAD VIEW), SPRING POP & KARAOKE HIGHLIGHT:**
+5. **QUY TẮC CÂY HỘI THOẠI (NESTED THREAD VIEW), SPRING POP & TỐI GIẢN PHỤ ĐỀ (CẤM ĐÈ KARAOKE DƯ THỪA):**
    - **Nested Thread View**: Các bình luận luôn hiển thị bài viết chính thu nhỏ ở phía trên kết nối bằng **đường kẻ dọc xám (Thread Connector Line)** chạy thẳng từ avatar tác giả xuống avatar người bình luận, tái hiện 100% cấu trúc phản hồi gốc của ứng dụng Threads.
    - **Spring Pop-in Physics**: Thẻ bài viết khi xuất hiện nảy lên với phương trình dao động tắt dần vật lý (`y = center + 35*exp(-14*t)*cos(18*t)`), tạo cảm giác nảy lò xo mượt mà chuẩn ứng dụng iOS, kết hợp micro-shake khi có cảm thán mạnh.
-   - **Dynamic Word-by-Word Karaoke Highlight**: Phụ đề chạy chữ tự động tô sáng màu Vàng chanh / Cyan neon theo từng từ giọng đọc lướt qua ở góc dưới màn hình, tối đa hóa Retention Rate người xem.
+   - **Tối giản phụ đề (Zero Karaoke Clutter)**: Thẻ bài Threads trung tâm đã chứa đầy đủ 100% nội dung văn bản rõ nét, tuyệt đối không đốt phụ đề karaoke chạy chữ ở đáy màn hình để tránh rối mắt và che lấp hình nền gameplay.
 
 6. **QUY TẮC BỘ ÂM THANH BIỂU CẢM (SMART EMOTIONAL SFX & VOICE MODULATION):**
    - **Smart Emotional SFX**: Tự động nhận diện ngữ cảnh câu thoại để kích hoạt âm thanh phù hợp: *Vine Boom* (cảm thán giật gân, bàng hoàng), *Huh?* (thắc mắc, khó hiểu, quên bài), *Whoosh* (than thở, bất lực, buồn bã), *Ding* (bí quyết, sáng suốt), và *Pop* (chuyển cảnh tiêu chuẩn).

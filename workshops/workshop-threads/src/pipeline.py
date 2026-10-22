@@ -49,7 +49,7 @@ def build_threads_video(
     default_male_voice: str = "vi-VN-NamMinhNeural",
     default_female_voice: str = "vi-VN-HoaiMyNeural",
     enable_spring_pop: bool = True,
-    enable_karaoke: bool = True,
+    enable_karaoke: bool = False,
     publish_youtube: bool = False,
     privacy: str = "unlisted",
 ) -> Dict[str, Any]:

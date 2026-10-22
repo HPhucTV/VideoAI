@@ -138,6 +138,7 @@ def main():
         job_id="job_thread_thanhtruc_hdqt",
         background_path=mc_bg if mc_bg.exists() else None,
         theme="dark",
+        enable_karaoke=False,
         publish_youtube=True,
         privacy="unlisted"
     )

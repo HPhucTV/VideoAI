@@ -173,7 +173,7 @@ Khung canvas: **1920 × 1080 pixel @ 30fps / 60fps / 90fps**.
    - Khi hiển thị bình luận, bài viết chính xuất hiện thu nhỏ ở trên kết nối qua **đường kẻ dọc xám (Thread Connector Line)** chạy thẳng xuống avatar người bình luận.
    - Hiệu ứng nảy thẻ lò xo vật lý (`Spring Pop-in Physics` qua FFmpeg overlay: `y = center + 35*exp(-14*t)*cos(18*t)`), micro-shake khi có cảm thán mạnh.
 
-6. **Phụ Đề Dynamic Karaoke Highlight & Bộ SFX Biểu Cảm:**
-   - Phụ đề chạy chữ tự động tô sáng màu Vàng chanh / Cyan neon theo từng từ giọng đọc lướt qua ở góc dưới.
+6. **Bộ SFX Biểu Cảm & Tối Giản Phụ Đề (Zero Clutter):**
+   - Thẻ bài Threads trung tâm đã hiển thị đầy đủ 100% nội dung chữ, loại bỏ hoàn toàn phụ đề karaoke chạy chữ dưới chân để khung hình thông thoáng, tập trung trọn vẹn vào thẻ bài và gameplay nền.
    - Bộ âm thanh biểu cảm: *Vine Boom* (giật gân, sốc), *Huh?* (thắc mắc, khó hiểu), *Whoosh* (than thở, buồn bã), *Ding* (bí quyết, sáng suốt), và *Pop* (chuyển cảnh tiêu chuẩn).
 
