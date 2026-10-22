@@ -49,12 +49,21 @@ output/**/*.webp
 output/news/*
 output/explainer/*
 output/whiteboard/*
+output/blender/*
+output/cinematic/*
 !output/news/.gitkeep
 !output/explainer/.gitkeep
 !output/whiteboard/.gitkeep
+!output/blender/.gitkeep
+!output/cinematic/.gitkeep
 !output/jobs/
 !output/jobs/*.json
 !output/jobs/.gitkeep
+
+# Archives & Temporary Packages
+workshops/flowkit-main.zip
+*.zip
+*.tar.gz
 
 # Workshop Ephemeral Files
 workshops/workshop-explainer/output/
@@ -71,6 +80,12 @@ workshops/workshop-whiteboard/preview.html
 .env.local
 *.env
 !*.env.example
+client_secrets.json
+*client_secret*.json
+token.json
+*token*.json
+workshops/workshop-cinematic/youtube/channels/*/token.json
+workshops/workshop-cinematic/youtube/channels/*/client_secrets.json
 
 # OS and IDE files
 .DS_Store

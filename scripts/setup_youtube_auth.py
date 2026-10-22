@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 OmniVideo Studio - Trình Thiết Lập Xác Thực & Đăng Nhập Kênh YouTube
-Hướng dẫn và tự động mở trình duyệt để cấp quyền OAuth2 một lần duy nhất.
+Hướng dẫn và mở đường link xác thực OAuth2 một lần duy nhất.
 """
 from __future__ import annotations
 
@@ -9,31 +9,29 @@ import argparse
 import json
 import logging
 import os
+import subprocess
 import sys
 from pathlib import Path
 
+# Force utf-8 encoding and unbuffered output so print flushes immediately
 if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
 if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CINEMATIC_DIR = ROOT_DIR / "workshops" / "workshop-cinematic"
 if str(CINEMATIC_DIR) not in sys.path:
     sys.path.insert(0, str(CINEMATIC_DIR))
 
-# Link to venv packages if available
-venv_site = CINEMATIC_DIR / ".venv" / "Lib" / "site-packages"
-if venv_site.exists() and str(venv_site) not in sys.path:
-    sys.path.insert(0, str(venv_site))
-
 try:
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
     from googleapiclient.discovery import build
-except ImportError:
-    print("❌ Thiếu thư viện Google OAuth. Đang kiểm tra...", flush=True)
+except ImportError as e:
+    print(f"❌ Thiếu thư viện Google OAuth ({e}). Hãy chạy với venv của workshop-cinematic.", flush=True)
+    sys.exit(1)
 
 SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload",
@@ -92,24 +90,31 @@ def check_or_setup_auth(channel_name: str = DEFAULT_CHANNEL):
     # 2. Check client_secrets.json
     if not secrets_file.exists():
         print("❌ CHƯA TÌM THẤY FILE: client_secrets.json", flush=True)
-        print("-" * 65, flush=True)
-        print("👉 HƯỚNG DẪN 3 BƯỚC NHẬN FILE XÁC THỰC TỪ GOOGLE (1 lần duy nhất):", flush=True)
-        print("  1. Truy cập: https://console.cloud.google.com/apis/credentials", flush=True)
-        print("  2. Bật API 'YouTube Data API v3' tại: https://console.cloud.google.com/apis/library/youtube.googleapis.com", flush=True)
-        print("  3. Nhấn 'Create Credentials' -> 'OAuth client ID' -> Chọn loại 'Desktop app'.", flush=True)
-        print("  4. Tải file JSON về máy, đổi tên thành 'client_secrets.json' và đặt vào một trong các vị trí sau:", flush=True)
-        print(f"     📍 Vị trí 1: {secrets_file}")
-        print(f"     📍 Vị trí 2 (Thư mục gốc): {root_secrets}\n")
-        print("Sau khi copy file xong, hãy chạy lại lệnh này để hoàn tất đăng nhập!", flush=True)
         return False
 
-    # 3. Launch OAuth Browser Flow
-    print("🌐 Đang khởi động trình duyệt để đăng nhập tài khoản Google YouTube...", flush=True)
-    print("👉 Hãy nhấn 'Cho phép' (Allow) trên tab trình duyệt vừa mở để cấp quyền đăng video.", flush=True)
+    # 3. Launch OAuth Flow cleanly
+    flow = InstalledAppFlow.from_client_secrets_file(
+        str(secrets_file),
+        scopes=SCOPES,
+    )
+
+    prompt_msg = (
+        "\n" + "=" * 65 + "\n"
+        "👉 HÃY BẤM VÀO ĐƯỜNG LINK SAU ĐỂ ĐĂNG NHẬP GOOGLE YOUTUBE:\n"
+        "{url}\n"
+        + "=" * 65 + "\n"
+        "Đang lắng nghe phản hồi từ trình duyệt tại cổng 8088...\n"
+    )
 
     try:
-        flow = InstalledAppFlow.from_client_secrets_file(str(secrets_file), SCOPES)
-        creds = flow.run_local_server(port=0)
+        creds = flow.run_local_server(
+            port=8088,
+            authorization_prompt_message=prompt_msg,
+            success_message="Xac thuc thanh cong! Ban co the dong tab trinh duyet nay lai va quay ve IDE.",
+            open_browser=False,
+            prompt="consent",
+            access_type="offline",
+        )
 
         # Save token
         token_file.write_text(creds.to_json(), encoding="utf-8")
