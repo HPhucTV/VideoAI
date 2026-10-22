@@ -1,0 +1,12 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Karaoke,Arial,44,&H00FFFFFF,&H0000DAF5,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,0,2,40,40,320,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:02.00,Karaoke,,0,0,0,,{\k50}Học {\k50}sinh {\k50}hai {\k50}ca

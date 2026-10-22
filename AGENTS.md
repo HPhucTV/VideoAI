@@ -138,7 +138,7 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
 > ⚠️ **MANDATORY POLICY FOR WORKSHOP 5 (THREADS & SOCIAL DRAMA):**
 > Video Threads phải tái hiện 100% cảm giác "Chụp màn hình điện thoại nguyên bản" (Native Mobile App Screenshot) từ các bài đăng viral, tuyệt đối cấm tạo cảm giác đồ họa 3D render giả tạo hoặc phát âm ngọng tiếng Anh.
 
-### 6 Quy Tắc Bất Di Bất Dịch Của Xưởng 5:
+### 7 Quy Tắc Bất Di Bất Dịch Của Xưởng 5:
 
 1. **QUY TẮC CHUẨN DARK MODE AMOLED (#101010) & KÍCH THƯỚC PIXEL-PERFECT (CẤM THẺ TRẮNG PHỒNG TO GIẢ LẬP):**
    - **Mặc định 100% video Threads sử dụng Dark Mode AMOLED (`#101010`)**: Viền sắc nét mỏng `1px solid #282828`, bo góc thanh thoát `18px`, chiều rộng chuẩn `820px` (chiếm ~76% chiều ngang khung hình 1080px), padding `22px 24px`.
@@ -169,9 +169,20 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
    - **Spring Pop-in Physics**: Thẻ bài viết khi xuất hiện nảy lên với phương trình dao động tắt dần vật lý (`y = center + 35*exp(-14*t)*cos(18*t)`), tạo cảm giác nảy lò xo mượt mà chuẩn ứng dụng iOS, kết hợp micro-shake khi có cảm thán mạnh.
    - **Tối giản phụ đề (Zero Karaoke Clutter)**: Thẻ bài Threads trung tâm đã chứa đầy đủ 100% nội dung văn bản rõ nét, tuyệt đối không đốt phụ đề karaoke chạy chữ ở đáy màn hình để tránh rối mắt và che lấp hình nền gameplay.
 
-6. **QUY TẮC BỘ ÂM THANH BIỂU CẢM (SMART EMOTIONAL SFX & VOICE MODULATION):**
-   - **Smart Emotional SFX**: Tự động nhận diện ngữ cảnh câu thoại để kích hoạt âm thanh phù hợp: *Vine Boom* (cảm thán giật gân, bàng hoàng), *Huh?* (thắc mắc, khó hiểu, quên bài), *Whoosh* (than thở, bất lực, buồn bã), *Ding* (bí quyết, sáng suốt), và *Pop* (chuyển cảnh tiêu chuẩn).
-   - **Emotion Pitch & Rate Modulation**: Tự động điều chỉnh cao độ và nhịp đọc theo cảm xúc câu thoại (kịch tính tăng tốc + nâng cao độ, than thở hạ giọng trầm ấm và chậm rãi).
+6. **QUY TẮC BỘ ÂM THANH MEME CHÍNH HÃNG & DYNAMIC BGM DUCKING (CẤM ÂM THANH TỔNG HỢP GIẢ LẬP & BGM CHÌM):**
+   - **100% SFX Meme Gốc Chuẩn Mạng Xã Hội:** Tuyệt đối **CẤM** dùng sóng sin hay nhiễu code nhân tạo làm âm thanh giả lập. Sử dụng toàn bộ file âm thanh meme chính hãng 48kHz:
+     - *Vine Boom* (`vine_boom.wav` bass punch siêu lực), *Bruh* (`bruh.wav` giọng nam trầm kinh điển), *Record Scratch* (`record_scratch.wav` cào đĩa than DJ), *Dế đêm* (`cricket.wav` awkward silence), *Sad Trombone* (`sad_trombone.wav` kèn đồng thất bại), *Emotional Damage* (`emotional_damage.wav`), *Metal Pipe* (`metal_pipe.wav`), *Windows Error* (`windows_error.wav`), *Anime Wow* (`anime_wow.wav`), *Quack* (`quack.wav`), *Huh?* (`huh.wav`), *What?!* (`what.wav`), *Ding* (`ding.wav`), *Pop* (`pop.wav`), và *Whoosh* (`whoosh.wav`).
+   - **Kho Nhạc Nền (BGM) Đa Thể Loại & Rõ Nét (Cấm BGM Chìm < 0.25):**
+     - Tuyệt đối không để âm lượng BGM bị chìm (mức âm lượng cơ sở chuẩn đạt `0.35` – `0.40`).
+     - Hỗ trợ 4 phong cách BGM sạch: Sneaky Snitch (*comedy_sneaky.mp3* tấu hài rón rén), Monkeys Spinning Monkeys (*comedy_monkeys.mp3* hề hước nhịp nhanh), Lofi Chill (*lofi_chill.mp3* tâm sự nhẹ nhàng), và Dramatic Suspense (*drama_suspense.mp3* kịch tính dồn dập).
+   - **Kỹ thuật Dynamic Audio Ducking via Sidechain Compression:**
+     - Sử dụng bộ lọc `sidechaincompress` của FFmpeg: BGM tự động hạ âm êm ái khi nhân vật nói thoại, và lập tức dâng tràn đầy năng lượng trong các khoảng lặng, awkward silence, hoặc chuyển card.
+
+7. **QUY TẮC HOOK 3 GIÂY ĐẦU, NHỊP DỪNG BỐI RỐI (AWKWARD SILENCE) & COMEDY VOICE ACTING:**
+   - **Hook 3s "Tát thẳng vào mặt" (Punch-in-the-Face Hook):** Thay vì đọc tuần tự dẫn dắt chậm chạp, câu mở đầu tại frame 0.0s phải đập thẳng vào tình huống trớ trêu/plot-twist giật gân nhất kết hợp **Hook Badge** (Pill banner nổi bật `🔥 KHI BẠN THÂN CHỬI NGƯỜI YÊU BẠN... 🤡`) ngay trên đỉnh thẻ bài.
+   - **Khoảng lặng chết tiệt (Awkward Silence):** Sử dụng thẻ `[pause:0.4]` hoặc `[sfx:record_scratch.wav]` ngắt giọng đúng 0.3s - 0.5s trước cú twist/punchline để tạo khoảng lặng gây cười tự nhiên thay vì nói thao thao bất tuyệt.
+   - **Comedy Voice Acting (Punch-up Kịch bản):** Văn bản hiển thị trên card giữ nguyên 100% gốc Threads, nhưng giọng đọc TTS được lồng ghép biểu cảm (Voice Acting) Gen Z cà khịa, tự nhục, xỉu ngang để video sống động và có hồn.
+   - **Bộ Meme SFX kinh điển:** Tích hợp sẵn `record_scratch.wav` (dừng đĩa than), `cricket.wav` (dế kêu ngượng ngùng), `bruh.wav` (cạn lời), và `sad_trombone.wav` (thất bại thảm hại).
 
 ---
 

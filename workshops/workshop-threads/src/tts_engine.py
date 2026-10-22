@@ -24,6 +24,8 @@ from typing import Optional, Tuple
 
 import edge_tts
 
+_SFX_DIR = Path(__file__).resolve().parent.parent / "assets" / "sfx"
+
 # Từ điển chuyển âm tiếng Anh / thuật ngữ mượn sang ngữ âm tiếng Việt chuẩn xác cho Edge-TTS
 ENGLISH_PHONETIC_MAP = [
     # Thuật ngữ học tập, nhóm & công sở (Ưu tiên từ ghép trước)
@@ -226,20 +228,16 @@ def normalize_slang(text: str) -> str:
 
 def detect_emotion(text: str) -> dict:
     """
-    Phân tích ngữ cảnh câu thoại để xác định sắc thái cảm xúc,
-    tự động điều biến cao độ (pitch), tốc độ (rate) và lựa chọn sound effect (SFX) phù hợp:
-    - shock: Bất ngờ, ngạc nhiên, cảm thán mạnh -> vine_boom.wav, rate: +28%, pitch: +2Hz
-    - question: Băn khoăn, nghi vấn, hoang mang -> huh.wav, rate: +22%, pitch: +1Hz
-    - sad: Than thở, đau đớn, bất lực, buồn bã -> whoosh.wav, rate: +18%, pitch: -3Hz
-    - aha: Phát hiện, ngộ ra, đồng tình -> ding.wav, rate: +25%, pitch: +0Hz
-    - neutral: Mặc định -> pop.wav, rate: +25%, pitch: +0Hz
+    Tự động nhận diện ngữ cảnh và cảm xúc câu thoại để:
+    - Tự động điều biến cao độ (pitch), tốc độ (rate)
+    - Tự động gán Meme SFX kinh điển chuẩn 100% (Vine Boom, Bruh, Record Scratch, Emotional Damage, Metal Pipe, Huh, What, Windows Error, Anime Wow, Sad Trombone, Cricket,...)
     """
     t_lower = text.lower()
 
-    # 1. Shock / Dramatic Impact
+    # 1. Shock / Dramatic Impact -> Vine Boom
     shock_keywords = [
         "má ơi", "y chang", "vãi", "trời ơi", "vcl", "vch", "sốc",
-        "duma", "đuma", "bất ngờ", "đột nhiên", "tốc xích", "kinh khủng"
+        "duma", "đuma", "bất ngờ", "đột nhiên", "tốc xích", "kinh khủng", "chấn động"
     ]
     if any(k in t_lower for k in shock_keywords) or (("má" in t_lower or "y chang" in t_lower) and "!" in text):
         return {
@@ -250,10 +248,141 @@ def detect_emotion(text: str) -> dict:
             "shake": True,
         }
 
-    # 2. Confusion / Quizzical
+    # 2. Emotional Damage / Cà khịa cay đắng / Sát thương tinh thần -> Emotional Damage
+    damage_keywords = [
+        "sát thương", "xát muối", "chửi thấm", "đau ví", "đau lòng", "cay",
+        "nhột", "nhục", "vỡ mộng", "phũ", "cay đắng", "tự nhục", "chửi người yêu", "tác hại"
+    ]
+    if any(k in t_lower for k in damage_keywords):
+        return {
+            "emotion": "damage",
+            "rate": "+24%",
+            "pitch": "+0Hz",
+            "sfx": "emotional_damage.wav",
+            "shake": True,
+        }
+
+    # 3. Metal Pipe / Va chạm sụp đổ / Té ngửa -> Metal Pipe
+    pipe_keywords = [
+        "té ngửa", "vấp ngã", "sụp đổ", "va vào", "đập đầu", "tiếng ống"
+    ]
+    if any(k in t_lower for k in pipe_keywords):
+        return {
+            "emotion": "pipe",
+            "rate": "+28%",
+            "pitch": "+1Hz",
+            "sfx": "metal_pipe.wav",
+            "shake": True,
+        }
+
+    # 4. What / Bàng hoàng phẫn nộ -> What Screaming
+    what_keywords = [
+        "cái gì vậy", "cái gì cơ", "nani", "điên hả", "điên à", "gì cơ"
+    ]
+    if any(k in t_lower for k in what_keywords):
+        return {
+            "emotion": "what",
+            "rate": "+30%",
+            "pitch": "+3Hz",
+            "sfx": "what.wav",
+            "shake": True,
+        }
+
+    # 5. Awkward / Plot-twist / Facepalm -> Record Scratch
+    awkward_keywords = [
+        "quê", "xui xẻo", "mất việc", "hãm", "xỉu", "bất lực", "ngượng", "tăng xông", "lúng túng", "sượng", "sượng trân"
+    ]
+    if any(k in t_lower for k in awkward_keywords):
+        return {
+            "emotion": "awkward",
+            "rate": "+24%",
+            "pitch": "-1Hz",
+            "sfx": "record_scratch.wav",
+            "shake": True,
+        }
+
+    # 6. Bruh / Speechless / Deadpan -> Bruh
+    bruh_keywords = [
+        "tội nghiệp", "cạn lời", "hết cứu", "bó tay", "chịu", "lạy"
+    ]
+    if any(k in t_lower for k in bruh_keywords):
+        return {
+            "emotion": "bruh",
+            "rate": "+20%",
+            "pitch": "-4Hz",
+            "sfx": "bruh.wav",
+            "shake": False,
+        }
+
+    # 7. Fail / Clown / Thất bại thảm hại -> Sad Trombone
+    fail_keywords = [
+        "toang", "rớt môn", "thất bại", "chia tay", "cắm sừng", "bị lừa", "mất tiền", "bay màu", "kiệt sức", "thảm"
+    ]
+    if any(k in t_lower for k in fail_keywords):
+        return {
+            "emotion": "fail",
+            "rate": "+20%",
+            "pitch": "-3Hz",
+            "sfx": "sad_trombone.wav",
+            "shake": False,
+        }
+
+    # 8. Awkward Silence / Lúng túng im bặt -> Cricket
+    silence_keywords = [
+        "im lặng", "im bặt", "không ai nói", "chết lặng", "ngớ người", "đứng hình"
+    ]
+    if any(k in t_lower for k in silence_keywords):
+        return {
+            "emotion": "silence",
+            "rate": "+20%",
+            "pitch": "-2Hz",
+            "sfx": "cricket.wav",
+            "shake": False,
+        }
+
+    # 9. Windows Error / Đơ máy lag não -> Windows Error
+    error_keywords = [
+        "đơ", "lag", "đứng máy", "sập nguồn", "quá tải", "load không kịp", "mất sóng"
+    ]
+    if any(k in t_lower for k in error_keywords):
+        return {
+            "emotion": "error",
+            "rate": "+20%",
+            "pitch": "-2Hz",
+            "sfx": "windows_error.wav",
+            "shake": False,
+        }
+
+    # 10. Wow / Trầm trồ kinh điển / Khen đểu -> Anime Wow
+    wow_keywords = [
+        "kinh điển", "đỉnh nóc", "kịch trần", "đỉnh chóp", "bá đạo", "ảo thật", "siêu phẩm", "quá đỉnh"
+    ]
+    if any(k in t_lower for k in wow_keywords):
+        return {
+            "emotion": "wow",
+            "rate": "+26%",
+            "pitch": "+2Hz",
+            "sfx": "anime_wow.wav",
+            "shake": False,
+        }
+
+    # 11. Quack / Ngớ ngẩn hề hước -> Quack
+    quack_keywords = [
+        "hề", "ngáo", "tấu hài", "ngớ ngẩn", "trẻ trâu"
+    ]
+    if any(k in t_lower for k in quack_keywords):
+        return {
+            "emotion": "quack",
+            "rate": "+26%",
+            "pitch": "+1Hz",
+            "sfx": "quack.wav",
+            "shake": False,
+        }
+
+    # 12. Confusion / Quizzical -> Huh?
     question_keywords = [
         "là sao", "hổng", "chật vật", "không hiểu", "quên sạch",
-        "sao lại", "quăng", "bỏ đi", "chịu luôn", "ngáo", "lú"
+        "sao lại", "quăng", "bỏ đi", "chịu luôn", "lú"
     ]
     if any(k in t_lower for k in question_keywords) or "?" in text:
         return {
@@ -264,22 +393,9 @@ def detect_emotion(text: str) -> dict:
             "shake": False,
         }
 
-    # 3. Lament / Sadness / Despair
-    sad_keywords = [
-        "đau", "khóc", "rớt", "thảm", "bất công", "bcvl", "kiệt sức", "toang", "xu cà na"
-    ]
-    if any(k in t_lower for k in sad_keywords) or "..." in text or "💔" in text:
-        return {
-            "emotion": "sad",
-            "rate": "+18%",
-            "pitch": "-3Hz",
-            "sfx": "whoosh.wav",
-            "shake": False,
-        }
-
-    # 4. Insight / Idea / Aha
+    # 13. Insight / Idea / Aha -> Ding
     aha_keywords = [
-        "chuẩn", "chính xác", "bí quyết", "hiểu rồi", "nhớ rồi", "ra rồi", "hay quá"
+        "chuẩn", "chính xác", "bí quyết", "hiểu rồi", "nhớ rồi", "ra rồi", "hay quá", "sáng suốt"
     ]
     if any(k in t_lower for k in aha_keywords):
         return {
@@ -290,7 +406,20 @@ def detect_emotion(text: str) -> dict:
             "shake": False,
         }
 
-    # 5. Neutral
+    # 14. Lament / Sadness -> Whoosh
+    sad_keywords = [
+        "đau", "khóc", "rớt", "bất công", "bcvl", "xu cà na"
+    ]
+    if any(k in t_lower for k in sad_keywords) or "💔" in text:
+        return {
+            "emotion": "sad",
+            "rate": "+18%",
+            "pitch": "-3Hz",
+            "sfx": "whoosh.wav",
+            "shake": False,
+        }
+
+    # 15. Neutral -> Pop
     return {
         "emotion": "neutral",
         "rate": "+25%",
@@ -350,18 +479,110 @@ def synthesize_speech(
 ) -> float:
     """
     Sinh file âm thanh Edge-TTS tiếng Việt chuẩn 48kHz.
-    Trả về thời lượng âm thanh tính bằng giây.
+    Hỗ trợ chèn các thẻ ngắt nhịp hài hước & Meme SFX:
+    - [pause:0.5]: Dừng im lặng 0.5 giây (Awkward Silence).
+    - [sfx:record_scratch.wav]: Chèn âm thanh record scratch dừng đĩa than.
+    - [sfx:cricket.wav]: Chèn tiếng dế kêu ngượng ngùng.
+    - [sfx:sad_trombone.wav]: Chèn tiếng trombone thất bại hài hước.
+    - [sfx:bruh.wav]: Chèn âm thanh bruh câm nín.
     """
     out_path = Path(out_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-
-    tts_text = normalize_slang(text) if apply_slang_norm else unicodedata.normalize("NFC", text.strip())
 
     if auto_emotion:
         emo = detect_emotion(text)
         rate = emo.get("rate", rate)
         pitch = emo.get("pitch", pitch)
 
-    asyncio.run(_synthesize_async(tts_text, out_path, voice=voice, rate=rate, pitch=pitch))
+    tag_pattern = r"(\[sfx:[^\]]+\]|\[pause:[0-9.]+\])"
+    if not re.search(tag_pattern, text):
+        tts_text = normalize_slang(text) if apply_slang_norm else unicodedata.normalize("NFC", text.strip())
+        asyncio.run(_synthesize_async(tts_text, out_path, voice=voice, rate=rate, pitch=pitch))
+        return get_audio_duration(out_path)
+
+    # Xử lý đa phân đoạn có nhịp dừng & SFX hài hước
+    raw_tokens = [t.strip() for t in re.split(tag_pattern, text) if t.strip()]
+    temp_dir = out_path.parent / f"temp_{out_path.stem}_chunks"
+    temp_dir.mkdir(parents=True, exist_ok=True)
+
+    audio_chunks = []
+    for idx, token in enumerate(raw_tokens):
+        chunk_file = temp_dir / f"chunk_{idx}.wav"
+        if token.startswith("[pause:") and token.endswith("]"):
+            dur_str = token[7:-1]
+            try:
+                pause_dur = float(dur_str)
+            except ValueError:
+                pause_dur = 0.4
+            cmd = [
+                "ffmpeg", "-y",
+                "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
+                "-t", f"{pause_dur:.3f}",
+                "-c:a", "pcm_s16le",
+                str(chunk_file)
+            ]
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            audio_chunks.append(chunk_file)
+
+        elif token.startswith("[sfx:") and token.endswith("]"):
+            sfx_spec = token[5:-1].split(":")
+            sfx_name = sfx_spec[0].strip()
+            sfx_dur = float(sfx_spec[1]) if len(sfx_spec) > 1 else None
+
+            sfx_src = _SFX_DIR / sfx_name
+            if not sfx_src.exists():
+                sfx_src = _SFX_DIR / "pop.wav"
+
+            if sfx_dur:
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-i", str(sfx_src.resolve()),
+                    "-t", f"{sfx_dur:.3f}",
+                    "-ar", "24000", "-ac", "1",
+                    "-c:a", "pcm_s16le",
+                    str(chunk_file)
+                ]
+            else:
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-i", str(sfx_src.resolve()),
+                    "-ar", "24000", "-ac", "1",
+                    "-c:a", "pcm_s16le",
+                    str(chunk_file)
+                ]
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            audio_chunks.append(chunk_file)
+
+        else:
+            sub_tts = normalize_slang(token) if apply_slang_norm else unicodedata.normalize("NFC", token.strip())
+            sub_mp3 = temp_dir / f"chunk_{idx}.mp3"
+            asyncio.run(_synthesize_async(sub_tts, sub_mp3, voice=voice, rate=rate, pitch=pitch))
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", str(sub_mp3.resolve()),
+                "-ar", "24000", "-ac", "1",
+                "-c:a", "pcm_s16le",
+                str(chunk_file)
+            ]
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            audio_chunks.append(chunk_file)
+
+    if audio_chunks:
+        inputs = []
+        filter_parts = []
+        for c_idx, c_path in enumerate(audio_chunks):
+            inputs.extend(["-i", str(c_path.resolve())])
+            filter_parts.append(f"[{c_idx}:a]")
+        concat_str = f"{''.join(filter_parts)}concat=n={len(audio_chunks)}:v=0:a=1[a_out]"
+
+        cmd_concat = [
+            "ffmpeg", "-y",
+            *inputs,
+            "-filter_complex", concat_str,
+            "-map", "[a_out]",
+            "-c:a", "libmp3lame" if out_path.suffix.lower() == ".mp3" else "pcm_s16le",
+            str(out_path)
+        ]
+        subprocess.run(cmd_concat, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     return get_audio_duration(out_path)

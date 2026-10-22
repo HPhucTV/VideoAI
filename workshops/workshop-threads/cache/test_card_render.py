@@ -1,0 +1,211 @@
+import subprocess
+from pathlib import Path
+
+out_dir = Path("workshops/workshop-threads/cache/test_render").resolve()
+out_dir.mkdir(parents=True, exist_ok=True)
+
+avatar_src = Path("shared-assets/branding/hanshin_avatar.png").resolve().as_posix()
+meme_src = Path("workshops/workshop-threads/cache/post_media_njskmel.jpg").resolve().as_posix()
+
+html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * {{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }}
+  body {{
+    width: 1080px;
+    height: 1920px;
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 130px;
+  }}
+  .brand-header {{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 35px;
+  }}
+  .brand-avatar {{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.8);
+  }}
+  .brand-name {{
+    margin-top: 10px;
+    font-size: 26px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.9);
+  }}
+  .threads-card {{
+    width: 820px;
+    background: #101010;
+    border-radius: 18px;
+    padding: 22px 24px;
+    border: 1px solid #282828;
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.75);
+    color: #f3f5f7;
+  }}
+  .card-top {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }}
+  .user-info {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }}
+  .user-avatar {{
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }}
+  .user-names {{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }}
+  .username {{
+    font-size: 20px;
+    font-weight: 700;
+    color: #f3f5f7;
+  }}
+  .dot {{
+    color: #71767b;
+    font-size: 15px;
+  }}
+  .time-ago {{
+    color: #71767b;
+    font-size: 15px;
+    font-weight: 400;
+  }}
+  .top-right-icons {{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #71767b;
+  }}
+  .post-text {{
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: #f3f5f7;
+    margin-bottom: 14px;
+    word-break: break-word;
+    letter-spacing: -0.2px;
+  }}
+  .post-media-container {{
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid #282828;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: #000000;
+  }}
+  .post-media-img {{
+    width: 100%;
+    max-height: 480px;
+    object-fit: contain;
+    display: block;
+  }}
+  .actions-row {{
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-top: 4px;
+    color: #f3f5f7;
+  }}
+  .action-btn {{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 15px;
+    color: #71767b;
+    font-weight: 500;
+  }}
+  .action-btn svg {{
+    width: 22px;
+    height: 22px;
+    stroke: #f3f5f7;
+    stroke-width: 1.8;
+    fill: none;
+  }}
+</style>
+</head>
+<body>
+  <div class="brand-header">
+    <img class="brand-avatar" src="file:///{avatar_src}" />
+    <span class="brand-name">HANSHIN THREADS</span>
+  </div>
+  <div class="threads-card">
+    <div class="card-top">
+      <div class="user-info">
+        <img class="user-avatar" src="file:///{avatar_src}" />
+        <div class="user-names">
+          <span class="username">kem chanh bạc hà</span>
+          <span class="dot">•</span>
+          <span class="time-ago">1 ngày</span>
+        </div>
+      </div>
+      <div class="top-right-icons">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#71767b"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </div>
+    </div>
+    <div class="post-text">tsv sau 2 lần taowork trên dh</div>
+    <div class="post-media-container">
+      <img class="post-media-img" src="file:///{meme_src}" />
+    </div>
+    <div class="actions-row">
+      <div class="action-btn">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <span>4.6K</span>
+      </div>
+      <div class="action-btn">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <span>892</span>
+      </div>
+      <div class="action-btn">
+        <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        <span>135</span>
+      </div>
+      <div class="action-btn">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </div>
+    </div>
+  </div>
+</body>
+</html>"""
+
+temp_html = out_dir / "test.html"
+temp_html.write_text(html_content, encoding="utf-8")
+out_png = out_dir / "test_card.png"
+
+cmd = [
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+    "--headless",
+    "--disable-gpu",
+    "--default-background-color=00000000",
+    "--window-size=1080,1920",
+    f"--screenshot={str(out_png)}",
+    f"file:///{temp_html.as_posix()}",
+]
+subprocess.run(cmd, check=True)
+print("SUCCESS: Screenshot generated at:", out_png)

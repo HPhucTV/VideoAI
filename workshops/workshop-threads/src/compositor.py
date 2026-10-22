@@ -110,6 +110,8 @@ def make_threads_video(
     pause_between: float = 0.35,
     enable_spring_pop: bool = True,
     enable_karaoke: bool = False,
+    bgm_volume: float = 0.38,
+    enable_ducking: bool = True,
 ) -> Path:
     """
     Render video Threads hoàn chỉnh 9:16:
@@ -124,10 +126,12 @@ def make_threads_video(
           "shake": True # rung màn hình nhẹ
         }
     - sfx_pop_path: âm thanh pop khi chuyển card
-    - bgm_path: nhạc nền chill
+    - bgm_path: nhạc nền chill / hài hước
     - output_path: đường dẫn file .mp4 xuất ra
     - enable_spring_pop: hiệu ứng nảy thẻ lò xo vật lý
-    - enable_karaoke: phụ đề karaoke word-by-word highlight
+    - enable_karaoke: phụ đề karaoke word-by-word highlight (mặc định False)
+    - bgm_volume: âm lượng nhạc nền (mặc định 0.38 rõ ràng, không bị chìm)
+    - enable_ducking: tự động hạ âm nhạc nền khi nhân vật nói và nâng lên khi im lặng
     """
     out_file = Path(output_path).resolve()
     out_file.parent.mkdir(parents=True, exist_ok=True)
@@ -159,18 +163,26 @@ def make_threads_video(
     # 2. Xây dựng Master Audio với FFmpeg
     audio_inputs = []
     filter_complex_audio = []
-    mix_labels = []
+    tts_labels = []
 
     for idx, item in enumerate(timeline):
         audio_inputs.extend(["-i", item["audio_mp3"]])
         delay_ms = int(item["start"] * 1000)
         filter_complex_audio.append(f"[{idx}:a]adelay={delay_ms}|{delay_ms}[a_tts_{idx}];")
-        mix_labels.append(f"[a_tts_{idx}]")
+        tts_labels.append(f"[a_tts_{idx}]")
+
+    # Gom toàn bộ giọng đọc TTS thành voice bus
+    if len(tts_labels) == 1:
+        voice_bus_label = tts_labels[0]
+    else:
+        filter_complex_audio.append(f"{''.join(tts_labels)}amix=inputs={len(tts_labels)}:normalize=0[a_voice_raw];")
+        voice_bus_label = "[a_voice_raw]"
 
     # Thêm Smart Emotional SFX tại từng phân đoạn
     next_input_idx = len(timeline)
     sfx_cache = {}
     default_pop = Path(sfx_pop_path) if sfx_pop_path and Path(sfx_pop_path).exists() else (_SFX_DIR / "pop.wav")
+    sfx_labels = []
 
     for item in timeline:
         custom_sfx = item.get("sfx")
@@ -184,29 +196,48 @@ def make_threads_video(
 
             s_idx = sfx_cache[sfx_key]
             delay_ms = int(item["start"] * 1000)
-            vol = 0.85 if "vine_boom" in sfx_key else 0.95
+            vol = 0.90 if "vine_boom" in sfx_key else 0.95
+            sfx_tag = f"[a_sfx_{item['index']}]"
             filter_complex_audio.append(
-                f"[{s_idx}:a]adelay={delay_ms}|{delay_ms},volume={vol}[a_sfx_{item['index']}];"
+                f"[{s_idx}:a]adelay={delay_ms}|{delay_ms},volume={vol}{sfx_tag};"
             )
-            mix_labels.append(f"[a_sfx_{item['index']}]")
+            sfx_labels.append(sfx_tag)
 
-    # Thêm BGM nếu có
+    # Thêm BGM với Dynamic Audio Ducking chuyên nghiệp
     bgm_exists = bgm_path and Path(bgm_path).exists()
+    final_mix_labels = []
+
     if bgm_exists:
         bgm_idx = next_input_idx
         audio_inputs.extend(["-stream_loop", "-1", "-i", str(Path(bgm_path).resolve())])
         next_input_idx += 1
         fade_out_start = max(0.5, total_duration - 1.0)
         filter_complex_audio.append(
-            f"[{bgm_idx}:a]volume=0.14,afade=t=in:ss=0:d=0.5,afade=t=out:st={fade_out_start:.2f}:d=1.0[a_bgm];"
+            f"[{bgm_idx}:a]volume={bgm_volume:.2f},afade=t=in:ss=0:d=0.5,afade=t=out:st={fade_out_start:.2f}:d=1.0[a_bgm_base];"
         )
-        mix_labels.append("[a_bgm]")
+        if enable_ducking:
+            filter_complex_audio.append(f"{voice_bus_label}asplit=2[a_voice_mix][a_voice_sc];")
+            filter_complex_audio.append(
+                "[a_bgm_base][a_voice_sc]sidechaincompress=threshold=0.035:ratio=3.8:attack=25:release=250[a_bgm_ducked];"
+            )
+            final_mix_labels.append("[a_voice_mix]")
+            final_mix_labels.append("[a_bgm_ducked]")
+        else:
+            final_mix_labels.append(voice_bus_label)
+            final_mix_labels.append("[a_bgm_base]")
+    else:
+        final_mix_labels.append(voice_bus_label)
+
+    final_mix_labels.extend(sfx_labels)
 
     # Mix toàn bộ audio
-    total_mix_count = len(mix_labels)
-    filter_complex_audio.append(
-        f"{''.join(mix_labels)}amix=inputs={total_mix_count}:normalize=0:dropout_transition=0[a_master]"
-    )
+    total_mix_count = len(final_mix_labels)
+    if total_mix_count == 1:
+        filter_complex_audio.append(f"{final_mix_labels[0]}anull[a_master]")
+    else:
+        filter_complex_audio.append(
+            f"{''.join(final_mix_labels)}amix=inputs={total_mix_count}:normalize=0:dropout_transition=0[a_master]"
+        )
 
     master_audio_path = temp_dir / "master_audio.wav"
     cmd_audio = [

@@ -63,6 +63,7 @@ def render_card(
     brand_title: str = "HANSHIN THREADS",
     brand_avatar_path: Optional[str | Path] = None,
     parent_context: Optional[Dict[str, str]] = None,
+    hook_badge: Optional[str] = None,
 ) -> Path:
     """
     Render thẻ bài viết Threads thành ảnh PNG trong suốt chuẩn 1080x1920,
@@ -159,6 +160,15 @@ def render_card(
         </div>
         """
 
+    # 4.5. Hook Badge (Tựa đề giật gân 3s đầu thu hút click)
+    hook_badge_html = ""
+    if hook_badge:
+        hook_badge_html = f"""
+        <div class="hook-badge-container">
+          <div class="hook-badge">🔥 {html.escape(hook_badge)}</div>
+        </div>
+        """
+
     # 5. Phối màu theo Theme
     if theme == "light":
         card_bg = "#ffffff"
@@ -252,6 +262,28 @@ def render_card(
     letter-spacing: 2px;
     text-transform: uppercase;
     text-shadow: 0 4px 14px rgba(0, 0, 0, 0.95);
+  }}
+
+  /* Hook Badge (Tựa đề giật gân 3s đầu) */
+  .hook-badge-container {{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 22px;
+  }}
+  .hook-badge {{
+    background: linear-gradient(135deg, #FFE600 0%, #FF8C00 100%);
+    color: #0b0f17;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 10px 24px;
+    border-radius: 30px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 24px rgba(255, 140, 0, 0.45);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
   }}
 
   /* Thẻ Threads chuẩn Native Screenshot */
@@ -454,6 +486,7 @@ def render_card(
 </head>
 <body>
   {brand_header_html}
+  {hook_badge_html}
 
   <div class="threads-card">
     {nested_parent_html}

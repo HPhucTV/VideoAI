@@ -150,7 +150,7 @@ Khung canvas: **1920 × 1080 pixel @ 30fps / 60fps / 90fps**.
 > ⚠️ **MANDATORY POLICY FOR WORKSHOP 5 (THREADS & SOCIAL DRAMA):**
 > Sản xuất video ngắn 9:16 (Shorts/TikTok/Reels) từ các bài đăng Threads và mạng xã hội đạt chuẩn native app, tuyệt đối loại bỏ cảm giác đồ họa giả lập 3D hoặc thiếu tương tác.
 
-### 6 Trụ Cột Kỹ Thuật Độc Quyền Xưởng 5:
+### 7 Trụ Cột Kỹ Thuật Độc Quyền Xưởng 5:
 
 1. **Chuẩn Dark Mode AMOLED (#101010):**
    - Viền mỏng `1px solid #282828`, bo góc nhẹ `18px`, chiều rộng `820px` (76% khung hình 1080px), padding `22px 24px`.
@@ -173,7 +173,19 @@ Khung canvas: **1920 × 1080 pixel @ 30fps / 60fps / 90fps**.
    - Khi hiển thị bình luận, bài viết chính xuất hiện thu nhỏ ở trên kết nối qua **đường kẻ dọc xám (Thread Connector Line)** chạy thẳng xuống avatar người bình luận.
    - Hiệu ứng nảy thẻ lò xo vật lý (`Spring Pop-in Physics` qua FFmpeg overlay: `y = center + 35*exp(-14*t)*cos(18*t)`), micro-shake khi có cảm thán mạnh.
 
-6. **Bộ SFX Biểu Cảm & Tối Giản Phụ Đề (Zero Clutter):**
-   - Thẻ bài Threads trung tâm đã hiển thị đầy đủ 100% nội dung chữ, loại bỏ hoàn toàn phụ đề karaoke chạy chữ dưới chân để khung hình thông thoáng, tập trung trọn vẹn vào thẻ bài và gameplay nền.
-   - Bộ âm thanh biểu cảm: *Vine Boom* (giật gân, sốc), *Huh?* (thắc mắc, khó hiểu), *Whoosh* (than thở, buồn bã), *Ding* (bí quyết, sáng suốt), và *Pop* (chuyển cảnh tiêu chuẩn).
+6. **Bộ Meme SFX Chính Hãng & BGM Đa Thể Loại (Dynamic Sidechain Ducking):**
+   - **Kho SFX Meme Kinh Điển 48kHz (Cấm âm thanh nhân tạo):**
+     - Thay thế 100% âm thanh code tổng hợp bằng file âm thanh meme chính hãng chuẩn studio: *Vine Boom* (bass punch siêu lực), *Bruh* (giọng nam trầm kinh điển), *Record Scratch* (cào đĩa than DJ), *Dế đêm* (cricket awkward silence), *Sad Trombone* (kèn đồng thất bại), *Emotional Damage* (Steven He), *Metal Pipe* (ống kim loại rơi), *Windows Error* (tiếng lỗi XP), *Anime Wow*, *Quack* (vịt ngớ ngẩn), *Huh?* (Kevin Hart), *What?!*, *Ding*, *Pop*, và *Whoosh*.
+   - **Thư Viện Nhạc Nền (BGM) Đa Thể Loại & Rõ Nét (Base Volume 0.38):**
+     - Đầy đủ 4 phong cách BGM sạch: Sneaky Snitch (*comedy_sneaky.mp3* tấu hài rón rén), Monkeys Spinning Monkeys (*comedy_monkeys.mp3* hề hước nhịp nhanh), Lofi Chill (*lofi_chill.mp3* tâm sự nhẹ nhàng), và Dramatic Suspense (*drama_suspense.mp3* kịch tính dồn dập).
+   - **Kỹ thuật Dynamic Audio Ducking chuyên nghiệp:**
+     - Sử dụng bộ lọc `sidechaincompress` của FFmpeg: BGM tự động hạ âm êm dịu khi nhân vật nói thoại, và lập tức dâng tràn đầy năng lượng trong các khoảng lặng, awkward silence, hoặc chuyển card.
+   - **Tối Giản Phụ Đề (Zero Clutter):**
+     - Thẻ bài Threads trung tâm đã hiển thị đầy đủ 100% nội dung chữ, loại bỏ hoàn toàn phụ đề karaoke chạy chữ dưới chân để khung hình thông thoáng, tập trung trọn vẹn vào thẻ bài và gameplay nền.
+
+7. **Hook 3 Giây Đầu, Awkward Silence & Comedy Voice Acting:**
+   - **Visual Hook Badge:** Đặt pill banner giật gân trên đỉnh thẻ bài (ví dụ `🔥 KHI BẠN THÂN CHỬI NGƯỜI YÊU BẠN... 🤡`) để người xem đọc được ngay trong 0.5s đầu.
+   - **Audio Hook trực diện:** Câu thoại mở đầu tát thẳng vào mâu thuẫn/nghịch lý lố bịch nhất, không dẫn dắt rườm rà.
+   - **Khoảng lặng chết tiệt (Awkward Silence):** Ngắt giọng `[pause:0.4]` kết hợp `[sfx:record_scratch.wav]` hoặc `[sfx:cricket.wav]` ngay trước cú plot-twist để tạo nhịp cười đắt giá.
+   - **Voice Acting lồng tiếng biểu cảm:** Diễn cảm xúc trào phúng, tự nhục và cà khịa theo phong cách Gen Z.
 

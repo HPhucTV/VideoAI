@@ -46,6 +46,9 @@ def build_threads_video(
     theme: str = "dark",
     background_path: Optional[str | Path] = None,
     bgm_path: Optional[str | Path] = None,
+    bgm_style: Optional[str] = "comedy_sneaky",
+    bgm_volume: float = 0.38,
+    enable_ducking: bool = True,
     default_male_voice: str = "vi-VN-NamMinhNeural",
     default_female_voice: str = "vi-VN-HoaiMyNeural",
     enable_spring_pop: bool = True,
@@ -126,6 +129,7 @@ def build_threads_video(
         likes=str(post.get("likes", "1.8K")),
         comments=str(post.get("comments", "356")),
         reposts=str(post.get("reposts", "24")),
+        hook_badge=post.get("hook_badge"),
         theme=theme,
     )
 
@@ -199,11 +203,25 @@ def build_threads_video(
     sfx_path = _SFX_POP if _SFX_POP.exists() else None
     bgm_selected = Path(bgm_path) if bgm_path and Path(bgm_path).exists() else None
     if not bgm_selected:
-        bgm_files = list(_BGM_DIR.glob("*.mp3"))
-        if bgm_files:
-            bgm_selected = bgm_files[0]
+        style_key = (bgm_style or "comedy_sneaky").lower().strip()
+        if "monkey" in style_key:
+            target_bgm = _BGM_DIR / "comedy_monkeys.mp3"
+        elif "lofi" in style_key or "chill" in style_key:
+            target_bgm = _BGM_DIR / "lofi_chill.mp3"
+        elif "drama" in style_key or "suspense" in style_key:
+            target_bgm = _BGM_DIR / "drama_suspense.mp3"
+        else:
+            target_bgm = _BGM_DIR / "comedy_sneaky.mp3"
 
-    logger.info("Ghép nối video hoàn chỉnh qua FFmpeg (Spring Pop & Karaoke Subtitles)...")
+        if target_bgm.exists():
+            bgm_selected = target_bgm
+        else:
+            bgm_files = list(_BGM_DIR.glob("*.mp3"))
+            if bgm_files:
+                bgm_selected = bgm_files[0]
+
+    logger.info("Nhạc nền sử dụng: %s (Volume: %.2f, Ducking: %s)", bgm_selected.name if bgm_selected else "None", bgm_volume, enable_ducking)
+    logger.info("Ghép nối video hoàn chỉnh qua FFmpeg (Spring Pop, Dynamic Ducking & Authentic Meme SFX)...")
     make_threads_video(
         background_path=bg_video,
         segments=segments,
@@ -215,6 +233,8 @@ def build_threads_video(
         pause_between=0.35,
         enable_spring_pop=enable_spring_pop,
         enable_karaoke=enable_karaoke,
+        bgm_volume=bgm_volume,
+        enable_ducking=enable_ducking,
     )
 
     logger.info("🎉 Video thành phẩm đã sẵn sàng: %s", final_video_path)
