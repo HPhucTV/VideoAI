@@ -123,14 +123,18 @@ SLANG_DICTIONARY = [
     (r"\bkols?\b|\bkol\b", "kây o eo"),
     (r"\bgen\s*z\b|\bgenz\b", "gien zi"),
 
-    # Viết tắt thông dụng mạng xã hội
+    # Viết tắt thông dụng mạng xã hội & Teen-code
+    (r"\bclm\b|\bclmm\b", "vãi chưởng"),
+    (r"\bđcm\b|\bđcmm\b|\bdcm\b", "bực thật"),
+    (r"\bvcl\b|\bvler\b|\bvch\b", "vãi thật"),
+    (r"\bvl\b", "vãi"),
+    (r"\bvc\b", "vãi chưởng"),
     (r"\bhđqt\b|\bhdqt\b", "hội đồng quản trị"),
     (r"\bbcuoi\b|\bbuonc\b", "buồn cười"),
-    (r"\bvc\b|\bvch\b", "vãi chưởng"),
     (r"\btr\s+ơi\b|\btr\s+oi\b", "trời ơi"),
-    (r"\bko\b|\bk\b|\bhok\b", "không"),
-    (r"\bđc+\b|\bdc+\b", "được"),
-    (r"\bđag\b", "đang"),
+    (r"\bko\b|\bk\b|\bhok\b|\bhơm\b", "không"),
+    (r"\bđc+\b|\bdc+\b|\bđccc+\b", "được"),
+    (r"\bđag\b|\bdag\b", "đang"),
     (r"\bđii+\b", "đi"),
     (r"\buh\b|\buhm\b", "ừ"),
     (r"\bck\b", "chuyển khoản"),
@@ -145,6 +149,8 @@ SLANG_DICTIONARY = [
     (r"\bch\b", "chưa"),
     (r"\bt\b", "tao"),
     (r"\bm\b", "mày"),
+    (r"\bẻ\b", "ỉa"),
+    (r"\bvs\b", "với"),
     (r"\bmik\b|\bmk\b", "mình"),
     (r"\bnhg\b|\bnhma\b", "nhưng mà"),
     (r"\bi\s*chag\b", "y chang"),
@@ -174,9 +180,10 @@ def clean_emoticons_and_noise(text: str) -> str:
     cleaned = text
 
     # 1. Loại bỏ các icon cười dạng văn bản (text emoticons)
-    # Ví dụ: =))), =)), =), :))), :)), :), :D, :P, :>, :v, :3, ^^, xD, T_T, ;)), <3
+    # Ví dụ: =))), =)), =), :))), :)), :), :D, :P, :>, :v, :3, ^^, xD, T_T, ;)), <3, -)), ~))
     emoticon_patterns = [
-        r"[=;:][\)\(\]\[\}\{DPOpdp/\\>vV3]+",
+        r"[-=;:][\)\(\]\[\}\{DPOpdp/\\>vV3]+",
+        r"-+[\)\(]+|~+[\)\(]+",
         r"\b[xX][dD]\b",
         r"\^[\._]?\^|>_<|><|T[\._]?T|TAT|<3|</3|-_-|;\-;",
         r"\b(ha+ha+|he+he+|hi+hi+|hic\s*hic|hu\s*hu|k+k+k+)\b",
@@ -468,6 +475,22 @@ async def _synthesize_async(
     raise RuntimeError(f"Edge-TTS failed to synthesize text: {text[:50]}...")
 
 
+def add_audio_tail_padding(audio_path: Path, pad_dur: float = 0.35) -> Path:
+    """Thêm khoảng lặng an toàn ở đuôi audio để chống nuốt âm tiết cuối của TTS."""
+    temp_pad = audio_path.parent / f"pad_{audio_path.name}"
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", str(audio_path.resolve()),
+        "-af", f"apad=pad_dur={pad_dur:.3f}",
+        "-c:a", "libmp3lame" if audio_path.suffix.lower() == ".mp3" else "pcm_s16le",
+        str(temp_pad.resolve())
+    ]
+    subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    if temp_pad.exists():
+        temp_pad.replace(audio_path)
+    return audio_path
+
+
 def synthesize_speech(
     text: str,
     out_file: str | Path,
@@ -476,6 +499,7 @@ def synthesize_speech(
     pitch: str = "+0Hz",
     apply_slang_norm: bool = True,
     auto_emotion: bool = False,
+    tail_padding: float = 0.35,
 ) -> float:
     """
     Sinh file âm thanh Edge-TTS tiếng Việt chuẩn 48kHz.
@@ -498,6 +522,8 @@ def synthesize_speech(
     if not re.search(tag_pattern, text):
         tts_text = normalize_slang(text) if apply_slang_norm else unicodedata.normalize("NFC", text.strip())
         asyncio.run(_synthesize_async(tts_text, out_path, voice=voice, rate=rate, pitch=pitch))
+        if tail_padding > 0:
+            add_audio_tail_padding(out_path, tail_padding)
         return get_audio_duration(out_path)
 
     # Xử lý đa phân đoạn có nhịp dừng & SFX hài hước
@@ -584,5 +610,7 @@ def synthesize_speech(
             str(out_path)
         ]
         subprocess.run(cmd_concat, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        if tail_padding > 0:
+            add_audio_tail_padding(out_path, tail_padding)
 
     return get_audio_duration(out_path)

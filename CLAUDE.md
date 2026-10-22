@@ -27,8 +27,21 @@ See [AGENTS.md](file:///c:/Users/tranh/Documents/Duy/VideoAI/AGENTS.md) and [doc
 11. **Gate 7 YouTube Unlisted Privacy Mandate:** Automatically package Publishing Kit (Title, Chapters, Tags), upload master MP4, set SRT subtitles, attach High-CTR 3D Thumbnail, and ALWAYS default to `unlisted` privacy.
 12. **Fresh-Render Mandate (Zero Asset Reuse):** Every new episode/job must render 100% fresh assets (images at Gate 3/5, video at Gate 6). Strictly forbid copying or reusing stale clips/images from previous jobs. Isolate output folders per `job_id`.
 
+## Core Rules For Threads Video Production (Workshop 5 - Threads & Social Drama)
+1. **Dark Mode AMOLED (#101010) & Pixel-Perfect Dimensions:** Default to `#101010` dark theme, `1px solid #282828` border, `18px` border-radius, width `820px`, padding `22px 24px`. NEVER use plain white cartoonish bubbly cards.
+2. **Real Avatars & Media (Method A2):** Always cache and display 100% real photographic avatars from Instagram CDN for the post author and all commenters. NEVER fall back to letter initial circles. Preserve post media aspect ratio in `14px` rounded containers.
+3. **Audio Purifier & Slang Normalizer:** Strip 100% ASCII emoticons (`=)))`, `:)))`, `^^`, `-))`, etc.) and emojis before Edge-TTS. Transliterate English loanwords (`teamwork` -> `tim quớc`, `deadline` -> `đét lai`, `tsv` -> `tân sinh viên`, `dh` -> `đại học`, `clm` -> `vãi chưởng`, `t` -> `tao`, `m` -> `mày`, `đc` -> `được`). Add `0.35s tail padding` to prevent syllable clipping.
+4. **Concentric Channel Brand Watermark:** Circular channel avatar at `y ≈ 130px` must be mathematically centered with an alpha circular mask (0.0px offset), accompanied by bold `HANSHIN THREADS` title.
+5. **Nested Thread View & Zero Karaoke Clutter:** Always display parent context snippet with gray vertical connector line. Remove distracting bottom karaoke boxes.
+6. **Audio-Visual Punchline Comedy Sync:** Card entry at `t = 0.0s` only plays subtle `pop.wav` (vol 0.60). Comedic Meme SFX (`vine_boom.wav`, `bruh.wav`, `quack.wav`, etc.) hits at the **punchline moment** synchronized with a die-cut **Meme Sticker (PNG in `assets/memes/`) popping up via spring bounce** in the lower third area.
+7. **Dynamic BGM Ducking:** Base volume `0.35 - 0.40` ducked automatically during speech via sidechain compression, swelling during awkward silences and punchlines.
+
 ## Quick CLI Execution
 - Run unified studio pipeline (Gates 3 -> 7):
   ```bash
   python scripts/studio_pipeline.py --job <job_id> --publish-youtube
+  ```
+- Run Workshop 5 Threads production:
+  ```bash
+  python scripts/produce_njskmel_thread.py
   ```

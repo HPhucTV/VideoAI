@@ -184,6 +184,11 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
    - **Comedy Voice Acting (Punch-up Kịch bản):** Văn bản hiển thị trên card giữ nguyên 100% gốc Threads, nhưng giọng đọc TTS được lồng ghép biểu cảm (Voice Acting) Gen Z cà khịa, tự nhục, xỉu ngang để video sống động và có hồn.
    - **Bộ Meme SFX kinh điển:** Tích hợp sẵn `record_scratch.wav` (dừng đĩa than), `cricket.wav` (dế kêu ngượng ngùng), `bruh.wav` (cạn lời), và `sad_trombone.wav` (thất bại thảm hại).
 
+8. **QUY TẮC ĐỒNG BỘ MEME STICKER VISUAL & PUNCHLINE COMEDY TIMING (AUDIO-VISUAL PUNCHLINE SYNC — CẤM PHÁT SFX Ở ĐẦU CÂU):**
+   - **Cấm hoàn toàn phát Meme SFX ở đầu card:** Khi chuyển card tại `t = 0.0s`, chỉ phát âm thanh `pop.wav` hoặc `whoosh.wav` nhẹ nhàng (âm lượng `0.60`) để báo hiệu card trượt vào.
+   - **Đồng bộ Meme SFX + Sticker Visual tại điểm rơi Punchline:** Khi giọng đọc dứt câu đùa (hoặc tại 1.3s cuối phân cảnh), âm thanh Meme SFX (`vine_boom.wav`, `bruh.wav`, `quack.wav`, `what.wav`, `metal_pipe.wav`,...) vang lên **đồng bộ 100% cùng chiếc Meme Sticker (PNG trong suốt có viền trắng die-cut 10px và bóng đổ) nảy lò xo vật lý (Spring Bounce)** ở khoảng trống dưới card (`y ≈ 1220`).
+   - **Khắc phục triệt để mất chữ & nuốt âm:** Tự động gắn bộ đệm an toàn `+0.35s tail padding` vào đuôi mọi clip TTS để âm tiết cuối không bao giờ bị cắt cụt; mở rộng từ điển Teen-code (`clm` $\rightarrow$ *"vãi chưởng"*, `t` $\rightarrow$ *"tao"*, `m` $\rightarrow$ *"mày"*); lọc sạch toàn bộ ký tự lộn xộn dạng `-))`, `~))` trước khi nạp vào Edge-TTS.
+
 ---
 
 ## 🛠 LỆNH ĐIỀU PHỐI NHANH (QUICK COMMANDS)

@@ -139,6 +139,7 @@ def build_threads_video(
         "duration": post_dur,
         "text": post_tts,
         "sfx": post_sfx,
+        "punchline_offset": post.get("punchline_offset"),
         "shake": post_shake,
     })
 
@@ -193,6 +194,7 @@ def build_threads_video(
             "duration": c_dur,
             "text": c_tts,
             "sfx": c_sfx,
+            "punchline_offset": c.get("punchline_offset"),
             "shake": c_shake,
         })
 

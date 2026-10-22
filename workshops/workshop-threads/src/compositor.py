@@ -21,6 +21,18 @@ logger = logging.getLogger("workshop_threads.compositor")
 
 
 _SFX_DIR = Path(__file__).resolve().parent.parent / "assets" / "sfx"
+_MEMES_DIR = Path(__file__).resolve().parent.parent / "assets" / "memes"
+
+
+def find_meme_for_sfx(sfx_name: Optional[str]) -> Optional[Path]:
+    """Tìm sticker meme tương ứng với âm thanh SFX."""
+    if not sfx_name:
+        return None
+    stem = Path(sfx_name).stem.lower()
+    candidate = _MEMES_DIR / f"{stem}.png"
+    if candidate.exists():
+        return candidate
+    return None
 
 
 def format_ass_time(seconds: float) -> str:
@@ -138,19 +150,36 @@ def make_threads_video(
     temp_dir = out_file.parent / f"temp_{out_file.stem}"
     temp_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Tính toán timeline từng phân đoạn
+    # 1. Tính toán timeline từng phân đoạn & Điểm rơi Punchline Meme
     timeline = []
     current_time = 0.0
     for idx, seg in enumerate(segments):
         start_t = current_time
         seg_dur = float(seg["duration"]) + pause_between
         end_t = start_t + seg_dur
+
+        custom_sfx = seg.get("sfx")
+        meme_candidate = find_meme_for_sfx(custom_sfx)
+
+        # Tính toán mốc thời gian punchline cho Meme SFX & Sticker
+        if custom_sfx and custom_sfx != "pop.wav":
+            punch_offset = seg.get("punchline_offset")
+            if punch_offset is not None:
+                punch_t = start_t + float(punch_offset)
+            else:
+                # Đặt punchline rơi vào đoạn kết thúc câu thoại (khoảng 1.2s - 1.4s trước khi chuyển card)
+                punch_t = max(start_t + 0.6, end_t - 1.4)
+        else:
+            punch_t = None
+
         timeline.append({
             "index": idx,
             "card_png": str(Path(seg["card_png"]).resolve()),
             "audio_mp3": str(Path(seg["audio_mp3"]).resolve()),
             "text": seg.get("text") or seg.get("content", ""),
-            "sfx": seg.get("sfx"),
+            "sfx": custom_sfx,
+            "punchline_t": punch_t,
+            "meme_png": str(meme_candidate.resolve()) if meme_candidate else None,
             "shake": seg.get("shake", False),
             "start": start_t,
             "end": end_t,
@@ -178,30 +207,45 @@ def make_threads_video(
         filter_complex_audio.append(f"{''.join(tts_labels)}amix=inputs={len(tts_labels)}:normalize=0[a_voice_raw];")
         voice_bus_label = "[a_voice_raw]"
 
-    # Thêm Smart Emotional SFX tại từng phân đoạn
     next_input_idx = len(timeline)
     sfx_cache = {}
     default_pop = Path(sfx_pop_path) if sfx_pop_path and Path(sfx_pop_path).exists() else (_SFX_DIR / "pop.wav")
     sfx_labels = []
 
+    # 2.1. Âm thanh Pop chuyển thẻ nhẹ nhàng tại start_t của mỗi phân cảnh
+    if default_pop.exists():
+        pop_key = str(default_pop.resolve())
+        audio_inputs.extend(["-i", pop_key])
+        pop_in_idx = next_input_idx
+        next_input_idx += 1
+        for item in timeline:
+            delay_ms = int(item["start"] * 1000)
+            tag = f"[a_pop_{item['index']}]"
+            filter_complex_audio.append(
+                f"[{pop_in_idx}:a]adelay={delay_ms}|{delay_ms},volume=0.65{tag};"
+            )
+            sfx_labels.append(tag)
+
+    # 2.2. Âm thanh Meme SFX chính xác vang lên tại mốc PUNCHLINE (punchline_t)
     for item in timeline:
         custom_sfx = item.get("sfx")
-        sfx_candidate = (_SFX_DIR / custom_sfx) if custom_sfx and (_SFX_DIR / custom_sfx).exists() else default_pop
-        if sfx_candidate and sfx_candidate.exists():
-            sfx_key = str(sfx_candidate.resolve())
-            if sfx_key not in sfx_cache:
-                audio_inputs.extend(["-i", sfx_key])
-                sfx_cache[sfx_key] = next_input_idx
-                next_input_idx += 1
-
-            s_idx = sfx_cache[sfx_key]
-            delay_ms = int(item["start"] * 1000)
-            vol = 0.90 if "vine_boom" in sfx_key else 0.95
-            sfx_tag = f"[a_sfx_{item['index']}]"
-            filter_complex_audio.append(
-                f"[{s_idx}:a]adelay={delay_ms}|{delay_ms},volume={vol}{sfx_tag};"
-            )
-            sfx_labels.append(sfx_tag)
+        punch_t = item.get("punchline_t")
+        if custom_sfx and custom_sfx != "pop.wav" and punch_t is not None:
+            sfx_candidate = (_SFX_DIR / custom_sfx)
+            if sfx_candidate.exists():
+                sfx_key = str(sfx_candidate.resolve())
+                if sfx_key not in sfx_cache:
+                    audio_inputs.extend(["-i", sfx_key])
+                    sfx_cache[sfx_key] = next_input_idx
+                    next_input_idx += 1
+                s_idx = sfx_cache[sfx_key]
+                delay_ms = int(punch_t * 1000)
+                vol = 0.95
+                tag = f"[a_meme_sfx_{item['index']}]"
+                filter_complex_audio.append(
+                    f"[{s_idx}:a]adelay={delay_ms}|{delay_ms},volume={vol}{tag};"
+                )
+                sfx_labels.append(tag)
 
     # Thêm BGM với Dynamic Audio Ducking chuyên nghiệp
     bgm_exists = bgm_path and Path(bgm_path).exists()
@@ -250,13 +294,24 @@ def make_threads_video(
     ]
     subprocess.run(cmd_audio, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
-    # 3. Dựng Video tổng hợp (Ghép Nền + Overlay Cards + Spring Pop + Karaoke + Master Audio)
+    # 3. Dựng Video tổng hợp (Ghép Nền + Overlay Cards + Spring Pop + Meme Stickers + Karaoke + Master Audio)
     video_cmd_inputs = [
         "-stream_loop", "-1",
         "-i", str(Path(background_path).resolve()),
     ]
     for item in timeline:
         video_cmd_inputs.extend(["-i", item["card_png"]])
+
+    # Đăng ký input cho từng Meme Sticker
+    meme_input_map = {}
+    current_v_in_idx = len(timeline) + 1
+    for item in timeline:
+        if item.get("meme_png"):
+            video_cmd_inputs.extend(["-i", item["meme_png"]])
+            meme_input_map[item["index"]] = current_v_in_idx
+            current_v_in_idx += 1
+
+    audio_stream_idx = current_v_in_idx
     video_cmd_inputs.extend(["-i", str(master_audio_path)])
 
     # Scale/crop video nền về đúng width x height
@@ -269,6 +324,7 @@ def make_threads_video(
         st = item["start"]
         et = item["end"]
 
+        # 3.1. Overlay thẻ bài viết
         if enable_spring_pop:
             x_expr = "(W-w)/2"
             if item.get("shake"):
@@ -283,6 +339,18 @@ def make_threads_video(
             )
         last_v = next_v
 
+        # 3.2. Overlay Meme Sticker đồng bộ với punchline
+        if idx in meme_input_map and item.get("punchline_t") is not None:
+            meme_in = meme_input_map[idx]
+            meme_v = f"[vm_{idx}]"
+            pt = item["punchline_t"]
+            # Nảy sticker lò xo vật lý tại khoảng trống dưới card (y = 1220)
+            m_y_expr = f"1220+if(lt(t-{pt:.3f},0.22),35*exp(-14*(t-{pt:.3f}))*cos(18*(t-{pt:.3f})),0)"
+            v_filters.append(
+                f"{last_v}[{meme_in}:v]overlay=x='(W-w)/2':y='{m_y_expr}':enable='between(t,{pt:.3f},{et:.3f})'{meme_v};"
+            )
+            last_v = meme_v
+
     # Thêm Karaoke ASS subtitles nếu bật
     if enable_karaoke and any(item.get("text") for item in timeline):
         ass_path = temp_dir / "karaoke.ass"
@@ -292,7 +360,6 @@ def make_threads_video(
         v_filters.append(f"{last_v}null[v_final];")
 
     filter_complex_video = "".join(v_filters)
-    audio_stream_idx = len(timeline) + 1
 
     cmd_video = [
         "ffmpeg", "-y",

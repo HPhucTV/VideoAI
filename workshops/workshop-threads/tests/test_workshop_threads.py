@@ -182,3 +182,35 @@ def test_bgm_library_and_sfx_suite():
         sfx_file = _SFX_DIR / sfx_name
         assert sfx_file.exists(), f"Thiếu file SFX: {sfx_name}"
         assert sfx_file.stat().st_size > 5000, f"File SFX quá nhỏ/rỗng: {sfx_name}"
+
+
+def test_meme_sticker_library_and_sfx_sync():
+    from compositor import _MEMES_DIR, find_meme_for_sfx
+    assert _MEMES_DIR.exists()
+    
+    meme_names = [
+        "vine_boom.png", "bruh.png", "quack.png", "what.png",
+        "huh.png", "sad_trombone.png", "metal_pipe.png", "emotional_damage.png",
+        "anime_wow.png", "record_scratch.png"
+    ]
+    for m in meme_names:
+        mf = _MEMES_DIR / m
+        assert mf.exists(), f"Thiếu file Meme Sticker: {m}"
+        assert mf.stat().st_size > 5000, f"File Meme Sticker quá nhỏ/rỗng: {m}"
+        
+    # Kiểm tra mapping SFX -> Meme Sticker
+    assert find_meme_for_sfx("vine_boom.wav").name == "vine_boom.png"
+    assert find_meme_for_sfx("bruh.wav").name == "bruh.png"
+    assert find_meme_for_sfx("quack.wav").name == "quack.png"
+    assert find_meme_for_sfx("what.wav").name == "what.png"
+    assert find_meme_for_sfx("emotional_damage.wav").name == "emotional_damage.png"
+    assert find_meme_for_sfx("non_existent.wav") is None
+
+
+def test_expanded_slang_and_emoticon_cleaning():
+    raw = "-)) bộ m ỉa mạnh dữ lắm hả, clm nó 😭"
+    norm = normalize_slang(raw)
+    assert "-))" not in norm
+    assert "mày" in norm
+    assert "vãi chưởng" in norm
+
