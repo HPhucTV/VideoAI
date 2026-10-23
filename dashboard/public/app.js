@@ -454,8 +454,12 @@ searchInput.oninput = (e) => {
 
 filterTabs.forEach(tab => {
   tab.onclick = () => {
-    filterTabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
+    filterTabs.forEach(t => {
+      t.classList.remove("active", "bg-surface-container-high", "text-primary", "border-l-2", "border-primary");
+      t.classList.add("text-on-surface-variant");
+    });
+    tab.classList.add("active", "bg-surface-container-high", "text-primary", "border-l-2", "border-primary");
+    tab.classList.remove("text-on-surface-variant");
     currentFilter = tab.dataset.workshop;
     renderGrid();
   };

@@ -2,16 +2,16 @@
 <html class="dark" lang="vi">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OmniVideo Studio - Video AI Production Dashboard</title>
-  
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>OmniVideo Studio - Antigravity 2.0 Mission Control</title>
+
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  
-  <!-- Tailwind CSS -->
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -19,31 +19,53 @@
       theme: {
         extend: {
           colors: {
-            background: "#0b1326",
-            surface: "#0b1326",
-            "surface-dim": "#0b1326",
-            "surface-container-lowest": "#060e20",
-            "surface-container-low": "#131b2e",
             "surface-container": "#171f33",
-            "surface-container-high": "#222a3d",
-            "surface-container-highest": "#2d3449",
-            "surface-bright": "#31394d",
-            "on-surface": "#dae2fd",
-            "on-surface-variant": "#bbcabf",
-            outline: "#86948a",
-            "outline-variant": "#3c4a42",
-            primary: "#4edea3",
-            "primary-container": "#10b981",
-            "on-primary": "#003824",
             "on-primary-container": "#00422b",
-            secondary: "#4cd7f6",
-            "secondary-container": "#03b5d3",
-            "on-secondary": "#003640",
             "on-secondary-container": "#00424e",
-            tertiary: "#d0bcff",
+            "inverse-surface": "#dae2fd",
+            "tertiary-fixed-dim": "#d0bcff",
+            "on-tertiary": "#3c0091",
+            "tertiary": "#d0bcff",
+            "surface-dim": "#0b1326",
+            "inverse-on-surface": "#283044",
+            "background": "#0b1326",
+            "surface-bright": "#31394d",
+            "on-tertiary-container": "#4600a7",
+            "surface-variant": "#2d3449",
+            "surface-container-high": "#222a3d",
+            "on-error": "#690005",
+            "outline": "#86948a",
+            "on-tertiary-fixed-variant": "#5516be",
+            "on-primary": "#003824",
+            "on-surface-variant": "#bbcabf",
+            "on-surface": "#dae2fd",
+            "surface-container-highest": "#2d3449",
+            "on-error-container": "#ffdad6",
+            "surface": "#0b1326",
+            "secondary-container": "#03b5d3",
+            "error-container": "#93000a",
+            "surface-container-low": "#131b2e",
+            "on-secondary-fixed": "#001f26",
+            "on-background": "#dae2fd",
+            "surface-container-lowest": "#060e20",
+            "outline-variant": "#3c4a42",
             "tertiary-container": "#b090ff",
-            error: "#ffb4ab",
-            "error-container": "#93000a"
+            "on-secondary-fixed-variant": "#004e5c",
+            "primary-container": "#10b981",
+            "on-primary-fixed-variant": "#005236",
+            "error": "#ffb4ab",
+            "secondary-fixed-dim": "#4cd7f6",
+            "on-secondary": "#003640",
+            "inverse-primary": "#006c49",
+            "secondary-fixed": "#acedff",
+            "primary-fixed": "#6ffbbe",
+            "primary-fixed-dim": "#4edea3",
+            "secondary": "#4cd7f6",
+            "tertiary-fixed": "#e9ddff",
+            "surface-tint": "#4edea3",
+            "primary": "#4edea3",
+            "on-primary-fixed": "#002113",
+            "on-tertiary-fixed": "#23005c"
           },
           fontFamily: {
             sans: ["Inter", "sans-serif"],
@@ -54,424 +76,427 @@
       }
     };
   </script>
-  
-  <!-- Dashboard Custom Styles for Modals & Interactive Elements -->
+
+  <!-- Modals & Custom Production Styles -->
   <link rel="stylesheet" href="styles.css"/>
 
   <style>
     .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      display: inline-block;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.15rem;
       vertical-align: middle;
-      line-height: 1;
+      display: inline-block;
     }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #060e20; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #222a3d; border-radius: 9999px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3c4a42; }
-    @keyframes sweep {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(200%); }
+    .neon-glow-primary {
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
     }
-    .animate-sweep { animation: sweep 2.2s infinite ease-in-out; }
+    .neon-glow-cyan {
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+    }
+    .neon-glow-amber {
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+    }
+    .neon-glow-pink {
+      box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060e20;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222a3d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3c4a42;
+    }
   </style>
 </head>
 
-<body class="bg-background text-on-surface min-h-screen flex flex-col font-sans overflow-x-hidden selection:bg-primary selection:text-on-primary">
+<body class="bg-surface-container-lowest text-on-surface min-h-screen flex flex-col font-sans antialiased selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
 
   <!-- ================= TOP APP BAR ================= -->
-  <header class="docked top-0 z-40 bg-surface-container-low shadow-sm backdrop-blur-md flex justify-between items-center w-full px-6 py-3 h-16 fixed left-0 border-b border-outline-variant/30">
-    <!-- Brand & Live Channel Status -->
-    <div class="flex items-center gap-6">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center relative overflow-hidden shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <div class="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30"></div>
-          <span class="material-symbols-outlined text-primary text-[22px] relative z-10">videocam</span>
-        </div>
+  <header class="bg-surface-container-low docked full-width top-0 z-40 shadow-sm backdrop-blur-md flex justify-between items-center w-full px-6 py-2 h-16 fixed border-b border-outline-variant/30">
+    <!-- Brand & Workspace Info -->
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2.5">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+        </span>
         <div class="flex flex-col">
-          <span class="text-lg font-headline font-bold text-primary tracking-tight">OmniVideo Studio</span>
-          <span class="text-xs font-mono text-on-surface-variant flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-            Kênh: Storyverse VN • 100% Local (Chi phí 0đ)
+          <span class="text-base font-headline font-bold text-primary tracking-tight">OmniVideo Studio</span>
+          <span class="text-xs font-mono text-on-surface-variant flex items-center gap-1">
+            <span>Kênh: Storyverse VN</span>
+            <span class="text-outline-variant">•</span>
+            <span class="text-secondary font-semibold">100% Local GPU</span>
           </span>
         </div>
       </div>
 
-      <!-- Quick Metrics Pill -->
-      <div class="hidden lg:flex items-center gap-4 bg-surface-container-lowest/80 border border-outline-variant/30 px-3.5 py-1.5 rounded-lg text-xs font-mono">
-        <div>Tổng video: <span class="text-primary font-bold" id="stat-total-videos">0</span></div>
-        <span class="text-outline">•</span>
-        <div>Dung lượng: <span class="text-secondary font-bold" id="stat-total-size">0 MB</span></div>
-      </div>
-
-      <!-- Antigravity 2.0 Live Bridge Pill -->
-      <div id="antigravity-pill" class="flex items-center gap-2.5 bg-surface-container-lowest/90 border border-secondary/40 px-3 py-1.5 rounded-lg text-xs font-mono shadow-[0_0_12px_rgba(76,215,246,0.15)]">
-        <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-ping" id="antigravity-dot"></span>
-        <div class="flex items-center gap-1.5">
-          <span class="text-secondary font-bold" id="antigravity-text">Antigravity 2.0: Sẵn Sàng</span>
-          <span class="bg-secondary/20 text-secondary border border-secondary/40 text-[10px] font-bold px-1.5 py-0.2 rounded" id="antigravity-gate-badge">Cổng 6</span>
-        </div>
+      <!-- Antigravity 2.0 Live Status Badge -->
+      <div id="antigravity-pill" class="hidden xl:flex items-center gap-2 bg-surface-container-lowest/90 border border-secondary/40 rounded-full px-3 py-1 text-xs font-mono shadow-[0_0_12px_rgba(76,215,246,0.15)]">
+        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" id="antigravity-dot"></span>
+        <span class="text-secondary font-bold" id="antigravity-text">Antigravity 2.0: Sẵn Sàng</span>
+        <span class="text-outline-variant">•</span>
+        <span class="bg-secondary/20 text-secondary border border-secondary/40 text-[10px] font-bold px-1.5 py-0.2 rounded" id="antigravity-gate-badge">Cổng 6</span>
       </div>
     </div>
 
-    <!-- Actions & User Profile -->
-    <div class="flex items-center gap-3">
-      <!-- Search Input -->
-      <div class="relative hidden sm:block w-64">
-        <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[18px]">search</span>
-        <input class="w-full bg-surface-container-lowest/90 border border-outline-variant/30 rounded-lg pl-8 pr-3 py-1.5 text-xs font-mono text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 transition-all" id="search-input" placeholder="Tìm kiếm kịch bản, beat..." type="text"/>
+    <!-- Center Search & Nav Links -->
+    <div class="hidden lg:flex items-center space-x-4 flex-1 max-w-xl mx-6">
+      <div class="relative w-full">
+        <span class="material-symbols-outlined absolute left-3 top-2 text-on-surface-variant text-[18px]">search</span>
+        <input id="search-input" class="w-full bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg pl-9 pr-4 py-1.5 text-xs font-mono text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Tìm kiếm kịch bản, beat, task ID..." type="text"/>
+      </div>
+    </div>
+
+    <!-- Trailing Telemetry & Actions -->
+    <div class="flex items-center space-x-3">
+      <!-- Hardware Telemetry -->
+      <div class="hidden md:flex items-center space-x-3 text-xs font-mono bg-surface-container-lowest/60 px-3 py-1.5 rounded-lg border border-outline-variant/30">
+        <div>Video: <span class="text-primary font-bold" id="stat-total-videos">0</span></div>
+        <span class="text-outline-variant">•</span>
+        <div>Dung lượng: <span class="text-secondary font-bold" id="stat-total-size">0 MB</span></div>
       </div>
 
-      <!-- New Video Project Button -->
-      <button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline font-semibold text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-[0_0_16px_rgba(16,185,129,0.35)] active:scale-[0.98] transition-all" id="btn-open-create">
+      <!-- Quick Action Buttons -->
+      <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container text-xs font-headline font-bold neon-glow-primary active:scale-[0.98] transition-transform" id="btn-open-create">
         <span class="material-symbols-outlined text-[16px]">add</span>
         <span>Tạo Video Mới</span>
       </button>
 
-      <!-- Refresh Library Button -->
-      <button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors" onclick="loadVideos()" title="Tải lại danh sách">
-        <span class="material-symbols-outlined text-[20px]">refresh</span>
+      <button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors" onclick="loadVideos()" title="Tải lại thư viện">
+        <span class="material-symbols-outlined text-[18px]">refresh</span>
       </button>
     </div>
   </header>
 
   <!-- ================= MAIN LAYOUT WITH SIDEBAR ================= -->
   <div class="flex pt-16 min-h-screen">
-    
+
     <!-- ================= SIDEBAR ================= -->
-    <aside class="docked h-[calc(100vh-4rem)] left-0 top-16 w-64 z-30 fixed bg-surface-container-lowest border-r border-outline-variant/30 shadow-md backdrop-blur-lg flex flex-col justify-between py-4 px-3 custom-scrollbar overflow-y-auto">
-      <div class="flex flex-col gap-4">
-        <div class="px-3 py-1 flex items-center justify-between border-b border-outline-variant/20 pb-3">
+    <aside class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-4 px-3 bg-surface-container-lowest docked left-0 top-16 z-30 shadow-md backdrop-blur-lg fixed overflow-y-auto border-r border-outline-variant/30">
+      <div>
+        <div class="px-3 mb-3 pb-3 border-b border-outline-variant/20 flex items-center justify-between">
           <div>
-            <h2 class="text-sm font-headline font-bold text-primary">Phân Xưởng Sản Xuất</h2>
-            <p class="text-[11px] font-mono text-on-surface-variant">Pipeline Trực Tuyến</p>
+            <div class="text-sm font-headline font-bold text-primary">Phân Xưởng Sản Xuất</div>
+            <p class="text-[10px] font-mono text-outline">VFX & Neural NLE Engine</p>
           </div>
           <span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#4edea3]"></span>
         </div>
 
         <!-- Filter Tabs / Workshop Selectors -->
-        <nav class="flex flex-col gap-1 filter-tabs">
-          <span class="text-[10px] font-mono text-outline uppercase tracking-wider px-3 pt-1">Bộ Lọc Phân Xưởng</span>
-          
-          <button class="tab-btn active text-left px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs font-semibold" data-workshop="all">
+        <nav class="space-y-1 filter-tabs">
+          <!-- All -->
+          <button class="tab-btn active w-full text-left bg-surface-container-high text-primary border-l-2 border-primary font-semibold px-3 py-2 rounded-r-lg flex items-center justify-between text-xs transition-all" data-workshop="all">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">space_dashboard</span>
+              <span class="material-symbols-outlined text-primary text-[18px]">space_dashboard</span>
               <span>Tất Cả Video</span>
             </div>
-            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            <span class="text-[10px] font-mono text-primary font-bold bg-primary-container/15 px-1.5 py-0.5 rounded">ALL</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="threads">
+          <!-- Workshop 5: Threads -->
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="threads">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-pink-400">forum</span>
-              <span>Xưởng 5: Threads Drama</span>
+              <span class="material-symbols-outlined text-pink-400 text-[18px] group-hover:scale-105 transition-transform">flash_on</span>
+              <span class="truncate">Xưởng 5: Threads Social</span>
             </div>
-            <span class="bg-pink-500/20 text-pink-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-pink-500/30 font-bold">9:16 Meme</span>
+            <span class="text-[10px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 px-1 rounded uppercase">9:16</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="cinematic">
+          <!-- Workshop 4: Cinematic -->
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="cinematic">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-amber-400">movie</span>
-              <span>Xưởng 4: Phim 3D Điện Ảnh</span>
+              <span class="material-symbols-outlined text-amber-400 text-[18px] group-hover:scale-105 transition-transform">movie_filter</span>
+              <span class="truncate">Xưởng 4: Phim 3D / Donghua</span>
             </div>
-            <span class="bg-amber-500/20 text-amber-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-amber-500/30 font-bold">16:9 Gen V</span>
+            <span class="text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded font-bold">4K</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="whiteboard">
+          <!-- Workshop 3: Whiteboard -->
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="whiteboard">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-tertiary">history_edu</span>
-              <span>Xưởng 3: Bảng Trắng Vẽ Tay</span>
+              <span class="material-symbols-outlined text-cyan-400 text-[18px] group-hover:scale-105 transition-transform">history_edu</span>
+              <span class="truncate">Xưởng 3: Bảng Trắng</span>
             </div>
-            <span class="bg-tertiary/20 text-tertiary text-[10px] font-mono px-1.5 py-0.5 rounded border border-tertiary/30">60m Audio</span>
+            <span class="text-[10px] font-mono text-outline bg-surface-container px-1 rounded">60m</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="explainer">
+          <!-- Workshop 2: Explainer -->
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="explainer">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-secondary">code_blocks</span>
-              <span>Xưởng 2: Remotion Explainer</span>
+              <span class="material-symbols-outlined text-purple-400 text-[18px] group-hover:scale-105 transition-transform">code_blocks</span>
+              <span class="truncate">Xưởng 2: Remotion Tech</span>
             </div>
-            <span class="bg-secondary/20 text-secondary text-[10px] font-mono px-1.5 py-0.5 rounded border border-secondary/30">React</span>
+            <span class="text-[10px] font-mono text-purple-300 bg-purple-500/20 px-1 rounded">TS</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="news">
+          <!-- Workshop 1: News -->
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="news">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-primary">flash_on</span>
-              <span>Xưởng 1: Tin Tức Shorts</span>
+              <span class="material-symbols-outlined text-emerald-400 text-[18px] group-hover:scale-105 transition-transform">bolt</span>
+              <span class="truncate">Xưởng 1: Tin Tức Nhanh</span>
             </div>
-            <span class="bg-primary/20 text-primary text-[10px] font-mono px-1.5 py-0.5 rounded border border-primary/30 font-bold">9:16</span>
+            <span class="text-[10px] font-mono text-primary font-bold bg-primary/20 px-1 rounded">9:16</span>
           </button>
         </nav>
       </div>
 
-      <!-- Telemetry Widget -->
-      <div class="flex flex-col gap-2 pt-4 border-t border-outline-variant/30">
-        <div class="bg-surface-container-low/90 border border-outline-variant/40 rounded-lg p-3 flex flex-col gap-2">
-          <div class="flex items-center justify-between text-xs font-mono">
-            <span class="text-on-surface-variant flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px] text-primary">memory</span>
-              Độ trễ Engine: 14ms
-            </span>
-            <span class="text-primary font-bold">READY</span>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <div class="flex justify-between text-[11px] font-mono text-outline">
-              <span>Trạng thái Render Engine</span>
-              <span class="text-primary font-semibold">100% Cục bộ</span>
-            </div>
-            <div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
-              <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: 100%;"></div>
-            </div>
-          </div>
+      <!-- Bottom Local Telemetry Dock -->
+      <div class="bg-surface-container-low/90 rounded-xl p-3 border border-outline-variant/30 space-y-2 mt-4">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-on-surface-variant flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-xs text-primary">memory</span>
+            Engine Latency
+          </span>
+          <span class="text-primary font-semibold">11ms</span>
         </div>
-
-        <button class="w-full bg-surface-container-high hover:bg-surface-container text-secondary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all" onclick="openCreateModal()">
-          <span class="material-symbols-outlined text-[16px]">terminal</span>
-          <span>Khởi Động Pipeline Mới</span>
+        <div class="text-[11px] font-mono text-outline truncate">
+          Node: LocalHost:3333 (IPC Open)
+        </div>
+        <div class="flex items-center gap-1.5 text-[11px] font-mono text-secondary">
+          <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+          <span>Google Antigravity 2.0: Online</span>
+        </div>
+        <button class="w-full text-left text-[11px] font-mono text-on-surface-variant hover:text-on-surface flex items-center justify-between pt-1 border-t border-outline-variant/30" onclick="openCreateModal()">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">terminal</span>
+            Khởi Động Pipeline Mới
+          </span>
+          <span class="material-symbols-outlined text-xs">arrow_forward_ios</span>
         </button>
       </div>
     </aside>
 
-    <!-- ================= MAIN CONTENT CANVAS ================= -->
-    <main class="flex-1 ml-64 p-6 lg:p-8 flex flex-col gap-8 max-w-[1720px] mx-auto w-full">
+    <!-- ================= MAIN WORKSPACE CONTENT CANVAS ================= -->
+    <main class="flex-1 lg:ml-64 p-6 lg:p-8 space-y-8 max-w-[1720px] mx-auto w-full">
 
-      <!-- ================= ANTIGRAVITY 2.0 MISSION CONTROL SECTION ================= -->
-      <section class="relative bg-gradient-to-b from-surface-container-high/90 to-surface-container-low/95 border border-secondary/30 rounded-2xl p-6 shadow-2xl backdrop-blur-2xl overflow-hidden" id="antigravity-mission-control">
-        <!-- Ambient Glow -->
-        <div class="absolute -top-24 -right-24 w-80 h-80 bg-secondary/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-primary/15 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- ================= HERO SECTION: ANTIGRAVITY 2.0 MISSION CONTROL ================= -->
+      <section class="rounded-2xl bg-surface-container-low border border-outline-variant/40 p-6 relative overflow-hidden backdrop-blur-xl shadow-2xl" id="antigravity-mission-control">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- Section Top Header & Active Session Status -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-outline-variant/30 relative z-10">
-          <div class="flex flex-col gap-1.5">
-            <div class="flex items-center gap-2.5 flex-wrap">
-              <span class="px-3 py-1 rounded-full bg-secondary/15 border border-secondary/40 text-secondary text-xs font-mono font-bold flex items-center gap-2 shadow-[0_0_12px_rgba(76,215,246,0.25)]">
-                <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse" id="mission-status-dot"></span>
+        <!-- Mission Control Header & HITL Approval Bar -->
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30 relative z-10">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-secondary-container/20 text-secondary border border-secondary/40 uppercase tracking-wider flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" id="mission-status-dot"></span>
                 <span id="mission-status-text">ĐỒNG BỘ HAI CHIỀU ANTIGRAVITY 2.0</span>
               </span>
-              <span class="text-xs font-mono text-outline" id="mission-convo-pill">Session: <span class="text-on-surface font-semibold" id="mission-convo-id">0acabd2b...</span></span>
-              <span class="text-xs font-mono bg-surface-container-highest px-2.5 py-0.5 rounded text-primary flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">bolt</span>
+              <span class="text-xs font-mono text-outline">Session: <span class="text-on-surface font-semibold" id="mission-convo-id">0acabd2b...</span></span>
+              <span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-primary flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]">bolt</span>
                 Zero-Cost Local IPC
               </span>
             </div>
 
-            <h1 class="text-2xl lg:text-3xl font-headline font-extrabold text-on-surface tracking-tight mt-1 flex items-center gap-2">
-              Mission Control: <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-tertiary">Antigravity Autonomous Studio</span>
+            <h1 class="text-2xl lg:text-3xl font-headline font-bold text-on-surface tracking-tight mt-1">
+              Mission Control: <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-on-surface">Antigravity Autonomous Studio</span>
             </h1>
             <p class="text-xs font-mono text-on-surface-variant">
-              Theo dõi luồng suy nghĩ (Thinking Stream), trạng thái 7 Cổng Điện Ảnh, và điều phối tác vụ trực tiếp từ Web Dashboard vào IDE.
+              Tác nhân AI tự hành điều phối 5 phân xưởng qua Model Context Protocol (MCP) • Stream suy nghĩ & duyệt cổng thời gian thực.
             </p>
           </div>
 
-          <!-- Human-In-The-Loop Fast Approval Controls -->
-          <div class="flex items-center gap-2.5 flex-wrap self-start lg:self-center">
-            <button class="bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/40 text-xs font-mono font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all shadow-sm active:scale-95" onclick="quickApproveGate('Gate 3 (Asset Master Sets & Characters)')" title="Phê duyệt dàn nhân vật và bối cảnh Cổng 3">
-              <span class="material-symbols-outlined text-[16px]">verified</span>
+          <!-- Human-in-the-Loop Fast Gate Approval Buttons -->
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/50 text-primary bg-primary/10 hover:bg-primary/20 text-xs font-mono font-semibold transition-colors active:scale-95" onclick="quickApproveGate('Gate 3 (Asset Master Sets & Characters)')" title="Phê duyệt dàn nhân vật và bối cảnh Cổng 3">
+              <span class="material-symbols-outlined text-sm">verified</span>
               <span>Duyệt Cổng 3</span>
             </button>
-            <button class="bg-secondary/20 hover:bg-secondary hover:text-black text-secondary border border-secondary/40 text-xs font-mono font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all shadow-sm active:scale-95" onclick="quickApproveGate('Gate 5 (Storyboard Frame Sequences)')" title="Phê duyệt khung ảnh storyboard Cổng 5">
-              <span class="material-symbols-outlined text-[16px]">photo_library</span>
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/50 text-primary bg-primary/10 hover:bg-primary/20 text-xs font-mono font-semibold transition-colors active:scale-95" onclick="quickApproveGate('Gate 5 (Storyboard Frame Sequences)')" title="Phê duyệt khung ảnh storyboard Cổng 5">
+              <span class="material-symbols-outlined text-sm">photo_library</span>
               <span>Duyệt Cổng 5</span>
             </button>
-            <button class="bg-primary/20 hover:bg-primary hover:text-black text-primary border border-primary/40 text-xs font-mono font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all shadow-[0_0_12px_rgba(78,222,163,0.25)] active:scale-95" onclick="quickApproveGate('Tiếp tục bước sản xuất tiếp theo')" title="Phê duyệt và chuyển tiếp cổng">
-              <span class="material-symbols-outlined text-[16px]">play_arrow</span>
-              <span>Tiếp Tục Cổng Kế</span>
+            <button class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-bold text-xs font-mono neon-glow-cyan active:scale-95 transition-transform" onclick="quickApproveGate('Tiếp tục bước sản xuất tiếp theo')" title="Phê duyệt và kích hoạt cổng kế">
+              <span class="material-symbols-outlined text-sm">electric_bolt</span>
+              <span>⚡ Tiếp Tục Cổng Kế</span>
             </button>
           </div>
         </div>
 
-        <!-- 7-Gate Production Protocol Visual Stepper -->
-        <div class="mt-5 relative z-10">
-          <div class="flex items-center justify-between text-xs font-mono text-outline mb-2.5">
-            <span class="flex items-center gap-1.5 text-on-surface font-semibold">
-              <span class="material-symbols-outlined text-[16px] text-secondary">checklist_rtl</span>
-              Tiến Trình Quy Chuẩn 7 Cổng Sản Xuất (The 7-Gate Protocol):
+        <!-- The 7-Gate Production Protocol Horizontal Visual Stepper -->
+        <div class="py-4 relative z-10">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="text-xs font-mono font-semibold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-sm">linear_scale</span>
+              Quy Trình 7 Cổng Sản Xuất Tự Hành (Antigravity Protocol):
             </span>
-            <span class="text-secondary font-mono font-bold" id="gate-overall-progress">Tiến độ: 85% (Cổng 6/7)</span>
+            <span class="text-xs font-mono text-secondary font-bold" id="gate-overall-progress">Tiến độ: 85% (Cổng 6/7)</span>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5" id="seven-gates-container">
+          <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2.5" id="seven-gates-container">
             <!-- Gate 1 -->
-            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest/80 flex flex-col gap-1.5 transition-all" id="gate-card-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-outline">CỔNG 1</span>
-                <span class="material-symbols-outlined text-[14px] text-primary" id="gate-icon-1">check_circle</span>
+            <div class="gate-card p-2.5 rounded-xl border border-primary/50 bg-surface-container-lowest/90 flex flex-col justify-between transition-all" id="gate-card-1">
+              <div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+                <span>GATE 01</span>
+                <span class="material-symbols-outlined text-sm text-primary" id="gate-icon-1">check_circle</span>
               </div>
-              <div class="text-xs font-headline font-bold text-on-surface truncate">Ý Tưởng & Đề Tài</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">3 Cốt truyện AI</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-bold text-on-surface leading-tight">Ý Tưởng & Đề Tài</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-primary h-full rounded-full w-full" id="gate-bar-1"></div>
               </div>
             </div>
 
             <!-- Gate 2 -->
-            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest/80 flex flex-col gap-1.5 transition-all" id="gate-card-2">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-outline">CỔNG 2</span>
-                <span class="material-symbols-outlined text-[14px] text-primary" id="gate-icon-2">check_circle</span>
+            <div class="gate-card p-2.5 rounded-xl border border-primary/50 bg-surface-container-lowest/90 flex flex-col justify-between transition-all" id="gate-card-2">
+              <div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+                <span>GATE 02</span>
+                <span class="material-symbols-outlined text-sm text-primary" id="gate-icon-2">check_circle</span>
               </div>
-              <div class="text-xs font-headline font-bold text-on-surface truncate">Kịch Bản 5 Hồi</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">Thoại ≤ 20 từ (1.25x)</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-bold text-on-surface leading-tight">Kịch Bản 5 Hồi</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-primary h-full rounded-full w-full" id="gate-bar-2"></div>
               </div>
             </div>
 
             <!-- Gate 3 -->
-            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest/80 flex flex-col gap-1.5 transition-all" id="gate-card-3">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-outline">CỔNG 3</span>
-                <span class="material-symbols-outlined text-[14px] text-primary" id="gate-icon-3">check_circle</span>
+            <div class="gate-card p-2.5 rounded-xl border border-primary/50 bg-surface-container-lowest/90 flex flex-col justify-between transition-all" id="gate-card-3">
+              <div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+                <span>GATE 03</span>
+                <span class="material-symbols-outlined text-sm text-primary" id="gate-icon-3">check_circle</span>
               </div>
-              <div class="text-xs font-headline font-bold text-on-surface truncate">Bộ Asset & Bối Cảnh</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">Master Sets + Dàn NV</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-bold text-on-surface leading-tight">Bộ Asset & Prompt</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-primary h-full rounded-full w-full" id="gate-bar-3"></div>
               </div>
             </div>
 
             <!-- Gate 4 -->
-            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest/80 flex flex-col gap-1.5 transition-all" id="gate-card-4">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-outline">CỔNG 4</span>
-                <span class="material-symbols-outlined text-[14px] text-primary" id="gate-icon-4">check_circle</span>
+            <div class="gate-card p-2.5 rounded-xl border border-primary/50 bg-surface-container-lowest/90 flex flex-col justify-between transition-all" id="gate-card-4">
+              <div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+                <span>GATE 04</span>
+                <span class="material-symbols-outlined text-sm text-primary" id="gate-icon-4">check_circle</span>
               </div>
-              <div class="text-xs font-headline font-bold text-on-surface truncate">Lồng Tiếng 48kHz</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">Edge-TTS + Ducking</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-bold text-on-surface leading-tight">Lồng Tiếng 48kHz</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-primary h-full rounded-full w-full" id="gate-bar-4"></div>
               </div>
             </div>
 
             <!-- Gate 5 -->
-            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest/80 flex flex-col gap-1.5 transition-all" id="gate-card-5">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-outline">CỔNG 5</span>
-                <span class="material-symbols-outlined text-[14px] text-primary" id="gate-icon-5">check_circle</span>
+            <div class="gate-card p-2.5 rounded-xl border border-primary/50 bg-surface-container-lowest/90 flex flex-col justify-between transition-all" id="gate-card-5">
+              <div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+                <span>GATE 05</span>
+                <span class="material-symbols-outlined text-sm text-primary" id="gate-icon-5">check_circle</span>
               </div>
-              <div class="text-xs font-headline font-bold text-on-surface truncate">Khung Storyboard</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">Đồng bộ Media ID</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-bold text-on-surface leading-tight">Khung Storyboard</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-primary h-full rounded-full w-full" id="gate-bar-5"></div>
               </div>
             </div>
 
-            <!-- Gate 6 -->
-            <div class="gate-card p-2.5 rounded-xl border-2 border-secondary bg-surface-container-lowest/90 flex flex-col gap-1.5 transition-all shadow-[0_0_15px_rgba(76,215,246,0.25)]" id="gate-card-6">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-secondary">CỔNG 6</span>
+            <!-- Gate 6 (Active Processing) -->
+            <div class="gate-card p-2.5 rounded-xl border-2 border-secondary bg-surface-container-high/90 flex flex-col justify-between transition-all neon-glow-cyan" id="gate-card-6">
+              <div class="flex items-center justify-between text-xs text-secondary font-mono mb-1">
+                <span class="font-bold">GATE 06</span>
                 <span class="w-2 h-2 rounded-full bg-secondary animate-ping" id="gate-icon-6"></span>
               </div>
-              <div class="text-xs font-headline font-bold text-secondary truncate">Master Film & 3D Thumb</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">Gen V + Cyber Chatbox</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-bold text-on-surface leading-tight">Master Film & 3D Thumb</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-secondary h-full rounded-full w-3/4" id="gate-bar-6"></div>
               </div>
             </div>
 
-            <!-- Gate 7 -->
-            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest/80 flex flex-col gap-1.5 transition-all" id="gate-card-7">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-outline">CỔNG 7</span>
-                <span class="material-symbols-outlined text-[14px] text-outline" id="gate-icon-7">radio_button_unchecked</span>
+            <!-- Gate 7 (Waiting) -->
+            <div class="gate-card p-2.5 rounded-xl border border-outline-variant/30 bg-surface-container-lowest/60 flex flex-col justify-between transition-all opacity-75" id="gate-card-7">
+              <div class="flex items-center justify-between text-xs text-outline font-mono mb-1">
+                <span>GATE 07</span>
+                <span class="material-symbols-outlined text-sm text-outline" id="gate-icon-7">hourglass_empty</span>
               </div>
-              <div class="text-xs font-headline font-bold text-on-surface truncate">Xuất Bản YouTube</div>
-              <div class="text-[10px] font-mono text-on-surface-variant truncate">Unlisted + Publish Kit</div>
-              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+              <div class="text-xs font-headline font-medium text-on-surface-variant leading-tight">Xuất Bản YouTube</div>
+              <div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-2">
                 <div class="bg-outline h-full rounded-full w-0" id="gate-bar-7"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Two Columns: Quick Dispatch Form (Left) & Real-time Thinking Console (Right) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-6 relative z-10">
-          
-          <!-- Left Column: Quick Dispatch Form (5 cols) -->
-          <div class="lg:col-span-5 bg-surface-container-lowest/90 border border-outline-variant/40 rounded-xl p-4 flex flex-col justify-between shadow-md">
-            <div>
-              <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-3">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-secondary text-[20px]">send</span>
-                  <h3 class="text-sm font-headline font-bold text-on-surface">Kích Hoạt Tác Vụ Cho Antigravity</h3>
-                </div>
-                <span class="text-[10px] font-mono bg-surface-container-high px-2 py-0.5 rounded text-outline">Direct IPC</span>
-              </div>
-
-              <form id="antigravity-dispatch-form" class="flex flex-col gap-3">
-                <div class="flex flex-col gap-1">
-                  <label class="text-[11px] font-mono text-on-surface-variant flex items-center justify-between">
-                    <span>Phân Xưởng Sản Xuất:</span>
-                    <span class="text-secondary text-[10px]">Đã tối ưu chuẩn quy cách</span>
-                  </label>
-                  <select id="dispatch-workshop" class="bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:outline-none focus:border-secondary">
-                    <option value="threads">Xưởng 5: Threads Social Drama (Meme Pop + 9:16 Shorts)</option>
-                    <option value="cinematic">Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 Gen V 4K)</option>
-                    <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (60m Audio Drama)</option>
-                    <option value="explainer">Xưởng 2: Remotion Code Explainer (React 9:16/16:9)</option>
-                    <option value="news">Xưởng 1: Tin Tức HyperFrames (Thời Sự 9:16)</option>
-                  </select>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                  <label class="text-[11px] font-mono text-on-surface-variant">
-                    Link bài viết Threads HOẶC Chủ đề kịch bản:
-                  </label>
-                  <input type="text" id="dispatch-topic" class="bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-xs font-mono text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary" placeholder="vd: https://www.threads.com/@knhisme/post/DezHFAtGb4k" required />
-                </div>
-
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="flex flex-col gap-1">
-                    <label class="text-[10px] font-mono text-on-surface-variant">Gameplay Nền / Set:</label>
-                    <select id="dispatch-bg" class="bg-surface-container border border-outline-variant/40 rounded px-2.5 py-1.5 text-xs font-mono text-on-surface">
-                      <option value="minecraft_parkour.mp4">Minecraft Parkour</option>
-                      <option value="subway_surfers.mp4">Subway Surfers</option>
-                      <option value="gta5_car.mp4">GTA 5 Stunt Track</option>
-                      <option value="virtual_set_unreal">3D Virtual Lab (Xưởng 4)</option>
-                    </select>
-                  </div>
-
-                  <div class="flex flex-col gap-1">
-                    <label class="text-[10px] font-mono text-on-surface-variant">Tốc Độ Giọng Nói:</label>
-                    <select id="dispatch-speed" class="bg-surface-container border border-outline-variant/40 rounded px-2.5 py-1.5 text-xs font-mono text-on-surface">
-                      <option value="1.25">Chuẩn 1.25x (Nam Minh / Hoài My)</option>
-                      <option value="1.0">Chuẩn 1.0x (Tự nhiên)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 pt-1">
-                  <input type="checkbox" id="dispatch-publish" class="rounded bg-surface-container border-outline-variant/40 text-primary focus:ring-0" checked />
-                  <label for="dispatch-publish" class="text-xs font-mono text-on-surface-variant cursor-pointer">
-                    Tự động đóng gói & đăng YouTube Unlisted (Cổng 7)
-                  </label>
-                </div>
-
-                <button type="submit" class="mt-2 w-full bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-black font-headline font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-[0_0_16px_rgba(76,215,246,0.3)] active:scale-[0.98] transition-all" id="btn-dispatch-antigravity">
-                  <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
-                  <span>Gửi Lệnh Sản Xuất Vào Antigravity IDE</span>
-                </button>
-              </form>
+        <!-- Two-Column Interactive Control Hub -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2 relative z-10">
+          <!-- Left Column (5 cols): Kích Hoạt Tác Vụ Cho Antigravity -->
+          <div class="lg:col-span-5 bg-surface-container rounded-xl p-4 border border-outline-variant/30 space-y-3.5 shadow-md">
+            <div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+              <h2 class="text-sm font-headline font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">tune</span>
+                Kích Hoạt Tác Vụ Cho Antigravity
+              </h2>
+              <span class="text-[10px] font-mono font-mono text-secondary bg-surface-container-low px-2 py-0.5 rounded border border-secondary/30">Direct IPC</span>
             </div>
 
-            <div id="dispatch-feedback" class="hidden mt-3 p-2.5 rounded-lg text-xs font-mono"></div>
+            <form id="antigravity-dispatch-form" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Chọn Phân Xưởng Sản Xuất</label>
+                <select id="dispatch-workshop" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-primary focus:ring-1 focus:ring-primary">
+                  <option value="threads">Xưởng 5: Threads Social Drama (9:16 Meme Pop)</option>
+                  <option value="cinematic">Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 4K)</option>
+                  <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (60m Audio Drama)</option>
+                  <option value="explainer">Xưởng 2: Remotion Code Explainer (TypeScript NLE)</option>
+                  <option value="news">Xưởng 1: Tin Tức HyperFrames (Breaking Shorts)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Threads Post URL hoặc Chủ Đề Kịch Bản</label>
+                <div class="relative">
+                  <input id="dispatch-topic" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary pr-8" type="text" placeholder="https://www.threads.com/@knhisme/post/DezHFAtGb4k" required />
+                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-secondary text-sm">link</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] font-mono text-on-surface-variant mb-1">Gameplay Nền:</label>
+                  <select id="dispatch-bg" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded px-2.5 py-1.5 text-xs font-mono text-on-surface">
+                    <option value="minecraft_parkour.mp4">Minecraft Parkour</option>
+                    <option value="subway_surfers.mp4">Subway Surfers</option>
+                    <option value="gta5_car.mp4">GTA 5 Stunts Ramp</option>
+                    <option value="virtual_set_unreal">3D Virtual Lab (Xưởng 4)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-mono text-on-surface-variant mb-1">Tốc Độ Giọng:</label>
+                  <select id="dispatch-speed" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded px-2.5 py-1.5 text-xs font-mono text-on-surface">
+                    <option value="1.25">1.25x High Retention</option>
+                    <option value="1.0">1.0x Tự Nhiên</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="dispatch-publish" class="rounded bg-surface-container-lowest border-outline-variant/40 text-primary focus:ring-0" checked />
+                <label for="dispatch-publish" class="text-xs font-mono text-on-surface-variant cursor-pointer">
+                  Tự động đẩy YouTube Shorts Unlisted (Cổng 7)
+                </label>
+              </div>
+
+              <button type="submit" class="w-full bg-gradient-to-r from-secondary to-primary hover:opacity-95 text-black font-headline font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-[0_0_16px_rgba(76,215,246,0.3)] active:scale-[0.98] transition-all" id="btn-dispatch-antigravity">
+                <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+                <span>Gửi Tác Vụ Sang Antigravity IDE</span>
+              </button>
+            </form>
+
+            <div id="dispatch-feedback" class="hidden mt-2 p-2.5 rounded-lg text-xs font-mono"></div>
           </div>
 
-          <!-- Right Column: Live Thinking & Tool Stream Terminal (7 cols) -->
-          <div class="lg:col-span-7 bg-[#060b14] border border-outline-variant/40 rounded-xl overflow-hidden flex flex-col shadow-2xl">
-            <!-- Terminal Title Bar -->
-            <div class="bg-surface-container-lowest px-4 py-2.5 border-b border-outline-variant/30 flex items-center justify-between">
+          <!-- Right Column (7 cols): Live Agent Terminal & Thinking Stream -->
+          <div class="lg:col-span-7 bg-[#060b14] rounded-xl border border-outline-variant/40 overflow-hidden flex flex-col shadow-2xl">
+            <!-- Window Title Bar -->
+            <div class="bg-surface-container-lowest px-4 py-2 border-b border-outline-variant/30 flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
-                  <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-                  <span class="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
-                </div>
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block"></span>
                 <span class="text-xs font-mono text-outline ml-2">antigravity@gemini-agent: ~/workspace</span>
               </div>
 
-              <!-- Terminal Filters & Controls -->
+              <!-- Filter Buttons & Clear -->
               <div class="flex items-center gap-1.5 text-[11px] font-mono">
                 <button class="terminal-filter-btn active px-2 py-0.5 rounded bg-secondary/20 text-secondary" data-filter="all">Tất Cả</button>
                 <button class="terminal-filter-btn px-2 py-0.5 rounded text-outline hover:text-on-surface" data-filter="thought">Thinking</button>
@@ -483,193 +508,128 @@
               </div>
             </div>
 
-            <!-- Terminal Body -->
+            <!-- Live Terminal Body -->
             <div class="p-3.5 font-mono text-xs overflow-y-auto max-h-[290px] min-h-[260px] custom-scrollbar flex flex-col gap-1.5 leading-relaxed text-on-surface" id="antigravity-live-terminal">
               <div class="text-secondary/70">[SYSTEM] Đang lắng nghe kênh thời gian thực Antigravity 2.0 SSE...</div>
             </div>
 
-            <!-- Terminal Footer Status -->
-            <div class="bg-surface-container-lowest/80 px-4 py-1.5 border-t border-outline-variant/20 flex items-center justify-between text-[10px] font-mono text-outline">
-              <span class="flex items-center gap-1">
+            <!-- Terminal Footer Status Bar -->
+            <div class="bg-surface-container px-4 py-1.5 border-t border-outline-variant/30 flex items-center justify-between text-[10px] font-mono text-outline">
+              <span class="flex items-center gap-1.5 text-primary">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
                 <span id="terminal-step-indicator">Bước hiện tại: Đang sẵn sàng</span>
               </span>
               <span id="terminal-mtime-indicator">Cập nhật: Mới tức thì</span>
             </div>
           </div>
-
         </div>
       </section>
 
-      <!-- ================= HERO ACTIVE JOB MONITOR ================= -->
-      <section class="relative bg-surface-container-low/90 border border-outline-variant/40 rounded-xl p-5 lg:p-6 shadow-md backdrop-blur-xl overflow-hidden">
-        <div class="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30 relative z-10">
-          <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="px-2.5 py-0.5 rounded-full bg-primary/15 border border-primary/40 text-primary text-xs font-mono font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(78,222,163,0.2)]">
-                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                Dự Án 1-Giờ YouTube Sẵn Sàng
-              </span>
-              <span class="text-xs font-mono text-outline">Job #job-hop-dong-100-ty-tong-tai</span>
-              <span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-secondary">1080p 90fps • OpenCV Stream Whiteboard</span>
-            </div>
-
-            <h1 class="text-2xl font-headline font-bold text-on-surface tracking-tight mt-1">
-              Phim Hoạt Cảnh Bảng Trắng: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-on-surface">Bản Hợp Đồng 100 Tỷ (Full 60 Phút)</span>
-            </h1>
+      <!-- ================= SECTION: KHO VIDEO ĐÃ SẢN XUẤT ================= -->
+      <section class="space-y-4" id="workspaces">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-headline font-bold text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">video_library</span>
+              Kho Video Đã Sản Xuất (5 Xưởng Công Nghệ)
+            </h2>
             <p class="text-xs font-mono text-on-surface-variant">
-              Cấu trúc: <span class="text-on-surface font-semibold">9 Phân Cảnh (Chương I → IX) • 27 Beats Lời Thoại • Bút Vẽ Bảng Trắng 90 FPS</span>
+              Toàn bộ sản phẩm được đồng bộ từ output/threads, output/cinematic, output/whiteboard, v.v.
             </p>
           </div>
 
-          <!-- Quick Controls -->
-          <div class="flex items-center gap-2 self-start lg:self-center">
-            <button class="bg-primary/20 hover:bg-primary hover:text-on-primary-container text-primary border border-primary/40 text-xs font-mono px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm" onclick="triggerRender('job-hop-dong-100-ty-tong-tai')">
-              <span class="material-symbols-outlined text-[16px]">play_arrow</span>
-              <span>Re-render Toàn Bộ 9 Phân Cảnh</span>
+          <button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container text-xs font-headline font-bold neon-glow-primary active:scale-[0.98] transition-transform" onclick="openCreateModal()">
+            <span class="material-symbols-outlined text-sm font-bold">add</span>
+            <span>+ Tạo Video Mới</span>
+          </button>
+        </div>
+
+        <!-- Video Grid Container (Filled dynamically by app.js) -->
+        <div class="video-grid" id="video-grid">
+          <div class="loading-state py-12 text-center text-outline">
+            <div class="spinner mb-2"></div>
+            <p>Đang tải danh sách kho video từ server...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION: NLE LIVE PLAYER & AUDIO BEAT INSPECTOR ================= -->
+      <section class="rounded-2xl bg-surface-container border border-outline-variant/50 p-5 shadow-2xl relative">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-outline-variant/30 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2 rounded-lg bg-surface-container-lowest text-primary border border-primary/30">
+              <span class="material-symbols-outlined text-lg">timeline</span>
+            </span>
+            <div>
+              <h3 class="text-sm font-headline font-bold text-on-surface">
+                NLE Live Player & Audio Beat Inspector
+              </h3>
+              <p class="text-[11px] font-mono text-outline">
+                Phân tích sóng âm thanh: <span class="text-primary font-medium">Bản Hợp Đồng 100 Tỷ • 27 Beats Lời Thoại • Bút Vẽ Bảng Trắng 90 FPS</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Video scrubber controls & export buttons -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="px-3 py-1 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface text-xs font-mono flex items-center gap-1.5 hover:bg-surface-container-high" onclick="triggerRender('job-hop-dong-100-ty-tong-tai')">
+              <span class="material-symbols-outlined text-xs text-primary">play_arrow</span>
+              <span>Re-render Toàn Bộ</span>
             </button>
-            <button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 text-on-surface text-xs font-mono px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all" onclick="openPlayer('job-hop-dong-100-ty-tong-tai')">
-              <span class="material-symbols-outlined text-[16px] text-secondary">visibility</span>
+            <button class="px-3 py-1 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface text-xs font-mono flex items-center gap-1.5 hover:bg-surface-container-high" onclick="openPlayer('job-hop-dong-100-ty-tong-tai')">
+              <span class="material-symbols-outlined text-xs text-secondary">visibility</span>
               <span>Kiểm Tra Beats</span>
             </button>
           </div>
         </div>
 
-        <!-- 3-Panel Storyboard Live Preview Strip -->
-        <div class="mt-4 flex flex-col gap-2 relative z-10">
-          <div class="flex items-center justify-between text-xs font-mono text-outline">
-            <span>Bản Vẽ Minh Họa Độc Quyền Từng Phân Cảnh (Không Trùng Lặp):</span>
-            <span class="text-primary font-semibold">1920x1080 Notion Art • Giấy Kem #F5EBD7</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Panel 1: Scene 01 -->
-            <div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-2.5 flex flex-col gap-2">
-              <div class="flex items-center justify-between text-xs font-mono">
-                <span class="text-on-surface font-semibold">Chương I: Đêm Mưa Định Mệnh</span>
-                <span class="text-primary flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                  Scene 01
-                </span>
-              </div>
-              <div class="relative aspect-video rounded overflow-hidden border border-outline-variant/30">
-                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-01/scene-01.png" alt="Chương I"/>
-              </div>
+        <!-- Multi-Track Audio Waveform & Keyframe Canvas Bar -->
+        <div class="mt-3 space-y-2">
+          <div class="flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-3">
+              <span class="text-primary font-bold">00:34:12</span>
+              <span class="text-outline">/</span>
+              <span class="text-on-surface-variant">01:00:00</span>
+              <span class="px-2 py-0.5 rounded bg-surface-container-lowest text-[10px] text-secondary border border-secondary/30">BEAT SYNC: 128 BPM</span>
             </div>
-
-            <!-- Panel 2: Scene 02 -->
-            <div class="bg-surface-container-lowest/90 border-2 border-primary/60 rounded-lg p-2.5 flex flex-col gap-2 shadow-[0_0_16px_rgba(78,222,163,0.15)]">
-              <div class="flex items-center justify-between text-xs font-mono">
-                <span class="text-primary font-bold">Chương II: Bản Hợp Đồng 100 Tỷ</span>
-                <span class="text-secondary flex items-center gap-1 font-bold">
-                  <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                  Scene 02
-                </span>
-              </div>
-              <div class="relative aspect-video rounded overflow-hidden border border-primary/40">
-                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-02/scene-02.png" alt="Chương II"/>
-              </div>
-            </div>
-
-            <!-- Panel 3: Scene 03 -->
-            <div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-2.5 flex flex-col gap-2">
-              <div class="flex items-center justify-between text-xs font-mono">
-                <span class="text-on-surface font-semibold">Chương III: Cửa Hào Môn</span>
-                <span class="text-tertiary flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                  Scene 03
-                </span>
-              </div>
-              <div class="relative aspect-video rounded overflow-hidden border border-outline-variant/30">
-                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-03/scene-03.png" alt="Chương III"/>
-              </div>
+            <div class="flex items-center gap-2 text-outline text-[11px]">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-pink-500"></span> Voice SFX</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> Subtitle Hook</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Zoom Keyframe</span>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- ================= 3 WORKSHOP QUICK CARDS ================= -->
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Workshop 1 -->
-        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-200">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-primary shadow-[0_0_10px_rgba(78,222,163,0.2)]">
-                <span class="material-symbols-outlined text-[24px]">flash_on</span>
-              </div>
-              <span class="bg-primary/15 text-primary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-primary/30">9:16 SHORTS</span>
+          <div class="relative w-full h-12 bg-surface-container-lowest rounded-xl border border-outline-variant/40 overflow-hidden px-3 flex flex-col justify-center">
+            <div class="flex items-end justify-between h-7 gap-0.5 opacity-85">
+              <div class="w-1 bg-secondary rounded-t h-3"></div>
+              <div class="w-1 bg-secondary rounded-t h-5"></div>
+              <div class="w-1 bg-secondary rounded-t h-7"></div>
+              <div class="w-1 bg-primary rounded-t h-6"></div>
+              <div class="w-1 bg-primary rounded-t h-4"></div>
+              <div class="w-1 bg-secondary rounded-t h-2"></div>
+              <div class="w-1 bg-secondary rounded-t h-5"></div>
+              <div class="w-1 bg-amber-400 rounded-t h-7"></div>
+              <div class="w-1 bg-secondary rounded-t h-3"></div>
+              <div class="w-1 bg-secondary rounded-t h-5"></div>
+              <div class="w-1 bg-primary rounded-t h-7"></div>
+              <div class="w-1 bg-pink-400 rounded-t h-6"></div>
+              <div class="w-1 bg-pink-400 rounded-t h-7"></div>
+              <div class="w-1 bg-secondary rounded-t h-4"></div>
+              <div class="w-1 bg-primary rounded-t h-7"></div>
+              <div class="w-1 bg-primary rounded-t h-6"></div>
+              <div class="w-1 bg-secondary rounded-t h-3"></div>
+              <div class="w-1 bg-secondary rounded-t h-5"></div>
+              <div class="w-1 bg-secondary rounded-t h-7"></div>
+              <div class="w-1 bg-amber-400 rounded-t h-6"></div>
+              <div class="w-1 bg-secondary rounded-t h-4"></div>
+              <div class="w-1 bg-primary rounded-t h-7"></div>
+              <div class="w-1 bg-primary rounded-t h-5"></div>
+              <div class="w-1 bg-secondary rounded-t h-3"></div>
+              <div class="w-1 bg-secondary rounded-t h-6"></div>
             </div>
-            <div>
-              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 1: Tin Tức HyperFrames</h3>
-              <p class="text-xs text-on-surface-variant mt-1">Xuất video tin tức ngắn 45-60s tốc độ cao, kinetic subtitle tự động, phong cách thời sự quốc tế.</p>
+            <div class="absolute top-0 bottom-0 left-[42%] w-0.5 bg-primary shadow-[0_0_8px_#10b981] flex flex-col items-center">
+              <div class="w-2.5 h-2.5 bg-primary rounded-full -mt-1 shadow-md"></div>
             </div>
-          </div>
-          <button class="mt-4 w-full bg-surface-container-high hover:bg-primary hover:text-on-primary-container text-primary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('news')">
-            Lọc Kịch Bản Xưởng 1
-          </button>
-        </div>
-
-        <!-- Workshop 2 -->
-        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-secondary/60 transition-all duration-200">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-secondary shadow-[0_0_10px_rgba(76,215,246,0.2)]">
-                <span class="material-symbols-outlined text-[24px]">code_blocks</span>
-              </div>
-              <span class="bg-secondary/15 text-secondary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-secondary/30">REACT 16:9 & 9:16</span>
-            </div>
-            <div>
-              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 2: Remotion Tech Explainer</h3>
-              <p class="text-xs text-on-surface-variant mt-1">Video đồ họa giải thích công nghệ, 6-beat tâm lý học giữ chân người xem, biểu đồ và hiệu ứng chuyển động code.</p>
-            </div>
-          </div>
-          <button class="mt-4 w-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary-container text-secondary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('explainer')">
-            Lọc Kịch Bản Xưởng 2
-          </button>
-        </div>
-
-        <!-- Workshop 3 -->
-        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-tertiary/60 transition-all duration-200">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-tertiary shadow-[0_0_10px_rgba(208,188,255,0.2)]">
-                <span class="material-symbols-outlined text-[24px]">history_edu</span>
-              </div>
-              <span class="bg-tertiary/15 text-tertiary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-tertiary/30">1-HOUR AUDIO</span>
-            </div>
-            <div>
-              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 3: Bảng Trắng Storyteller</h3>
-              <p class="text-xs text-on-surface-variant mt-1">Video audio truyện dài 60 phút, tự động tạo Storyboard 3 ô tranh Notion độc quyền cho từng chương, lồng nhạc nền ducking thông minh.</p>
-            </div>
-          </div>
-          <button class="mt-4 w-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary-container text-tertiary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('whiteboard')">
-            Lọc Kịch Bản Xưởng 3
-          </button>
-        </div>
-      </section>
-
-      <!-- ================= VIDEO LIBRARY & PRODUCTION LEDGER ================= -->
-      <section class="bg-surface-container-low/80 border border-outline-variant/40 rounded-xl p-6 shadow-sm backdrop-blur-md flex flex-col gap-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30">
-          <div>
-            <h2 class="text-xl font-headline font-bold text-on-surface">Kho Dự Án Video Cục Bộ</h2>
-            <p class="text-xs text-on-surface-variant">Quản lý và kích hoạt render toàn bộ các video từ thư mục output/jobs/</p>
-          </div>
-
-          <button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all self-start sm:self-center" onclick="openCreateModal()">
-            <span class="material-symbols-outlined text-[16px]">add</span>
-            <span>+ Thêm Video Mới</span>
-          </button>
-        </div>
-
-        <!-- Video Grid Container (Filled by app.js) -->
-        <div class="video-grid" id="video-grid">
-          <div class="loading-state py-12 text-center text-outline">
-            <div class="spinner mb-2"></div>
-            <p>Đang tải danh sách kho video từ server...</p>
           </div>
         </div>
       </section>
@@ -852,6 +812,13 @@
     function filterByWorkshop(ws) {
       document.querySelectorAll(".tab-btn").forEach(b => {
         b.classList.toggle("active", b.dataset.workshop === ws);
+        if (b.dataset.workshop === ws) {
+          b.classList.add("bg-surface-container-high", "text-primary", "border-l-2", "border-primary");
+          b.classList.remove("text-on-surface-variant");
+        } else {
+          b.classList.remove("bg-surface-container-high", "text-primary", "border-l-2", "border-primary");
+          b.classList.add("text-on-surface-variant");
+        }
       });
       currentFilter = ws;
       renderGrid();
