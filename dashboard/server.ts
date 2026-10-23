@@ -4,6 +4,12 @@ import { readFile, writeFile, unlink, readdir, mkdir, rm } from "node:fs/promise
 import { join, extname, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
+import {
+  getActiveConversationId,
+  getAntigravitySession,
+  getRecentTranscriptEvents,
+  dispatchAntigravityMessage,
+} from "./antigravity_bridge.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = join(__dirname, "..");
@@ -196,6 +202,59 @@ async function scanVideoLibrary() {
     }
   }
 
+  // Quét thêm thư mục output/threads (Xưởng 5) và output/cinematic (Xưởng 4)
+  const extraWorkshops = ["threads", "cinematic"];
+  for (const ws of extraWorkshops) {
+    const wsDir = join(OUTPUT_DIR, ws);
+    if (!existsSync(wsDir)) continue;
+
+    try {
+      const items = await readdir(wsDir, { withFileTypes: true });
+      for (const item of items) {
+        let vPath: string | null = null;
+        let vId = item.name;
+
+        if (item.isDirectory()) {
+          // Ví dụ: output/threads/job_thread_knhisme_phuhuynh_fuck/job_thread_knhisme_phuhuynh_fuck.mp4
+          const subFiles = await readdir(join(wsDir, item.name));
+          const mp4 = subFiles.find(f => f.endsWith(".mp4"));
+          if (mp4) {
+            vPath = join(wsDir, item.name, mp4);
+            vId = item.name;
+          }
+        } else if (item.isFile() && item.name.endsWith(".mp4")) {
+          vPath = join(wsDir, item.name);
+          vId = basename(item.name, ".mp4");
+        }
+
+        if (vPath && existsSync(vPath) && !videos.some(v => v.id === vId)) {
+          const vstat = statSync(vPath);
+          const relVideoUrl = `/media/${ws}/${item.isDirectory() ? encodeURIComponent(item.name) + "/" + encodeURIComponent(basename(vPath)) : encodeURIComponent(basename(vPath))}`;
+          videos.push({
+            id: vId,
+            title: vId.replace(/job_thread_/g, "Threads: ").replace(/job-/g, "Job: ").replace(/_/g, " "),
+            workshop: ws,
+            archetype: ws === "threads" ? "social_drama" : "cinematic_3d",
+            targetPlatform: ws === "threads" ? "tiktok" : "youtube_long",
+            canvas: { width: ws === "threads" ? 1080 : 1920, height: ws === "threads" ? 1920 : 1080, fps: 60 },
+            voice: { voiceId: "vi-VN-NamMinhNeural" },
+            beatsCount: ws === "threads" ? 6 : 12,
+            beats: [],
+            metadata: { engine: ws === "threads" ? "Chroma Key & Headless Chrome" : "FlowKit & Imagen/Veo" },
+            hasVideo: true,
+            videoUrl: relVideoUrl,
+            thumbUrl: null,
+            srtUrl: null,
+            sizeBytes: vstat.size,
+            lastModified: vstat.mtime.toISOString(),
+          });
+        }
+      }
+    } catch (e) {
+      console.warn(`[WARN] Khong the scan thu muc ${ws}:`, e);
+    }
+  }
+
   // Sắp xếp video mới nhất lên đầu
   videos.sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime());
   return videos;
@@ -217,6 +276,128 @@ const server = createServer(async (req, res) => {
       "Access-Control-Allow-Headers": "Content-Type",
     });
     res.end();
+    return;
+  }
+
+  // ================= ANTIGRAVITY 2.0 LIVE BRIDGE APIS =================
+  if (pathname === "/api/antigravity/status" && req.method === "GET") {
+    const session = getAntigravitySession();
+    sendJson(res, 200, {
+      success: true,
+      connected: Boolean(session),
+      session,
+    });
+    return;
+  }
+
+  if (pathname === "/api/antigravity/events" && req.method === "GET") {
+    const limit = parseInt(url.searchParams.get("limit") || "35", 10);
+    const events = getRecentTranscriptEvents(undefined, limit);
+    sendJson(res, 200, {
+      success: true,
+      events,
+    });
+    return;
+  }
+
+  if (pathname === "/api/antigravity/stream") {
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      "Connection": "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+    });
+
+    const sendSse = (event: string, data: any) => {
+      res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    };
+
+    let session = getAntigravitySession();
+    sendSse("init", { connected: Boolean(session), session });
+
+    let lastSize = session ? session.transcriptSize : 0;
+    let lastStep = 0;
+
+    // Gửi lịch sử gần nhất
+    const initEvents = getRecentTranscriptEvents(undefined, 15);
+    if (initEvents.length > 0) {
+      lastStep = initEvents[initEvents.length - 1].stepIndex;
+      sendSse("history", { events: initEvents });
+    }
+
+    const pollInterval = setInterval(() => {
+      try {
+        const curSession = getAntigravitySession();
+        if (!curSession) {
+          sendSse("status", { connected: false });
+          return;
+        }
+
+        if (curSession.transcriptSize !== lastSize) {
+          lastSize = curSession.transcriptSize;
+          const freshEvents = getRecentTranscriptEvents(curSession.conversationId, 10);
+          const newEvents = freshEvents.filter(e => e.stepIndex > lastStep);
+          if (newEvents.length > 0) {
+            lastStep = newEvents[newEvents.length - 1].stepIndex;
+            for (const ev of newEvents) {
+              sendSse("step", ev);
+            }
+          }
+        }
+      } catch (err) {
+        // Silent catch for poll error
+      }
+    }, 1200);
+
+    const pingInterval = setInterval(() => {
+      res.write(": keep-alive\n\n");
+    }, 15000);
+
+    req.on("close", () => {
+      clearInterval(pollInterval);
+      clearInterval(pingInterval);
+    });
+    return;
+  }
+
+  if (pathname === "/api/antigravity/dispatch" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const prompt = body.prompt;
+      if (!prompt) {
+        sendJson(res, 400, { success: false, error: "Thiếu prompt yêu cầu" });
+        return;
+      }
+      const convoId = body.conversationId || getActiveConversationId();
+      if (!convoId) {
+        sendJson(res, 500, { success: false, error: "Không tìm thấy phiên Antigravity nào đang hoạt động" });
+        return;
+      }
+
+      const result = await dispatchAntigravityMessage(convoId, prompt);
+      sendJson(res, result.success ? 200 : 500, result);
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/antigravity/approve" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const gate = body.gate || "Gate 3";
+      const convoId = body.conversationId || getActiveConversationId();
+      if (!convoId) {
+        sendJson(res, 500, { success: false, error: "Không tìm thấy phiên Antigravity nào đang hoạt động" });
+        return;
+      }
+
+      const approvalMsg = `[Phê duyệt từ Web Dashboard]: Đã duyệt ${gate}. Cho phép tiếp tục tiến trình sản xuất video sang cổng kế tiếp!`;
+      const result = await dispatchAntigravityMessage(convoId, approvalMsg);
+      sendJson(res, result.success ? 200 : 500, result);
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
     return;
   }
 

@@ -189,6 +189,16 @@ All AI assistants, coding agents (Antigravity, Claude Code, Codex, Cursor), and 
    - **Đồng bộ Meme SFX + Sticker Visual tại điểm rơi Punchline:** Khi giọng đọc dứt câu đùa (hoặc tại 1.3s cuối phân cảnh), âm thanh Meme SFX (`vine_boom.wav`, `bruh.wav`, `quack.wav`, `what.wav`, `metal_pipe.wav`,...) vang lên **đồng bộ 100% cùng chiếc Meme Sticker (PNG trong suốt có viền trắng die-cut 10px và bóng đổ) nảy lò xo vật lý (Spring Bounce)** ở khoảng trống dưới card (`y ≈ 1220`).
    - **Khắc phục triệt để mất chữ & nuốt âm:** Tự động gắn bộ đệm an toàn `+0.35s tail padding` vào đuôi mọi clip TTS để âm tiết cuối không bao giờ bị cắt cụt; mở rộng từ điển Teen-code (`clm` $\rightarrow$ *"vãi chưởng"*, `t` $\rightarrow$ *"tao"*, `m` $\rightarrow$ *"mày"*); lọc sạch toàn bộ ký tự lộn xộn dạng `-))`, `~))` trước khi nạp vào Edge-TTS.
 
+9. **QUY TẮC MEME PHÔNG XANH (CHROMA KEY CUTOUT) & CAMERA PUNCH-IN ZOOM (CẤM 100% HỘP ĐÓNG KHUNG MEME):**
+   - **Xóa phông xanh nguyên bản (Chroma Key Cutout):** Toàn bộ meme phản ứng (The Rock, Huh Cat, Pedro Pascal cười khóc, Pop Cat, Side-Eye Dog, Walter White) được bóc tách phông xanh qua bộ lọc `colorkey=0x00FF00:0.32:0.1`, hòa trộn tự nhiên trực tiếp lên khung hình không còn viền hộp hay bo góc nhân tạo.
+   - **Camera Punch-in Zoom (1.10x):** Tại điểm rơi punchline và âm thanh meme SFX, thẻ bài viết thực hiện cú giật zoom nhẹ 1.10x (`scale=eval=frame`) trong 0.35s rồi đàn hồi mượt mà về vị trí ban đầu, tạo cảm giác giật mình cuốn hút người xem.
+   - **Đa dạng hóa kho Gameplay nền (Multi-Genre B-Roll):** Hỗ trợ tự động luân chuyển giữa GTA 5 Mega Ramp (`gta5_ramp.mp4`), Subway Surfers 4K (`subway_surfers.mp4`), và Minecraft Parkour (`minecraft_parkour.mp4`), xóa bỏ hoàn toàn cảm giác video rập khuôn một nền duy nhất.
+
+10. **QUY TẮC CHỮ NẢY KINETIC SUBTITLES & PHÂN VAI ĐA GIỌNG ĐỌC (MULTI-CHARACTER VOICE ACTING):**
+    - **Kinetic Karaoke Subtitles:** Phụ đề chunking 3-4 từ nảy chữ sinh động theo nhịp đọc, chữ in đậm Segoe UI, viền đen sắc nét, sáng rực màu Cyan Neon (`#00DAF5`) khi phát âm, giữ chân người xem liên tục.
+    - **Multi-voice Casting linh hoạt:** Không dùng 1 giọng đọc từ đầu đến cuối; luân phiên Nam/Nữ và điều biến cao độ theo vai (Phụ huynh nhận `pitch -5Hz`, giới trẻ nhận `rate +26%`, `pitch +1Hz`).
+    - **Tự động ngắt nhịp hài hước:** Dấu ba chấm kịch tính `...` tự động chuyển hóa thành khoảng lặng chết tiệt `[pause:0.35]` trước câu chốt hài.
+
 ---
 
 ## 🛠 LỆNH ĐIỀU PHỐI NHANH (QUICK COMMANDS)
