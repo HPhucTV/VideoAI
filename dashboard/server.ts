@@ -230,6 +230,13 @@ async function scanVideoLibrary() {
         if (vPath && existsSync(vPath) && !videos.some(v => v.id === vId)) {
           const vstat = statSync(vPath);
           const relVideoUrl = `/media/${ws}/${item.isDirectory() ? encodeURIComponent(item.name) + "/" + encodeURIComponent(basename(vPath)) : encodeURIComponent(basename(vPath))}`;
+          let relThumbUrl: string | null = null;
+          if (item.isDirectory()) {
+            const possibleThumb = ["thumb.jpg", "thumb.png", "thumbnail.jpg"].find(t => existsSync(join(wsDir, item.name, t)));
+            if (possibleThumb) {
+              relThumbUrl = `/media/${ws}/${encodeURIComponent(item.name)}/${possibleThumb}`;
+            }
+          }
           videos.push({
             id: vId,
             title: vId.replace(/job_thread_/g, "Threads: ").replace(/job-/g, "Job: ").replace(/_/g, " "),
@@ -243,7 +250,7 @@ async function scanVideoLibrary() {
             metadata: { engine: ws === "threads" ? "Chroma Key & Headless Chrome" : "FlowKit & Imagen/Veo" },
             hasVideo: true,
             videoUrl: relVideoUrl,
-            thumbUrl: null,
+            thumbUrl: relThumbUrl,
             srtUrl: null,
             sizeBytes: vstat.size,
             lastModified: vstat.mtime.toISOString(),
