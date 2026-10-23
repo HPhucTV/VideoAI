@@ -8,6 +8,7 @@ import {
   getActiveConversationId,
   getAntigravitySession,
   getRecentTranscriptEvents,
+  getProductionStudioState,
   dispatchAntigravityMessage,
 } from "./antigravity_bridge.ts";
 
@@ -289,10 +290,12 @@ const server = createServer(async (req, res) => {
   // ================= ANTIGRAVITY 2.0 LIVE BRIDGE APIS =================
   if (pathname === "/api/antigravity/status" && req.method === "GET") {
     const session = getAntigravitySession();
+    const studioState = getProductionStudioState(session?.conversationId);
     sendJson(res, 200, {
       success: true,
       connected: Boolean(session),
       session,
+      studioState,
     });
     return;
   }
@@ -320,7 +323,9 @@ const server = createServer(async (req, res) => {
     };
 
     let session = getAntigravitySession();
-    sendSse("init", { connected: Boolean(session), session });
+    let initialStudioState = getProductionStudioState(session?.conversationId);
+    sendSse("init", { connected: Boolean(session), session, studioState: initialStudioState });
+    sendSse("gate_state", initialStudioState);
 
     let lastSize = session ? session.transcriptSize : 0;
     let lastStep = 0;
@@ -339,6 +344,10 @@ const server = createServer(async (req, res) => {
           sendSse("status", { connected: false });
           return;
         }
+
+        // Đồng bộ trạng thái 7 Cổng định kỳ
+        const curState = getProductionStudioState(curSession.conversationId);
+        sendSse("gate_state", curState);
 
         if (curSession.transcriptSize !== lastSize) {
           lastSize = curSession.transcriptSize;

@@ -488,13 +488,31 @@ const antigravityGateBadge = document.getElementById("antigravity-gate-badge");
 const dispatchForm = document.getElementById("antigravity-dispatch-form");
 const dispatchFeedback = document.getElementById("dispatch-feedback");
 const gateOverallProgress = document.getElementById("gate-overall-progress");
+let currentHighestGate = 1;
+let lastAnnouncedGate = 0;
 
-function updateGateStepper(gateNumber, gateName, progressPercent = 75) {
+function updateGateStepper(gateNumber, gateName, progressPercent = 75, isCompleted = false, completedGates = []) {
   currentGate = gateNumber;
-  if (antigravityGateBadge) antigravityGateBadge.textContent = `Cổng ${gateNumber}`;
+  if (antigravityGateBadge) {
+    if (isCompleted && gateNumber >= 6) {
+      antigravityGateBadge.textContent = `Cổng ${gateNumber}: Hoàn Thành`;
+    } else {
+      antigravityGateBadge.textContent = `Cổng ${gateNumber}`;
+    }
+  }
+
   if (gateOverallProgress) {
-    const overall = Math.min(100, Math.round(((gateNumber - 1) * 100 + progressPercent) / 7));
-    gateOverallProgress.textContent = `Tiến độ: ${overall}% (Cổng ${gateNumber}/7: ${gateName})`;
+    if (isCompleted && gateNumber >= 6) {
+      gateOverallProgress.textContent = `Tiến độ: 100% (Cổng ${gateNumber}/7: ${gateName} 🎉)`;
+    } else {
+      const overall = Math.min(100, Math.round(((gateNumber - 1) * 100 + progressPercent) / 7));
+      gateOverallProgress.textContent = `Tiến độ: ${overall}% (Cổng ${gateNumber}/7: ${gateName})`;
+    }
+  }
+
+  const doneSet = new Set(Array.isArray(completedGates) ? completedGates : []);
+  if (isCompleted) {
+    for (let k = 1; k <= gateNumber; k++) doneSet.add(k);
   }
 
   for (let i = 1; i <= 7; i++) {
@@ -505,11 +523,11 @@ function updateGateStepper(gateNumber, gateName, progressPercent = 75) {
 
     card.className = "gate-card p-2.5 rounded-xl border flex flex-col gap-1.5 transition-all ";
 
-    if (i < gateNumber) {
+    if (doneSet.has(i) || i < gateNumber || (isCompleted && i <= gateNumber)) {
       // Completed gate
       card.className += "border-primary/50 bg-surface-container-lowest/90 gate-done";
       if (icon) {
-        icon.className = "material-symbols-outlined text-[14px] text-primary";
+        icon.className = "material-symbols-outlined text-[14px] text-primary font-bold";
         icon.textContent = "check_circle";
       }
       bar.className = "bg-primary h-full rounded-full w-full";
@@ -565,18 +583,26 @@ function processIncomingEvent(ev) {
   liveAntigravityEvents.push(ev);
   const time = formatEventTimestamp(ev.timestamp);
 
-  // Cập nhật Cổng quy trình nếu có
+  // Cập nhật Cổng quy trình nếu có và áp dụng nguyên tắc Monotonic (Không thụt lùi)
   const gateObj = ev.gate || ev.gateProgress;
-  if (gateObj) {
-    const gNum = gateObj.gateNumber || gateObj.gate || 1;
-    const gName = gateObj.gateName || gateObj.name || `Cổng ${gNum}`;
-    const gProg = gateObj.progressPercent || gateObj.progress || 50;
-    updateGateStepper(gNum, gName, gProg);
-    appendTerminalLine(
-      `<span class="text-secondary">[${time}]</span> <span class="text-amber-300 font-bold">[GATE ${gNum}]</span> ${escapeHtml(gName)} (${gProg}%)`,
-      "gate",
-      "gate"
-    );
+  if (gateObj && gateObj.gateNumber) {
+    const gNum = gateObj.gateNumber;
+    const gName = gateObj.gateName || `Cổng ${gNum}`;
+    const gProg = gateObj.progressPercent || 50;
+    const isDone = gateObj.isCompleted || false;
+
+    if (gNum >= currentHighestGate || (isDone && gNum >= 5)) {
+      currentHighestGate = Math.max(currentHighestGate, gNum);
+      updateGateStepper(currentHighestGate, gName, gProg, isDone, gateObj.completedGates);
+      if (lastAnnouncedGate !== gNum) {
+        lastAnnouncedGate = gNum;
+        appendTerminalLine(
+          `<span class="text-secondary">[${time}]</span> <span class="text-amber-300 font-bold">[GATE ${gNum}]</span> ${escapeHtml(gName)} (${gProg}%)`,
+          "gate",
+          "gate"
+        );
+      }
+    }
   }
 
   // 1. Thinking / Suy nghĩ nội tâm của Agent
@@ -646,18 +672,46 @@ function initAntigravityBridge() {
   try {
     antigravityEventSource = new EventSource("/api/antigravity/stream");
 
+    antigravityEventSource.onopen = () => {
+      if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Đã Kết Nối";
+      if (missionStatusDot) missionStatusDot.className = "w-2.5 h-2.5 rounded-full bg-primary animate-pulse";
+    };
+
     antigravityEventSource.addEventListener("init", (e) => {
       try {
         const data = JSON.parse(e.data);
-        if (data.activeSession) {
-          if (missionConvoId) missionConvoId.textContent = data.activeSession.slice(0, 12) + "...";
-          if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Kết Nối";
+        const session = data.session || data.activeSession;
+        const cId = session?.conversationId || (typeof session === "string" ? session : null);
+        if (cId) {
+          if (missionConvoId) missionConvoId.textContent = cId.slice(0, 12) + "...";
+          if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Đã Kết Nối";
           if (missionStatusText) missionStatusText.textContent = "ĐỒNG BỘ HAI CHIỀU ANTIGRAVITY 2.0";
           if (missionStatusDot) missionStatusDot.className = "w-2.5 h-2.5 rounded-full bg-primary animate-pulse";
+        }
+        if (data.studioState) {
+          const s = data.studioState;
+          currentHighestGate = s.currentGate || 1;
+          updateGateStepper(s.currentGate, s.gateName, s.progressPercent, s.isCompleted, s.completedGates);
         }
       } catch (err) {
         console.warn("Lỗi xử lý init SSE:", err);
       }
+    });
+
+    antigravityEventSource.addEventListener("gate_state", (e) => {
+      try {
+        const state = JSON.parse(e.data);
+        if (state && state.currentGate) {
+          currentHighestGate = Math.max(currentHighestGate, state.currentGate);
+          updateGateStepper(
+            state.currentGate,
+            state.gateName,
+            state.progressPercent,
+            state.isCompleted,
+            state.completedGates
+          );
+        }
+      } catch (_) {}
     });
 
     antigravityEventSource.addEventListener("history", (e) => {
@@ -819,6 +873,8 @@ if (dispatchForm) {
       if (data.success) {
         dispatchFeedback.className = "mt-3 p-2.5 rounded-lg text-xs font-mono bg-primary/15 border border-primary/40 text-primary";
         dispatchFeedback.innerHTML = `✅ <strong>Đã gửi lệnh vào Antigravity IDE thành công!</strong><br/>Agent đang tiếp nhận chỉ thị và bắt đầu tiến trình sản xuất.`;
+        currentHighestGate = 1;
+        lastAnnouncedGate = 1;
         updateGateStepper(1, "Ý Tưởng & Kịch Bản", 40);
         dispatchForm.reset();
       } else {

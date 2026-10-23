@@ -87,10 +87,27 @@ export function getAntigravitySession(convoId?: string): AntigravitySession | nu
   };
 }
 
+export interface ProductionStudioState {
+  currentGate: number;
+  gateName: string;
+  progressPercent: number;
+  isCompleted: boolean;
+  completedGates: number[];
+  activeJobId?: string;
+  masterVideoPath?: string;
+  lastUpdated: string;
+}
+
 /**
  * Suy luận Cổng sản xuất (Gate 1 -> Gate 7) từ nội dung của bước thực thi
+ * Chỉ trả về Gate khi có bằng chứng thực tế, trả về null nếu là bước phụ (git, file check, generic output)
  */
-export function inferProductionGate(stepObj: any): { gateNumber: number; gateName: string; progressPercent: number } {
+export function inferProductionGate(stepObj: any): {
+  gateNumber: number;
+  gateName: string;
+  progressPercent: number;
+  isCompleted?: boolean;
+} | null {
   const content = (stepObj.content || "").toLowerCase();
   const thinking = (stepObj.thinking || "").toLowerCase();
   const text = `${content} ${thinking}`;
@@ -99,26 +116,269 @@ export function inferProductionGate(stepObj: any): { gateNumber: number; gateNam
   const tools: string[] = (stepObj.tool_calls || []).map((t: any) => (t.name || t.tool_name || "").toLowerCase());
   const toolArgsStr = JSON.stringify(stepObj.tool_calls || {}).toLowerCase();
 
-  if (toolArgsStr.includes("youtube") || toolArgsStr.includes("upload_unlisted_video") || text.includes("cổng 7") || text.includes("gate 7") || text.includes("xuất bản youtube")) {
-    return { gateNumber: 7, gateName: "Cổng 7: Xuất Bản YouTube", progressPercent: 100 };
-  }
-  if (toolArgsStr.includes("make_threads_video") || toolArgsStr.includes("master_assembly") || toolArgsStr.includes("ffmpeg") && (toolArgsStr.includes("output/threads") || toolArgsStr.includes("output/cinematic")) || text.includes("cổng 6") || text.includes("gate 6") || text.includes("bấm máy")) {
-    return { gateNumber: 6, gateName: "Cổng 6: Bấm Máy & Lắp Ráp Master", progressPercent: 85 };
-  }
-  if (toolArgsStr.includes("render_card") || toolArgsStr.includes("storyboard") || toolArgsStr.includes("cutout") || text.includes("cổng 5") || text.includes("gate 5")) {
-    return { gateNumber: 5, gateName: "Cổng 5: Khung Hình Storyboard & Card", progressPercent: 70 };
-  }
-  if (toolArgsStr.includes("edge_tts") || toolArgsStr.includes("synthesize_speech") || toolArgsStr.includes("cổng 4") || text.includes("cổng 4") || text.includes("gate 4") || text.includes("lồng tiếng")) {
-    return { gateNumber: 4, gateName: "Cổng 4: Lồng Tiếng Edge-TTS 48kHz", progressPercent: 55 };
-  }
-  if (toolArgsStr.includes("cache_media") || toolArgsStr.includes("download") || toolArgsStr.includes("avatar") || text.includes("cổng 3") || text.includes("gate 3") || text.includes("asset")) {
-    return { gateNumber: 3, gateName: "Cổng 3: Duyệt Dàn Asset & Avatar", progressPercent: 40 };
-  }
-  if (text.includes("kịch bản") || text.includes("dialogue") || text.includes("5 hồi") || text.includes("cổng 2") || text.includes("gate 2")) {
-    return { gateNumber: 2, gateName: "Cổng 2: Phê Duyệt Kịch Bản & Thoại", progressPercent: 25 };
+  // 1. Cổng 7: Xuất Bản YouTube
+  if (
+    toolArgsStr.includes("youtube_publisher") ||
+    toolArgsStr.includes("upload_unlisted_video") ||
+    toolArgsStr.includes("publishing_kit") ||
+    text.includes("đã đăng tải youtube") ||
+    text.includes("cổng 7") ||
+    text.includes("gate 7") ||
+    text.includes("xuất bản youtube")
+  ) {
+    return {
+      gateNumber: 7,
+      gateName: "Cổng 7: Xuất Bản YouTube (Unlisted)",
+      progressPercent: 100,
+      isCompleted: true,
+    };
   }
 
-  return { gateNumber: 1, gateName: "Cổng 1: Tiếp Nhận Ý Tưởng & Phân Tích", progressPercent: 10 };
+  // 2. Cổng 6 HOÀN THÀNH (Master Film & 3D Thumbnail đã render xong)
+  if (
+    text.includes("hoàn thành sản xuất") ||
+    text.includes("video thành phẩm đã sẵn sàng") ||
+    text.includes("video render thành công") ||
+    text.includes("đã hoàn thành video") ||
+    (text.includes("production of the video") && text.includes("is complete")) ||
+    text.includes("trích xuất preview") ||
+    text.includes("final product adheres") ||
+    (toolArgsStr.includes("ffmpeg") && text.includes("mp4") && text.includes("sẵn sàng"))
+  ) {
+    return {
+      gateNumber: 6,
+      gateName: "Cổng 6: Master Film & 3D Thumb (Hoàn Thành)",
+      progressPercent: 100,
+      isCompleted: true,
+    };
+  }
+
+  // 3. Cổng 6 ĐANG BẤM MÁY (Dựng video qua FFmpeg, make_threads_video, compositor)
+  if (
+    toolArgsStr.includes("make_threads_video") ||
+    (toolArgsStr.includes("produce_threads") && toolArgsStr.includes("python")) ||
+    toolArgsStr.includes("master_assembly") ||
+    toolArgsStr.includes("assemble_104_master_film") ||
+    (toolArgsStr.includes("ffmpeg") && (toolArgsStr.includes("output/threads") || toolArgsStr.includes("output/cinematic"))) ||
+    text.includes("ghép nối video hoàn chỉnh") ||
+    text.includes("bấm máy") ||
+    text.includes("cổng 6") ||
+    text.includes("gate 6")
+  ) {
+    return {
+      gateNumber: 6,
+      gateName: "Cổng 6: Bấm Máy & Lắp Ráp Master",
+      progressPercent: 85,
+      isCompleted: false,
+    };
+  }
+
+  // 4. Cổng 5: Khung Hình Storyboard & Card PNG
+  if (
+    toolArgsStr.includes("render_card") ||
+    toolArgsStr.includes("card_engine") ||
+    toolArgsStr.includes("generate_storyboard_frames") ||
+    toolArgsStr.includes("storyboard") ||
+    toolArgsStr.includes("cutout") ||
+    text.includes("cổng 5") ||
+    text.includes("gate 5") ||
+    text.includes("render thẻ")
+  ) {
+    return {
+      gateNumber: 5,
+      gateName: "Cổng 5: Khung Storyboard & Card PNG",
+      progressPercent: 70,
+      isCompleted: true,
+    };
+  }
+
+  // 5. Cổng 4: Lồng Tiếng Edge-TTS 48kHz
+  if (
+    toolArgsStr.includes("edge_tts") ||
+    toolArgsStr.includes("synthesize_speech") ||
+    toolArgsStr.includes("gate4_audio_runner") ||
+    toolArgsStr.includes("sinh âm thanh") ||
+    text.includes("sinh âm thanh cho post") ||
+    text.includes("sinh âm thanh cho comment") ||
+    text.includes("cổng 4") ||
+    text.includes("gate 4") ||
+    text.includes("lồng tiếng")
+  ) {
+    return {
+      gateNumber: 4,
+      gateName: "Cổng 4: Lồng Tiếng Edge-TTS 48kHz",
+      progressPercent: 55,
+      isCompleted: true,
+    };
+  }
+
+  // 6. Cổng 3: Dàn Asset & Avatar Độc Bản
+  if (
+    toolArgsStr.includes("cache_media") ||
+    toolArgsStr.includes("hoangbao_avatars") ||
+    toolArgsStr.includes("knhisme_avatars") ||
+    toolArgsStr.includes("subway_surfers") ||
+    toolArgsStr.includes("post_media") ||
+    (toolArgsStr.includes("download") && (toolArgsStr.includes("avatar") || toolArgsStr.includes("meme"))) ||
+    text.includes("cổng 3") ||
+    text.includes("gate 3") ||
+    text.includes("bộ asset") ||
+    text.includes("dàn asset")
+  ) {
+    return {
+      gateNumber: 3,
+      gateName: "Cổng 3: Bộ Asset & Dàn Avatar Độc Bản",
+      progressPercent: 40,
+      isCompleted: true,
+    };
+  }
+
+  // 7. Cổng 2: Phê Duyệt Kịch Bản 5 Hồi & Thoại
+  if (
+    (toolArgsStr.includes("produce_threads") && (toolArgsStr.includes("write_file") || toolArgsStr.includes("edit_file"))) ||
+    toolArgsStr.includes("thread_data") ||
+    toolArgsStr.includes("beats") ||
+    text.includes("kịch bản 5 hồi") ||
+    text.includes("tts_content") ||
+    text.includes("phê duyệt kịch bản") ||
+    text.includes("cổng 2") ||
+    text.includes("gate 2")
+  ) {
+    return {
+      gateNumber: 2,
+      gateName: "Cổng 2: Phê Duyệt Kịch Bản & Thoại",
+      progressPercent: 25,
+      isCompleted: true,
+    };
+  }
+
+  // 8. Cổng 1: Tiếp Nhận Ý Tưởng & Phân Tích Đề Tài
+  if (
+    stepObj.type === "USER_INPUT" ||
+    text.includes("dispatch_web") ||
+    text.includes("hãy sản xuất video") ||
+    toolArgsStr.includes("scraper") ||
+    toolArgsStr.includes("fetch_thread") ||
+    toolArgsStr.includes("puppeteer_navigate") ||
+    text.includes("tiếp nhận yêu cầu sản xuất") ||
+    text.includes("cổng 1") ||
+    text.includes("gate 1")
+  ) {
+    return {
+      gateNumber: 1,
+      gateName: "Cổng 1: Tiếp Nhận Ý Tưởng & Phân Tích",
+      progressPercent: 15,
+      isCompleted: true,
+    };
+  }
+
+  // Không có bằng chứng chuyển cổng -> Trả về null để KHÔNG làm thụt lùi tiến độ về Cổng 1
+  return null;
+}
+
+/**
+ * Tính toán trạng thái tổng thể hiện tại của Quy Trình 7 Cổng (Studio State Tracker)
+ * Quét toàn bộ ngữ cảnh gần nhất và đối chiếu với file thành phẩm trên đĩa
+ */
+export function getProductionStudioState(convoId?: string): ProductionStudioState {
+  const session = getAntigravitySession(convoId);
+  const now = new Date().toISOString();
+
+  // Kiểm tra file video mới render trong output/threads hoặc output/cinematic
+  let latestMp4: { path: string; mtime: number; name: string } | null = null;
+  const searchDirs = [
+    join(process.cwd(), "output", "threads"),
+    join(process.cwd(), "output", "cinematic")
+  ];
+
+  for (const sDir of searchDirs) {
+    if (!existsSync(sDir)) continue;
+    try {
+      const items = readdirSync(sDir);
+      for (const item of items) {
+        const full = join(sDir, item);
+        const st = statSync(full);
+        if (st.isDirectory()) {
+          const subFiles = readdirSync(full);
+          const mp4 = subFiles.find(f => f.endsWith(".mp4"));
+          if (mp4) {
+            const mp4Full = join(full, mp4);
+            const mp4Time = statSync(mp4Full).mtimeMs;
+            if (!latestMp4 || mp4Time > latestMp4.mtime) {
+              latestMp4 = { path: mp4Full, mtime: mp4Time, name: item };
+            }
+          }
+        } else if (item.endsWith(".mp4")) {
+          if (!latestMp4 || st.mtimeMs > latestMp4.mtime) {
+            latestMp4 = { path: full, mtime: st.mtimeMs, name: item };
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Mặc định ban đầu
+  let currentGate = 1;
+  let gateName = "Cổng 1: Tiếp Nhận Ý Tưởng & Phân Tích";
+  let progressPercent = 15;
+  let isCompleted = false;
+  const completedGatesSet = new Set<number>();
+  let activeJobId = latestMp4 ? latestMp4.name : undefined;
+
+  if (session && existsSync(session.transcriptPath)) {
+    try {
+      const raw = readFileSync(session.transcriptPath, "utf-8");
+      const lines = raw.trim().split("\n").filter(Boolean);
+      
+      // Quét 100 dòng gần nhất để lần theo dấu vết các cổng đã qua
+      const recentLines = lines.slice(Math.max(0, lines.length - 100));
+      for (const line of recentLines) {
+        try {
+          const obj = JSON.parse(line);
+          const g = inferProductionGate(obj);
+          if (g) {
+            if (g.gateNumber >= currentGate) {
+              currentGate = g.gateNumber;
+              gateName = g.gateName;
+              progressPercent = g.progressPercent;
+              if (g.isCompleted) isCompleted = true;
+            }
+            // Đánh dấu các cổng trước đó là đã hoàn thành
+            for (let k = 1; k <= g.gateNumber; k++) {
+              if (k < g.gateNumber || g.isCompleted) {
+                completedGatesSet.add(k);
+              }
+            }
+          }
+        } catch (_) {}
+      }
+    } catch (_) {}
+  }
+
+  // Nếu trên đĩa đã có file video MP4 render trong vòng 2 giờ qua và đang ở Cổng 6
+  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
+  if (latestMp4 && latestMp4.mtime > twoHoursAgo) {
+    if (currentGate <= 6) {
+      currentGate = 6;
+      gateName = "Cổng 6: Master Film & 3D Thumb (Hoàn Thành)";
+      progressPercent = 100;
+      isCompleted = true;
+      for (let k = 1; k <= 6; k++) {
+        completedGatesSet.add(k);
+      }
+    }
+  }
+
+  return {
+    currentGate,
+    gateName,
+    progressPercent,
+    isCompleted,
+    completedGates: Array.from(completedGatesSet).sort((a, b) => a - b),
+    activeJobId,
+    masterVideoPath: latestMp4 ? latestMp4.path : undefined,
+    lastUpdated: now,
+  };
 }
 
 /**
