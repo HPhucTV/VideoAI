@@ -256,6 +256,14 @@ html, body {
   opacity: 0;
 }
 
+.word-punch {
+  display: inline-block;
+  color: #facc15;
+  text-shadow: 0 0 30px rgba(250,204,21,0.9);
+  font-weight: 900;
+  transform: scale(1.05);
+}
+
 /* ── LAYOUT: COMPARISON ──────────────────────────────────────── */
 .layout-comparison {
   position: absolute; inset: 0; z-index: 5;

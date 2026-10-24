@@ -1,6 +1,7 @@
 ---
 name: create-news-video
-description: Tạo video tin tức ngắn 9:16 (~60s) từ URL bài báo hoặc file .txt tiếng Việt. Trigger khi user yêu cầu tạo video tin tức, làm short news, làm bản tin video, render tin thành video, làm TikTok tin tức. Output: video.mp4 + voice.mp3 + script.txt cho CapCut.
+description: >-
+  Tạo video tin tức ngắn 9:16 (~60s) từ URL bài báo hoặc file .txt tiếng Việt. Trigger khi user yêu cầu tạo video tin tức, làm short news, làm bản tin video, render tin thành video, làm TikTok tin tức. Output: video.mp4 + voice.mp3 + script.txt cho CapCut.
 ---
 
 # Create News Video Skill
@@ -41,6 +42,15 @@ Single argument: a news article URL (starts with `http://` or `https://`) OR a p
 - slug = lowercase ASCII (strip Vietnamese diacritics, đ→d), replace non-alphanumeric with `-`, trim dashes, max 40 chars
 - timestamp = current local time as `YYYYMMDD-HHmm`
 - outputDir = `output/<slug>-<timestamp>/`
+
+### Step 3.5: Capture Screenshots & B-Roll Assets (MANDATORY for Tech/Repo URLs)
+
+> ⚠️ **NO-SLIDE-DECK POLICY:** Video công nghệ tuyệt đối không để nền đen chữ chạy đơn điệu như slide. Bắt buộc thu thập tư liệu trực quan:
+- **Headless Browser Screenshot:** Khi URL là trang GitHub hoặc bài báo công nghệ, chụp 2 ảnh giao diện thật:
+  1. `overview.jpg`: Khung Header (Avatar, Tên Repo, Số Stars/Forks, Thẻ giới thiệu).
+  2. `content.jpg`: Sơ đồ kiến trúc (Architecture/Workflow), bảng so sánh hoặc khối code tiêu biểu.
+- **Document / PDF Preview:** Nếu nguồn nhắc đến file đầu ra (CV mẫu, báo cáo PDF): trích xuất trang 1 thành ảnh sắc nét (dùng `pdftoppm` hoặc công cụ tương đương) và lưu vào `<outputDir>/images/`.
+- Lưu ảnh vào `<outputDir>/images/bg.jpg` hoặc đường dẫn tương ứng để nhúng vào các template phân cảnh (`hook`, `feature-list`, `callout`).
 
 ### Step 4: Generate script.json
 

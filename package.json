@@ -18,6 +18,7 @@
     "dev:explainer": "npm --workspace=workshops/workshop-explainer run dev",
     "build:explainer": "npm --workspace=workshops/workshop-explainer run build",
     "pipeline:news": "npm --workspace=workshops/workshop-news run pipeline",
+    "auth:youtube": "python scripts/setup_youtube_auth.py",
     "sync:skills": "powershell -ExecutionPolicy Bypass -NoProfile -File scripts/sync-skills.ps1"
   },
   "keywords": [

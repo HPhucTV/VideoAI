@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OmniVideo Studio - Antigravity 2.0 Mission Control</title>
+<!-- Material Symbols Outlined Font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#171f33",
+            "on-primary-container": "#00422b",
+            "on-secondary-container": "#00424e",
+            "inverse-surface": "#dae2fd",
+            "tertiary-fixed-dim": "#d0bcff",
+            "on-tertiary": "#3c0091",
+            "tertiary": "#d0bcff",
+            "surface-dim": "#0b1326",
+            "inverse-on-surface": "#283044",
+            "background": "#0b1326",
+            "surface-bright": "#31394d",
+            "on-tertiary-container": "#4600a7",
+            "surface-variant": "#2d3449",
+            "surface-container-high": "#222a3d",
+            "on-error": "#690005",
+            "outline": "#86948a",
+            "on-tertiary-fixed-variant": "#5516be",
+            "on-primary": "#003824",
+            "on-surface-variant": "#bbcabf",
+            "on-surface": "#dae2fd",
+            "surface-container-highest": "#2d3449",
+            "on-error-container": "#ffdad6",
+            "surface": "#0b1326",
+            "secondary-container": "#03b5d3",
+            "error-container": "#93000a",
+            "surface-container-low": "#131b2e",
+            "on-secondary-fixed": "#001f26",
+            "on-background": "#dae2fd",
+            "surface-container-lowest": "#060e20",
+            "outline-variant": "#3c4a42",
+            "tertiary-container": "#b090ff",
+            "on-secondary-fixed-variant": "#004e5c",
+            "primary-container": "#10b981",
+            "on-primary-fixed-variant": "#005236",
+            "error": "#ffb4ab",
+            "secondary-fixed-dim": "#4cd7f6",
+            "on-secondary": "#003640",
+            "inverse-primary": "#006c49",
+            "secondary-fixed": "#acedff",
+            "primary-fixed": "#6ffbbe",
+            "primary-fixed-dim": "#4edea3",
+            "secondary": "#4cd7f6",
+            "tertiary-fixed": "#e9ddff",
+            "surface-tint": "#4edea3",
+            "primary": "#4edea3",
+            "on-primary-fixed": "#002113",
+            "on-tertiary-fixed": "#23005c"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-sm": "1rem",
+            "gutter-sm": "0.5rem",
+            "space-sm": "0.5rem",
+            "gutter-lg": "1.5rem",
+            "space-xl": "2rem",
+            "margin-lg": "2rem",
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "margin": "1.5rem"
+          },
+          fontFamily: {
+            "display-hero-mobile": ["Plus Jakarta Sans"],
+            "label-code-md": ["JetBrains Mono"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-code-lg": ["JetBrains Mono"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-hero": ["Plus Jakarta Sans"],
+            "label-code-sm": ["JetBrains Mono"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          fontSize: {
+            "display-hero-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-code-md": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "500" }],
+            "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.015em", fontWeight: "600" }],
+            "label-code-lg": ["14px", { lineHeight: "20px", letterSpacing: "-0.01em", fontWeight: "500" }],
+            "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" }],
+            "display-hero": ["48px", { lineHeight: "56px", letterSpacing: "-0.03em", fontWeight: "700" }],
+            "label-code-sm": ["10px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "500" }],
+            "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "600" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }],
+            "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.15rem;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    .neon-glow-primary {
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+    }
+    .neon-glow-cyan {
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+    }
+    .neon-glow-amber {
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+    }
+    .neon-glow-pink {
+      box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+    }
+    /* Custom scrollbar for terminal and lists */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060e20;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222a3d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3c4a42;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar (Shared Component Execution) -->
+<header class="bg-surface-container-low dark:bg-surface-container-low docked full-width top-0 z-40 shadow-sm backdrop-blur-md flex justify-between items-center w-full px-space-lg py-space-sm h-16 sticky">
+<!-- Brand & Workspace Info -->
+<div class="flex items-center space-x-space-md">
+<div class="flex items-center space-x-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+<div class="flex flex-col">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary tracking-tight">OmniVideo Studio</span>
+<span class="text-label-code-sm font-label-code-sm text-on-surface-variant flex items-center gap-1">
+<span>Kênh: Storyverse VN</span>
+<span class="text-outline-variant">•</span>
+<span class="text-secondary font-semibold">100% Local GPU</span>
+</span>
+</div>
+</div>
+<!-- Antigravity 2.0 Live Status Badge -->
+<div class="hidden xl:flex items-center gap-2 bg-surface-container-lowest/80 border border-outline-variant/40 rounded-full px-3 py-1">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="text-label-code-sm font-label-code-sm text-primary">IDE Connected (Session: 0acabd2b-7f12)</span>
+<span class="text-outline-variant">•</span>
+<span class="text-label-code-sm font-label-code-sm text-secondary font-medium">MCP Active</span>
+</div>
+</div>
+<!-- Center Search & Shared Nav Links -->
+<div class="hidden lg:flex items-center space-x-space-lg flex-1 max-w-xl mx-space-lg">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg pl-10 pr-4 py-1.5 text-body-sm font-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Tìm kịch bản, assets, task ID..." type="text"/>
+</div>
+<nav class="flex items-center space-x- space-x-4 shrink-0">
+<a class="text-primary dark:text-primary border-b-2 border-primary font-semibold text-label-code-md font-label-code-md pb-0.5" href="#workspaces">Workspaces</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium text-label-code-md font-label-code-md hover:text-on-surface transition-colors" href="#render-nodes">Render Nodes</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium text-label-code-md font-label-code-md hover:text-on-surface transition-colors" href="#pipelines">Pipelines</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium text-label-code-md font-label-code-md hover:text-on-surface transition-colors" href="#docs">Docs</a>
+</nav>
+</div>
+<!-- Trailing Hardware Telemetry & Quick CTA -->
+<div class="flex items-center space-x-space-md">
+<!-- Hardware telemetry indicators -->
+<div class="hidden md:flex items-center space-x-3 text-label-code-sm font-label-code-sm bg-surface-container-lowest/60 px-3 py-1.5 rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary" style="font-size: 16px;">memory</span>
+<span class="text-on-surface-variant">VRAM:</span>
+<span class="text-primary font-semibold">21.4 / 24 GB</span>
+<span class="text-[10px] text-outline font-normal">RTX 4090</span>
+</div>
+<span class="text-outline-variant">|</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-amber-400" style="font-size: 16px;">hard_drive</span>
+<span class="text-on-surface-variant">SSD:</span>
+<span class="text-on-surface font-semibold">1.8 TB</span>
+</div>
+</div>
+<!-- Icon Actions -->
+<div class="flex items-center space-x-1 text-on-surface-variant">
+<button class="p-2 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Fast Turbo Trigger">
+<span class="material-symbols-outlined">bolt</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Settings &amp; Parameters">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+<!-- Actions from TopNavBar JSON -->
+<button class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-secondary text-label-code-md font-label-code-md border border-outline-variant/40 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+        Run Pipeline
+      </button>
+<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container text-label-code-md font-label-code-md font-bold neon-glow-primary active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+        + Tạo Video Mới
+      </button>
+<!-- Profile Avatar -->
+<div class="w-8 h-8 rounded-full border border-primary/50 overflow-hidden ring-2 ring-primary/20 shrink-0">
+<img class="w-full h-full object-cover" data-alt="A cinematic portrait shot of a cybernetic digital video director wearing neon augmented glasses in a moody dark-lit futuristic studio room filled with glowing holographic timelines, rendered with razor-sharp volumetric lighting and neon emerald rim tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8BmNIAAr2lafvflXHKrD55qeZWoxDA6gLJASnKsCOUewl_E55bm_9_9gI7NtTBEv9nSi97hAY894-lB1AVNKlB0b7d_qru8SufarpN2LD4jSaO_eeRFNqE4VONS6fpDOqsq0R9B5yRcG7R2m3HTT8mWUtcDp-Tuaj_6AGtHhBljXBkVz5OOMA2wdDEn8G-eaxGrqTnfbz4Us2qWM0qLjnkiBsEys1iongOa6WZigxvzEn_9gF28LrLK7JRwVbOqSPGwzq8JuQDtcQ"/>
+</div>
+</div>
+</header>
+<!-- Main Multi-Panel Cockpit Body -->
+<div class="flex-1 flex overflow-hidden">
+<!-- SideNavBar (Shared Component Execution) -->
+<aside class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-space-md px-space-sm bg-surface-container-lowest dark:bg-surface-container-lowest docked left-0 top-16 z-30 shadow-md backdrop-blur-lg shrink-0 overflow-y-auto">
+<div>
+<!-- SideNav Brand / Subtext -->
+<div class="px-space-md mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">view_in_ar</span>
+<div class="text-headline-sm font-headline-sm font-bold text-primary dark:text-primary">OmniVideo Studio</div>
+</div>
+<p class="text-label-code-sm font-label-code-sm text-outline mt-0.5">VFX &amp; Neural NLE Engine</p>
+</div>
+<!-- Workspaces Filter tabs matching JSON and prompt -->
+<div class="space-y-1">
+<!-- Active Tab 1 -->
+<a class="bg-surface-container-high dark:bg-surface-container-high text-primary dark:text-primary border-l-2 border-primary font-semibold px-space-md py-space-sm rounded-r-lg flex items-center justify-between text-body-sm font-body-sm active:scale-[0.99] transition-all" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary">space_dashboard</span>
+<span>Tất Cả Video (28)</span>
+</div>
+<span class="text-label-code-sm font-label-code-sm text-primary font-mono bg-primary-container/15 px-1.5 py-0.5 rounded">ALL</span>
+</a>
+<!-- Tab 2: Xưởng 5 (Threads Shorts) -->
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between text-body-sm font-body-sm transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-pink-400 group-hover:scale-105 transition-transform">flash_on</span>
+<span class="truncate">Xưởng 5: Threads Social</span>
+</div>
+<span class="text-[10px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 px-1 rounded uppercase tracking-wider">HOT</span>
+</a>
+<!-- Tab 3: Xưởng 4: Phim 3D Điện Ảnh & Donghua -->
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between text-body-sm font-body-sm transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-amber-400 group-hover:scale-105 transition-transform">movie_filter</span>
+<span class="truncate">Xưởng 4: Phim 3D / Donghua</span>
+</div>
+<span class="text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded">4K</span>
+</a>
+<!-- Tab 4: Xưởng 3: Bảng Trắng Vẽ Tay -->
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between text-body-sm font-body-sm transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-cyan-400 group-hover:scale-105 transition-transform">history_edu</span>
+<span class="truncate">Xưởng 3: Bảng Trắng</span>
+</div>
+<span class="text-[10px] font-mono text-outline bg-surface-container px-1 rounded">60m</span>
+</a>
+<!-- Tab 5: Xưởng 2: Remotion Code Explainer -->
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between text-body-sm font-body-sm transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-purple-400 group-hover:scale-105 transition-transform">code_blocks</span>
+<span class="truncate">Xưởng 2: Remotion Tech</span>
+</div>
+<span class="text-[10px] font-mono text-purple-300 bg-purple-500/20 px-1 rounded">TS</span>
+</a>
+<!-- Tab 6: Xưởng 1: Tin Tức HyperFrames -->
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between text-body-sm font-body-sm transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-emerald-400 group-hover:scale-105 transition-transform">bolt</span>
+<span class="truncate">Xưởng 1: HyperFrames News</span>
+</div>
+</a>
+<!-- Extra Utility tabs -->
+<div class="pt-2 border-t border-outline-variant/30 mt-2">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center gap-2.5 text-body-sm font-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined">perm_media</span>
+<span>Media Library</span>
+</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface hover:bg-surface-container dark:hover:bg-surface-container px-space-md py-space-sm rounded-lg flex items-center gap-2.5 text-body-sm font-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span>Settings &amp; MCP</span>
+</a>
+</div>
+</div>
+<!-- Deploy Pipeline CTA -->
+<div class="mt-4 px-2">
+<button class="w-full py-2 px-3 rounded-lg bg-surface-container-high border border-primary/40 text-primary hover:bg-primary-container hover:text-on-primary-container text-label-code-md font-label-code-md font-semibold flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+            Deploy Pipeline
+          </button>
+</div>
+</div>
+<!-- Bottom Local Telemetry Dock -->
+<div class="bg-surface-container-low/90 rounded-xl p-3 border border-outline-variant/30 space-y-2 mt-4">
+<div class="flex items-center justify-between text-label-code-sm font-label-code-sm">
+<span class="text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-primary">memory</span>
+            Engine Latency
+          </span>
+<span class="text-primary font-mono font-semibold">11ms</span>
+</div>
+<div class="text-[11px] font-mono text-outline truncate">
+          Node: LocalHost:8848 (IPC Open)
+        </div>
+<div class="flex items-center gap-1.5 text-[11px] font-mono text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+<span>ComfyUI + Qwen-2.5: Online</span>
+</div>
+<button class="w-full text-left text-[11px] font-mono text-on-surface-variant hover:text-on-surface flex items-center justify-between pt-1 border-t border-outline-variant/30">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">terminal</span>
+            System Diagnostic
+          </span>
+<span class="material-symbols-outlined text-xs">arrow_forward_ios</span>
+</button>
+</div>
+</aside>
+<!-- Main Workspace Content Canvas -->
+<main class="flex-1 overflow-y-auto px-space-md lg:px-space-lg py-space-md space-y-space-lg">
+<!-- HERO SECTION: Antigravity 2.0 Mission Control & Autonomous Engine -->
+<section class="rounded-2xl bg-surface-container-low border border-outline-variant/40 p-space-md lg:p-space-lg relative overflow-hidden backdrop-blur-xl">
+<!-- Subtle ambient radial light in top right -->
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Mission Control Header & HITL Approval Bar -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-space-md border-b border-outline-variant/30">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-secondary-container/20 text-secondary border border-secondary/40 uppercase tracking-wider">Active Mission</span>
+<span class="text-label-code-sm font-label-code-sm text-outline">Task #AG-9428</span>
+</div>
+<h1 class="text-headline-md font-headline-md text-on-surface font-bold tracking-tight flex items-center gap-2">
+              Antigravity 2.0 Autonomous Engine: <span class="text-primary font-semibold">Đại Chiến Cổ Phiếu Meme Threads</span>
+</h1>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              Tác nhân đa mô hình tự hành phối hợp qua Model Context Protocol (MCP) • Khung hình 9:16 Viral Shorts
+            </p>
+</div>
+<!-- Human-in-the-Loop Gate Approval toolbar with button group -->
+<div class="flex flex-wrap items-center gap-2 shrink-0">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/50 text-primary bg-primary/10 hover:bg-primary/20 text-label-code-sm font-label-code-sm transition-colors">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+              Duyệt Cổng 3 (Asset Master)
+            </button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/50 text-primary bg-primary/10 hover:bg-primary/20 text-label-code-sm font-label-code-sm transition-colors">
+<span class="material-symbols-outlined text-sm">done_all</span>
+              Duyệt Cổng 5 (Storyboard)
+            </button>
+<button class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-bold text-label-code-sm font-label-code-sm neon-glow-cyan active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-sm">electric_bolt</span>
+              ⚡ Tiếp Tục Cổng Kế (Gate 7: Master Render)
+            </button>
+<button class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 text-label-code-sm font-label-code-sm transition-colors">
+<span class="material-symbols-outlined text-sm">pause</span>
+              Tạm Dừng / Re-prompt
+            </button>
+</div>
+</div>
+<!-- The 7-Gate Production Protocol Horizontal Visual Stepper -->
+<div class="py-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code-sm font-label-code-sm font-semibold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-sm">linear_scale</span>
+              Quy Trình 7 Cổng Sản Xuất Tự Hành (Antigravity Protocol)
+            </span>
+<span class="text-label-code-sm font-label-code-sm text-primary font-mono">
+              Tiến Độ Tổng Thể: <strong class="text-on-surface">82%</strong>
+</span>
+</div>
+<!-- Stepper Grid Cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2.5">
+<!-- Cổng 1 -->
+<div class="bg-surface-container-lowest/80 border border-primary/40 rounded-xl p-2.5 relative flex flex-col justify-between">
+<div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+<span>GATE 01</span>
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span>
+</div>
+<div class="text-body-sm font-body-sm font-semibold text-on-surface leading-tight">Ý Tưởng &amp; Đề Tài</div>
+<div class="mt-2 text-[10px] font-mono text-primary flex items-center justify-between">
+<span>100%</span>
+<span class="text-outline">DeepSeek R1</span>
+</div>
+</div>
+<!-- Cổng 2 -->
+<div class="bg-surface-container-lowest/80 border border-primary/40 rounded-xl p-2.5 relative flex flex-col justify-between">
+<div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+<span>GATE 02</span>
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span>
+</div>
+<div class="text-body-sm font-body-sm font-semibold text-on-surface leading-tight">Kịch Bản 5 Hồi</div>
+<div class="mt-2 text-[10px] font-mono text-primary flex items-center justify-between">
+<span>100%</span>
+<span class="text-outline">Hook 9.4/10</span>
+</div>
+</div>
+<!-- Cổng 3 -->
+<div class="bg-surface-container-lowest/80 border border-primary/40 rounded-xl p-2.5 relative flex flex-col justify-between">
+<div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+<span>GATE 03</span>
+<span class="material-symbols-outlined text-sm text-primary">verified</span>
+</div>
+<div class="text-body-sm font-body-sm font-semibold text-on-surface leading-tight">Bộ Asset &amp; Prompt</div>
+<div class="mt-2 text-[10px] font-mono text-primary flex items-center justify-between">
+<span>✓ Human Pass</span>
+<span class="text-outline">18 assets</span>
+</div>
+</div>
+<!-- Cổng 4 -->
+<div class="bg-surface-container-lowest/80 border border-primary/40 rounded-xl p-2.5 relative flex flex-col justify-between">
+<div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+<span>GATE 04</span>
+<span class="material-symbols-outlined text-sm text-primary">graphic_eq</span>
+</div>
+<div class="text-body-sm font-body-sm font-semibold text-on-surface leading-tight">Lồng Tiếng 48kHz</div>
+<div class="mt-2 text-[10px] font-mono text-primary flex items-center justify-between">
+<span>Dub Sync</span>
+<span class="text-outline">1.25x GenZ</span>
+</div>
+</div>
+<!-- Cổng 5 -->
+<div class="bg-surface-container-lowest/80 border border-primary/40 rounded-xl p-2.5 relative flex flex-col justify-between">
+<div class="flex items-center justify-between text-xs text-primary font-mono mb-1">
+<span>GATE 05</span>
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span>
+</div>
+<div class="text-body-sm font-body-sm font-semibold text-on-surface leading-tight">Khung Storyboard</div>
+<div class="mt-2 text-[10px] font-mono text-primary flex items-center justify-between">
+<span>Approved</span>
+<span class="text-outline">Keyframes</span>
+</div>
+</div>
+<!-- Cổng 6 (Active Processing) -->
+<div class="bg-surface-container-high/90 border-2 border-secondary rounded-xl p-2.5 relative flex flex-col justify-between neon-glow-cyan">
+<div class="flex items-center justify-between text-xs text-secondary font-mono mb-1">
+<span class="font-bold">GATE 06</span>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+</div>
+<div class="text-body-sm font-body-sm font-bold text-on-surface leading-tight">Master Film &amp; 3D Thumb</div>
+<!-- Progress bar -->
+<div class="mt-2">
+<div class="w-full bg-surface-container-lowest rounded-full h-1.5 overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: 74%"></div>
+</div>
+<div class="text-[10px] font-mono text-secondary flex items-center justify-between mt-1">
+<span>⚡ Đang Xử Lý</span>
+<span>74%</span>
+</div>
+</div>
+</div>
+<!-- Cổng 7 (Waiting) -->
+<div class="bg-surface-container-lowest/40 border border-outline-variant/20 rounded-xl p-2.5 relative flex flex-col justify-between opacity-70">
+<div class="flex items-center justify-between text-xs text-outline font-mono mb-1">
+<span>GATE 07</span>
+<span class="material-symbols-outlined text-sm text-outline">hourglass_empty</span>
+</div>
+<div class="text-body-sm font-body-sm font-medium text-on-surface-variant leading-tight">Xuất Bản YouTube</div>
+<div class="mt-2 text-[10px] font-mono text-outline">
+<span>⏳ Chờ Gate 6</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Two-Column Interactive Control Hub -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md pt-2">
+<!-- Left Column (5 cols): Kích Hoạt Tác Vụ Cho Antigravity -->
+<div class="lg:col-span-5 bg-surface-container rounded-xl p-space-md border border-outline-variant/30 space-y-3.5">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+<h2 class="text-headline-sm font-headline-sm text-on-surface font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span>
+                Kích Hoạt Tác Vụ Cho Antigravity
+              </h2>
+<span class="text-label-code-sm font-label-code-sm font-mono text-secondary bg-surface-container-low px-2 py-0.5 rounded border border-secondary/30">Direct IPC</span>
+</div>
+<!-- Form: Xưởng Sản Xuất -->
+<div>
+<label class="block text-label-code-sm font-label-code-sm text-on-surface-variant mb-1">Chọn Xưởng Sản Xuất</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-body-sm font-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary">
+<option selected="">Xưởng 5: Threads Social Drama (9:16 Meme Pop)</option>
+<option>Xưởng 4: Phim 3D Điện Ảnh &amp; Donghua (16:9 4K)</option>
+<option>Xưởng 3: Bảng Trắng Vẽ Tay (60m Audio Drama)</option>
+<option>Xưởng 2: Remotion Code Explainer (TypeScript NLE)</option>
+<option>Xưởng 1: Tin Tức HyperFrames (Breaking Shorts)</option>
+</select>
+</div>
+<!-- Form: Threads URL / Drama Topic -->
+<div>
+<label class="block text-label-code-sm font-label-code-sm text-on-surface-variant mb-1">Threads Post URL hoặc Chủ Đề Drama</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-label-code-md font-label-code-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary pr-8" type="text" value="https://threads.net/@hanoi.confessions/post/Cu-soc-tai-chinh-vay-200-trieu-di-da-lat"/>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-secondary text-sm">link</span>
+</div>
+</div>
+<!-- Form: Gameplay Nền Pills -->
+<div>
+<label class="block text-label-code-sm font-label-code-sm text-on-surface-variant mb-1.5">Gameplay Nền Giữ Chân (Retention Loop)</label>
+<div class="grid grid-cols-2 gap-2 text-body-sm font-body-sm">
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest border border-primary/40 cursor-pointer">
+<input checked="" class="text-primary focus:ring-primary bg-surface-container-lowest" name="gameplay" type="radio"/>
+<span class="text-xs text-on-surface font-medium truncate">Minecraft Parkour</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 cursor-pointer hover:border-outline">
+<input class="text-primary focus:ring-primary bg-surface-container-lowest" name="gameplay" type="radio"/>
+<span class="text-xs text-on-surface-variant truncate">Subway Surfers</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 cursor-pointer hover:border-outline">
+<input class="text-primary focus:ring-primary bg-surface-container-lowest" name="gameplay" type="radio"/>
+<span class="text-xs text-on-surface-variant truncate">GTA 5 Stunts Ramp</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 cursor-pointer hover:border-outline">
+<input class="text-primary focus:ring-primary bg-surface-container-lowest" name="gameplay" type="radio"/>
+<span class="text-xs text-on-surface-variant truncate">Satisfying Slime</span>
+</label>
+</div>
+</div>
+<!-- Voice Pitch & Speed toggle -->
+<div>
+<label class="block text-label-code-sm font-label-code-sm text-on-surface-variant mb-1">Cấu Hình Giọng Đọc AI TTS</label>
+<div class="flex rounded-lg bg-surface-container-lowest p-1 border border-outline-variant/30">
+<button class="flex-1 py-1 text-xs font-mono rounded bg-surface-container-high text-primary font-semibold border border-primary/30">1.25x High Ret.</button>
+<button class="flex-1 py-1 text-xs font-mono rounded text-on-surface-variant hover:text-on-surface">VN Deep Dub</button>
+<button class="flex-1 py-1 text-xs font-mono rounded text-on-surface-variant hover:text-on-surface">Gen Z Slang TTS</button>
+</div>
+</div>
+<!-- Checkbox toggles -->
+<div class="space-y-1.5 pt-1">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Tự động đẩy YouTube Shorts (Unlisted để kiểm tra)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Tạo 3 mẫu Thumbnail AI (Midjourney v6.1 + Comfy FaceSync)</span>
+</label>
+</div>
+<!-- Submit Button -->
+<button class="w-full mt-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-primary-container via-emerald-400 to-secondary text-surface-container-lowest font-headline-sm font-bold flex items-center justify-center gap-2 neon-glow-primary active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">rocket_launch</span>
+              🚀 Gửi Tác Vụ Sang Antigravity IDE
+            </button>
+</div>
+<!-- Right Column (7 cols): Live Agent Terminal & Thinking Stream -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-xl border border-outline-variant/40 flex flex-col overflow-hidden shadow-2xl">
+<!-- macOS Window Bar -->
+<div class="bg-surface-container-low px-4 py-2.5 border-b border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-amber-400/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-primary/80 inline-block"></span>
+<span class="ml-2 text-label-code-sm font-label-code-sm font-mono text-outline">session_0acabd2b.log</span>
+</div>
+<!-- Log Filter Pills -->
+<div class="flex items-center gap-1 bg-surface-container-lowest px-1.5 py-0.5 rounded-lg border border-outline-variant/30 text-label-code-sm font-label-code-sm font-mono">
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-bold">Tất Cả</button>
+<button class="px-2 py-0.5 rounded text-outline hover:text-on-surface">Thinking</button>
+<button class="px-2 py-0.5 rounded text-outline hover:text-on-surface">Tools (MCP)</button>
+<button class="px-2 py-0.5 rounded text-outline hover:text-on-surface">Gates</button>
+</div>
+</div>
+<!-- Terminal Stream Body -->
+<div class="p-4 font-mono text-xs space-y-3 overflow-y-auto max-h-[380px] bg-surface-container-lowest/95">
+<!-- Log line 1 -->
+<div class="flex items-start gap-2 text-on-surface-variant">
+<span class="text-outline shrink-0">[08:24:11]</span>
+<span class="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px]">THINKING</span>
+<span class="text-on-surface">
+                  Phân tích hook 3 giây đầu: <em class="text-secondary">"Cú sốc tài chính chấn động Threads tuần qua..."</em> → Điểm cuốn hút đạt <span class="text-primary font-bold">9.4/10</span>. Áp dụng pacing cắt khung 0.6s.
+                </span>
+</div>
+<!-- Log line 2 -->
+<div class="flex items-start gap-2 text-on-surface-variant">
+<span class="text-outline shrink-0">[08:24:14]</span>
+<span class="px-1.5 py-0.2 rounded bg-secondary/20 text-secondary font-bold text-[10px]">TOOL_CALL</span>
+<span class="text-on-surface">
+<code class="text-secondary font-semibold">ComfyUI_Workflow_Node_489</code>: Render 9:16 kinetic typography overlays. VRAM: 14.2 GB used.
+                </span>
+</div>
+<!-- Log line 3 -->
+<div class="flex items-start gap-2 text-on-surface-variant">
+<span class="text-outline shrink-0">[08:24:17]</span>
+<span class="px-1.5 py-0.2 rounded bg-primary/20 text-primary font-bold text-[10px]">HUMAN_GATE</span>
+<span class="text-primary-fixed">
+                  Gate 5 Storyboard passed by Human Director <strong>Vance</strong>. Keyframes approved.
+                </span>
+</div>
+<!-- Log line 4 -->
+<div class="flex items-start gap-2 text-on-surface-variant">
+<span class="text-outline shrink-0">[08:24:22]</span>
+<span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px]">EXECUTING</span>
+<span class="text-on-surface">
+                  Remotion bundle compile <code class="text-outline">--props=threads_drama_v2.json --fps=60</code> (Khung hình 2,420 / 3,600).
+                </span>
+</div>
+<!-- Log line 5 -->
+<div class="flex items-start gap-2 text-on-surface-variant">
+<span class="text-outline shrink-0">[08:24:25]</span>
+<span class="px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-bold text-[10px]">AGENT</span>
+<span class="text-on-surface">
+                  Đang áp bộ Sound FX meme <em>'Whoosh'</em> và <em>'Dramatic Boom'</em> tại nhịp beat 00:14. Khớp nhạc nền synthwave lofi.
+                </span>
+</div>
+<!-- Active Cursor line -->
+<div class="flex items-center gap-2 pt-2 border-t border-outline-variant/20 text-primary">
+<span class="text-outline">[08:24:28]</span>
+<span class="animate-pulse">❯</span>
+<span class="text-secondary">Antigravity daemon awaits Gate 7 final pipe confirmation...</span>
+<span class="inline-block w-2 h-4 bg-primary animate-pulse ml-1"></span>
+</div>
+</div>
+<!-- Terminal Footer Status Bar -->
+<div class="bg-surface-container px-4 py-2 border-t border-outline-variant/30 flex items-center justify-between text-label-code-sm font-label-code-sm font-mono text-outline">
+<span class="flex items-center gap-1.5 text-primary">
+<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                Stream FPS: 59.8 • IPC Buffer: 0% Dropped
+              </span>
+<span>Tokens: 142.8k / 200k • Latency: 11ms</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: Kho Video Đã Sản Xuất (5 Xưởng Công Nghệ) -->
+<section class="space-y-space-md" id="workspaces">
+<!-- Section Header with Filter Controls -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">video_library</span>
+              Kho Video Đã Sản Xuất (5 Xưởng Công Nghệ)
+            </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              Toàn bộ sản phẩm được tổng hợp từ Antigravity, Remotion TypeScript NLE, và ComfyUI Nodes
+            </p>
+</div>
+<!-- Actions & View Switchers -->
+<div class="flex items-center gap-2">
+<div class="flex rounded-lg bg-surface-container-low p-1 border border-outline-variant/30">
+<button class="px-3 py-1 rounded bg-surface-container text-primary text-label-code-sm font-label-code-sm font-semibold">Tất cả (28)</button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface text-label-code-sm font-label-code-sm">9:16 Shorts</button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface text-label-code-sm font-label-code-sm">16:9 Cinema</button>
+</div>
+<button class="p-2 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Diverse Video Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md items-start">
+<!-- Card 1 (9:16 Vertical Card - Xưởng 5) -->
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant/40 overflow-hidden flex flex-col hover:border-pink-500/50 transition-all group shadow-lg">
+<!-- 9:16 Thumbnail Container -->
+<div class="relative aspect-[9/16] w-full overflow-hidden bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A vertical 9:16 smartphone video shot showing dynamic split screen with satisfying colorful Minecraft parkour gameplay at the bottom and ultra-modern neon-colored kinetic Vietnamese text chat bubbles on top, vivid dark theme aesthetic with cyber neon emerald and pink highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMTZ-ZyhIgB26oMOEQFYfZ7AWn7mOxKr2EMpUvYug_5eqFSSi3jz6HJNvMV2Gaib5dXmj4DIB2Hp9bUXTJrOPEHZl4v2T1_7Cod3vFJCLiE_aLd42G6C700Z6dusKKAdMyvgwKyYiiyD_C9Q46Huk1SDqIpGK8__EKn2-llD4ICDyXHbB7CFsa0gGyWd39ZndLjrbQP5EaYObx_wZrLALCHTv9e-o1nIRTXRKeoFVnDvOiI4-Mw78415A9S8Bi6IrRo4dHS0DAu43r"/>
+<!-- Badges Overlay -->
+<div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-pink-500/90 text-white shadow-sm">
+                  9:16 Viral Pop
+                </span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-container-lowest/80 text-primary border border-primary/30">
+                  Xưởng 5: Threads
+                </span>
+</div>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-xs font-mono font-bold bg-surface-container-lowest/90 text-on-surface">
+                01:15
+              </span>
+<!-- Scrubber Hover Icon -->
+<div class="absolute inset-0 bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-[2px]">
+<span class="w-12 h-12 rounded-full bg-pink-500/90 text-white flex items-center justify-center neon-glow-pink">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<!-- Card Meta -->
+<div class="p-3.5 flex-1 flex flex-col justify-between space-y-3">
+<div>
+<h3 class="text-body-md font-body-md font-bold text-on-surface line-clamp-2 leading-snug">
+                  Drama Bạn Thân Vay 200 Triệu Đi Đà Lạt Không Trả
+                </h3>
+<div class="flex items-center gap-2 mt-2 text-label-code-sm font-label-code-sm text-outline">
+<span>FPS: 60</span>
+<span>•</span>
+<span>Audio: Gen Z 1.25x</span>
+<span>•</span>
+<span class="text-primary font-semibold">Sẵn Sàng Đăng</span>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-outline-variant/30">
+<button class="py-1.5 px-2 rounded-lg bg-surface-container text-xs font-medium text-on-surface hover:bg-surface-container-high flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-xs">play_arrow</span>
+                  Phát
+                </button>
+<button class="py-1.5 px-2 rounded-lg bg-surface-container text-xs font-medium text-primary hover:bg-surface-container-high flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-xs">download</span>
+                  Tải 4K
+                </button>
+<button class="py-1.5 px-2 rounded-lg bg-surface-container text-xs font-medium text-on-surface-variant hover:text-on-surface flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-xs">edit</span>
+                  Sửa
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 2 (16:9 Widescreen Card - Xưởng 4) -->
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant/40 overflow-hidden flex flex-col hover:border-amber-500/50 transition-all group shadow-lg">
+<!-- 16:9 Thumbnail -->
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A cinematic widescreen 16:9 4K fantasy digital render of a mystical cyberpunk Vietnamese swordsman standing atop a misty neon mountain peak holding a glowing cyan sword, volumetric rays and high-end Unreal Engine cinematic lighting, dark slate background palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBykhqrO68OeZNJ4GNVIdK0SnlZQZjmqtWamZUfv9EppUHu3srj4npEaVYXfj08oAGmKux3ihTaD8ESVALPRDYJLLA0hwupLty7JBJfL9_t4bu1eXmQpVmNaF1PPLw3EbtPALhoiVn4613JaGwt-DRdki_TlUza6GJT1feFUgcbX31Ml4dVx4ssIfLuIJPRE36cMIl9AVCIhn4kc5iztPVfzNDJ6EosQI2Mrtn3d1SNr0KqYTDHPxfhV1zZyjd9Pyekw2nH3IWjpJVl"/>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500 text-surface-container-lowest">
+                  16:9 4K Unreal
+                </span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-container-lowest/80 text-amber-300 border border-amber-500/30">
+                  Xưởng 4: 3D
+                </span>
+</div>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-xs font-mono font-bold bg-surface-container-lowest/90 text-on-surface">
+                04:30
+              </span>
+<div class="absolute inset-0 bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-[2px]">
+<span class="w-12 h-12 rounded-full bg-amber-500 text-surface-container-lowest flex items-center justify-center neon-glow-amber">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<!-- Card Meta -->
+<div class="p-3.5 flex-1 flex flex-col justify-between space-y-3">
+<div>
+<h3 class="text-body-md font-body-md font-bold text-on-surface line-clamp-2 leading-snug">
+                  Huyền Thoại Kiếm Khách 3D - Trailer Tập 4: Ma Trận Cổ Linh
+                </h3>
+<div class="flex items-center gap-2 mt-2 text-label-code-sm font-label-code-sm text-outline">
+<span>ComfyUI Render</span>
+<span>•</span>
+<span>Donghua Style</span>
+<span>•</span>
+<span class="text-amber-400 font-semibold">Đã Render</span>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-outline-variant/30">
+<button class="py-1.5 px-3 rounded-lg bg-surface-container text-xs font-medium text-on-surface hover:bg-surface-container-high flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                  Xem Preview
+                </button>
+<button class="py-1.5 px-3 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-medium hover:bg-amber-500/30 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-sm">ios_share</span>
+                  Export Master
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 3 (16:9 Widescreen Card - Xưởng 2) -->
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant/40 overflow-hidden flex flex-col hover:border-cyan-400/50 transition-all group shadow-lg">
+<!-- 16:9 Thumbnail -->
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A clean modern high-tech screen showing Remotion code editor with animated glowing TypeScript syntax and 3D floating neural attention matrix visualization, cyan and emerald color scheme, clean dark glass UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP547FryZOi--7LbNhgiAFcDPMHrdmG7oxVwdgc0T_1hpuYZbUFAmFgGRE_yvuar230jHUsg6pGR4rUXFUUv6-_PZ59_RuNz-Zdj21Bpn1VHlrJcBNcbfFPb7SfnzUKgbmr60VhJz_HjbsYGkC1s7imETncoOatmXA9NA-zZmYI588BqRm6WJHEWx-cYQGLpgc-2lrVXxcC4T_SidtinXeqy8nGi6rfJZ3AzqnpP0DPeBwzhgKZ0sS3Z4Fs_rJ2Fp6lA8S_c8BhrxF"/>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-secondary text-surface-container-lowest">
+                  Remotion TypeScript
+                </span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-container-lowest/80 text-secondary border border-secondary/30">
+                  Xưởng 2
+                </span>
+</div>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-xs font-mono font-bold bg-surface-container-lowest/90 text-on-surface">
+                10:12
+              </span>
+<div class="absolute inset-0 bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-[2px]">
+<span class="w-12 h-12 rounded-full bg-secondary text-surface-container-lowest flex items-center justify-center neon-glow-cyan">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<!-- Card Meta -->
+<div class="p-3.5 flex-1 flex flex-col justify-between space-y-3">
+<div>
+<h3 class="text-body-md font-body-md font-bold text-on-surface line-clamp-2 leading-snug">
+                  Giải Mã Kiến Trúc Transformers &amp; LLM Trong 10 Phút
+                </h3>
+<div class="flex items-center gap-2 mt-2 text-label-code-sm font-label-code-sm text-outline">
+<span>Vector Graphics</span>
+<span>•</span>
+<span>Audio Sync</span>
+<span>•</span>
+<span class="text-secondary font-semibold">Hoàn Tất</span>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-outline-variant/30">
+<button class="py-1.5 px-3 rounded-lg bg-surface-container text-xs font-medium text-on-surface hover:bg-surface-container-high flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-sm">code</span>
+                  Source Code
+                </button>
+<button class="py-1.5 px-3 rounded-lg bg-secondary/20 text-secondary border border-secondary/40 text-xs font-medium hover:bg-secondary/30 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+                  NLE Editor
+                </button>
+</div>
+</div>
+</div>
+<!-- Card 4 (9:16 Vertical Card - Xưởng 1) -->
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant/40 overflow-hidden flex flex-col hover:border-emerald-400/50 transition-all group shadow-lg">
+<!-- 9:16 Thumbnail Container -->
+<div class="relative aspect-[9/16] w-full overflow-hidden bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A dynamic vertical mobile video preview displaying fast-paced kinetic typography in Vietnamese and glowing neon emerald AI neural network benchmark graphs with DeepSeek R1 badge, high contrast AMOLED black styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALW05S1VJe2s0IqfPSlHK5O3e4t73bN-Tv8r-8J2HKl4RewAHoAy79v3Kl4zT8GHPlKPZMqFKBFWUaadExp92kzncMj88fV7T4XUl2FKMaBBy2vn_R23yDO-7TddKt3ZOSXcv6iFxCyXN8eC2CkT0venOBHai4F2lQpyQcJZq1wJiFGIUjxgeNbIgl06K6aaa3tzxQbskp9RADqWs3-bnzaCMzkftsYe7Td3P3RJab6evjepJAXYj212qVGLGs6nd3IxKAfNVgiwQI"/>
+<div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-primary-container text-on-primary-container">
+                  HyperFrames
+                </span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-container-lowest/80 text-primary border border-primary/30">
+                  Xưởng 1: Tin Nhanh
+                </span>
+</div>
+<span class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-xs font-mono font-bold bg-surface-container-lowest/90 text-on-surface">
+                00:58
+              </span>
+<div class="absolute inset-0 bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-[2px]">
+<span class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center neon-glow-primary">
+<span class="material-symbols-outlined text-2xl">play_arrow</span>
+</span>
+</div>
+</div>
+<!-- Card Meta -->
+<div class="p-3.5 flex-1 flex flex-col justify-between space-y-3">
+<div>
+<h3 class="text-body-md font-body-md font-bold text-on-surface line-clamp-2 leading-snug">
+                  Tin Nhanh AI: DeepSeek R1 Phá Đảo Benchmark Open Source
+                </h3>
+<div class="flex items-center gap-2 mt-2 text-label-code-sm font-label-code-sm text-outline">
+<span>Voice Auto</span>
+<span>•</span>
+<span>Subtitles 100%</span>
+<span>•</span>
+<span class="text-primary font-semibold">Đang Xếp Lịch</span>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-outline-variant/30">
+<button class="py-1.5 px-3 rounded-lg bg-surface-container text-xs font-medium text-on-surface hover:bg-surface-container-high flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                  Lịch Đăng
+                </button>
+<button class="py-1.5 px-3 rounded-lg bg-primary-container/20 text-primary border border-primary/40 text-xs font-medium hover:bg-primary-container/30 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-sm">download</span>
+                  Tải Về
+                </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: Video Player Inspector Modal / NLE Scrubber Dock -->
+<section class="rounded-2xl bg-surface-container border border-outline-variant/50 p-space-md shadow-2xl relative">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-outline-variant/30 pb-3">
+<div class="flex items-center gap-3">
+<span class="p-2 rounded-lg bg-surface-container-lowest text-primary border border-primary/30">
+<span class="material-symbols-outlined text-lg">timeline</span>
+</span>
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">
+                NLE Live Player &amp; Audio Beat Inspector
+              </h3>
+<p class="text-label-code-sm font-label-code-sm text-outline">
+                Đang kiểm tra: <span class="text-primary font-medium">Drama Bạn Thân Vay 200 Triệu (Cut #02 - 9:16)</span>
+</p>
+</div>
+</div>
+<!-- Video scrubber controls & export buttons -->
+<div class="flex flex-wrap items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface text-label-code-sm font-label-code-sm flex items-center gap-1.5 hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-sm text-primary">download</span>
+              Tải MP4 1080p60
+            </button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface text-label-code-sm font-label-code-sm flex items-center gap-1.5 hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-sm text-amber-400">image</span>
+              Tải Thumbnail PNG
+            </button>
+<button class="px-3 py-1.5 rounded-lg bg-pink-600/20 text-pink-300 border border-pink-500/40 text-label-code-sm font-label-code-sm flex items-center gap-1.5 hover:bg-pink-600/30">
+<span class="material-symbols-outlined text-sm">share</span>
+              Đẩy Sang TikTok / YouTube API
+            </button>
+</div>
+</div>
+<!-- Scrubber and Waveform Visualization -->
+<div class="mt-4 space-y-3">
+<!-- Timecode and markers -->
+<div class="flex items-center justify-between text-label-code-md font-label-code-md font-mono">
+<div class="flex items-center gap-3">
+<span class="text-primary font-bold">00:34:12</span>
+<span class="text-outline">/</span>
+<span class="text-on-surface-variant">01:15:00</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-[11px] text-secondary border border-secondary/30">BEAT SYNC: 128 BPM</span>
+</div>
+<div class="flex items-center gap-2 text-outline text-xs">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-pink-500"></span> Voice SFX</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> Subtitle Hook</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Zoom Keyframe</span>
+</div>
+</div>
+<!-- Multi-Track Audio Waveform & Keyframe Canvas Bar -->
+<div class="relative w-full h-16 bg-surface-container-lowest rounded-xl border border-outline-variant/40 overflow-hidden p-2 flex flex-col justify-center">
+<!-- Simulated Audio Bars -->
+<div class="flex items-end justify-between h-8 gap-0.5 opacity-80">
+<!-- High-density mini waveform bars -->
+<div class="w-1 bg-secondary rounded-t h-4"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-secondary rounded-t h-8"></div>
+<div class="w-1 bg-primary rounded-t h-7"></div>
+<div class="w-1 bg-primary rounded-t h-5"></div>
+<div class="w-1 bg-secondary rounded-t h-3"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-amber-400 rounded-t h-8"></div>
+<div class="w-1 bg-amber-400 rounded-t h-7"></div>
+<div class="w-1 bg-secondary rounded-t h-4"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-primary rounded-t h-8"></div>
+<div class="w-1 bg-primary rounded-t h-7"></div>
+<div class="w-1 bg-secondary rounded-t h-5"></div>
+<div class="w-1 bg-secondary rounded-t h-3"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-primary rounded-t h-8"></div>
+<div class="w-1 bg-primary rounded-t h-6"></div>
+<div class="w-1 bg-secondary rounded-t h-4"></div>
+<div class="w-1 bg-secondary rounded-t h-7"></div>
+<div class="w-1 bg-pink-400 rounded-t h-8"></div>
+<div class="w-1 bg-pink-400 rounded-t h-8"></div>
+<div class="w-1 bg-secondary rounded-t h-5"></div>
+<div class="w-1 bg-secondary rounded-t h-3"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-primary rounded-t h-8"></div>
+<div class="w-1 bg-primary rounded-t h-7"></div>
+<div class="w-1 bg-secondary rounded-t h-4"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-secondary rounded-t h-5"></div>
+<div class="w-1 bg-secondary rounded-t h-3"></div>
+<div class="w-1 bg-primary rounded-t h-8"></div>
+<div class="w-1 bg-primary rounded-t h-7"></div>
+<div class="w-1 bg-secondary rounded-t h-4"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+<div class="w-1 bg-secondary rounded-t h-8"></div>
+<div class="w-1 bg-amber-400 rounded-t h-7"></div>
+<div class="w-1 bg-secondary rounded-t h-5"></div>
+<div class="w-1 bg-secondary rounded-t h-3"></div>
+<div class="w-1 bg-secondary rounded-t h-6"></div>
+</div>
+<!-- Playhead scrubber indicator -->
+<div class="absolute top-0 bottom-0 left-[45%] w-0.5 bg-primary shadow-[0_0_8px_#10b981] flex flex-col items-center">
+<div class="w-3 h-3 bg-primary rounded-full -mt-1 shadow-md"></div>
+</div>
+</div>
+<!-- Transcript Sync Row -->
+<div class="p-2.5 rounded-lg bg-surface-container-lowest/80 border border-outline-variant/30 flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2 text-on-surface">
+<span class="text-label-code-sm font-label-code-sm text-secondary font-mono">[00:32 - 00:36]</span>
+<span>"Ủa rồi hẹn tháng sau trả mà giờ 8 tháng rồi chưa thấy đâu là sao bạn ơi?!"</span>
+</div>
+<span class="text-xs font-mono text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">mic</span>
+              100% Word-level Alignment
+            </span>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

@@ -29,13 +29,17 @@ Chỉ cần nhấp đúp vào file `studio.bat` tại thư mục gốc của d�
  [3] 🏭 Xưởng 3: Làm video Bảng Trắng Vẽ Tay (Python Whiteboard Animation)
  [4] 🖥️ Mở Remotion Studio Live Preview (Xem trước từng frame trên web)
  [5] 🎨 Mở Whiteboard Region Editor (Kéo thả vùng vẽ không cần server)
- [6] 🛠️ Kiểm tra môi trường hệ thống (Node, Python, FFmpeg, FFprobe)
+ [6] 🛠️ Kiểm tra môi trường hệ thống (Node, Python, FFmpeg, FFprobe, Blender)
+ [7] 🌐 Mở Video Library Dashboard (Web UI quản lý kho video)
+ [8] 🎥 Xưởng 4: Hoạt hình 3D Blender (EEVEE Next Cinematic Animation)
  [0] 🚪 Thoát
 ```
 
 * **Phím 4:** Khởi chạy Remotion Studio UI, tự động mở trình duyệt tại `http://localhost:3000` để bạn kéo timeline xem chuyển động từng frame của video giải thích.
 * **Phím 5:** Mở trình biên tập vẽ tay Bảng Trắng trên trình duyệt để kéo thả trực quan các vùng hình vẽ, chỉnh thời gian (ms) và hướng vẽ.
-* **Phím 6:** Kiểm tra nhanh tình trạng cài đặt Node.js, Python, FFmpeg, FFprobe trên máy.
+* **Phím 6:** Kiểm tra nhanh tình trạng cài đặt Node.js, Python, FFmpeg, FFprobe, Blender trên máy.
+* **Phím 7:** Khởi động Web Dashboard tại `http://localhost:3333` để duyệt, xem và tải về kho video thành phẩm từ mọi phân xưởng.
+* **Phím 8:** Khởi chạy pipeline render video 3D từ Blender 5.2 (EEVEE Next).
 
 ---
 
@@ -145,55 +149,113 @@ npx remotion still OmniExplainer-Portrait output/explainer/thumbnail.png --props
 
 ---
 
-### 🏭 4. Xưởng 3: Bảng Trắng Vẽ Tay (`workshops/workshop-whiteboard`)
+### 🏭 4. Xưởng 3: Bảng Trắng Vẽ Tay & YouTube Audio Drama (`workshops/workshop-whiteboard`)
 
-#### a. Chuyển đổi `job.json` sang file SRT và Annotation:
+#### a. Chuẩn bị tài nguyên đa phân cảnh từ `job.json`:
 ```powershell
-.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\job_adapter.py output\sample_job.json output\whiteboard\du-an-moi
+.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\job_adapter.py output\jobs\job-hop-dong-100-ty-tong-tai.json output\whiteboard\job-hop-dong-100-ty-tong-tai
 ```
 *Tự động tạo:*
-- `output/whiteboard/du-an-moi/input.srt` (Phụ đề đồng bộ mili-giây)
-- `output/whiteboard/du-an-moi/input.mp3` (Âm thanh nối liền có khoảng nghỉ)
-- `output/whiteboard/du-an-moi/scene-01.annotation.json` (Khung tọa độ vẽ tay)
+- `scenes/scene-01/` ... `scenes/scene-09/`: Mỗi phân cảnh có đầy đủ `scene-XX.mp3`, `scene-XX.srt`, `scene-XX.annotation.json` và `IMAGE_PROMPT.md`.
+- `input.srt` & `input.mp3` (Toàn cục đồng bộ).
 
-#### b. Mở Trình Biên Tập Vùng Vẽ (Web Region Editor):
+#### b. Xuất video hoàn chỉnh đa phân cảnh (90 FPS, BGM Ducking, Hand Eraser):
+```powershell
+# Xuất bản chuẩn 90 FPS với nhạc nền và hiệu ứng xóa bảng giữa các cảnh:
+.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\scripts\export_video.py job-hop-dong-100-ty-tong-tai --fps 90
+
+# Xuất bản video dài (Audio Drama 60 phút) KHÔNG khắc phụ đề (giữ nét vẽ thanh sạch):
+.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\scripts\export_video.py job-hop-dong-100-ty-tong-tai --fps 90 --no-subtitles
+
+# Render riêng một phân cảnh rồi tự ghép nối lại toàn bộ video:
+.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\scripts\export_video.py job-hop-dong-100-ty-tong-tai --scene scene-02
+```
+
+#### c. Mở Trình Biên Tập Vùng Vẽ (Web Region Editor):
 Mở trực tiếp file sau bằng Chrome hoặc Edge:
 ```text
 workshops/workshop-whiteboard/assets/preview.html
 ```
 
-#### c. Render video hoạt họa vẽ tay bằng Python:
-```powershell
-.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\scripts\render_stream_whiteboard.py <duong_dan_anh_png> <duong_dan_annotation_json> <duong_dan_output_mp4>
-```
-*Ví dụ render cảnh mẫu:*
-```powershell
-.\workshops\workshop-whiteboard\.venv\Scripts\python.exe workshops\workshop-whiteboard\scripts\render_stream_whiteboard.py workshops\workshop-whiteboard\assets\whiteboard\cho-di-nhan-lai\scene-01-trao-o.png workshops\workshop-whiteboard\assets\whiteboard\cho-di-nhan-lai\scene-01-trao-o.annotation.json output\whiteboard\video-whiteboard.mp4
-```
+---
 
 ---
 
-## 📁 5. CẤU TRÚC THƯ MỤC THÀNH PHẨM (`output/`)
+### 🎥 5. Xưởng 4: Phim Điện Ảnh AI Cinematic (`workshops/workshop-cinematic`) & 3D Blender (`workshops/workshop-blender`)
+
+#### a. Phim Điện Ảnh AI Cinematic (FlowKit / Google Veo 2 & Imagen 3):
+*Sử dụng mô hình Veo 2, Imagen 3, Omni Flash tạo video điện ảnh Hollywood nhất quán nhân vật.*
+```powershell
+# 1. Kiểm tra trạng thái Agent và Chrome Extension (flow.google.com):
+.\workshops\workshop-cinematic\.venv\Scripts\python.exe workshops\workshop-cinematic\scripts\run_pipeline.py --check
+
+# 2. Nạp hợp đồng kịch bản job.json vào cơ sở dữ liệu FlowKit:
+.\workshops\workshop-cinematic\.venv\Scripts\python.exe workshops\workshop-cinematic\scripts\run_pipeline.py --job output\jobs\job-xianxia-3d-sample.json --import-only
+
+# 3. Kích hoạt sinh ảnh hàng loạt qua Google Imagen 3:
+.\workshops\workshop-cinematic\.venv\Scripts\python.exe workshops\workshop-cinematic\scripts\run_pipeline.py --job job-xianxia-3d-sample --generate-images
+
+# 4. Kích hoạt sinh video hàng loạt qua Google Veo 2 (hoặc Omni Flash):
+.\workshops\workshop-cinematic\.venv\Scripts\python.exe workshops\workshop-cinematic\scripts\run_pipeline.py --job job-xianxia-3d-sample --generate-videos --model-family veo
+
+# 5. Ghép nối Master Film hoàn chỉnh (obsidian bumper, drone bass, audio crossfade):
+.\workshops\workshop-cinematic\.venv\Scripts\python.exe workshops\workshop-cinematic\scripts\run_pipeline.py --job job-xianxia-3d-sample --build-film
+```
+
+#### b. Hoạt Hình 3D Blender Local (EEVEE Next 60 FPS):
+```powershell
+python workshops/workshop-blender/scripts/export_3d_video.py output/jobs/job-xianxia-3d-sample.json --fps 60
+```
+*Pipeline tự động:*
+1. Nạp kịch bản `job.json` qua `job_adapter.py` để tính toán timeline và camera motions.
+2. Sinh giọng đọc Edge TTS và đo thời lượng micro-giây.
+3. Kích hoạt Blender 5.2 chạy headless (`blender.exe -b -P scripts/blender_renderer.py`).
+4. Dựng không gian 3D, nạp nhân vật anime rigged (`assets/characters/nam-chinh`), pose armature qua `pose_engine.py` và render EEVEE Next 60 FPS.
+5. Ghép âm thanh lồng tiếng và nhạc nền BGM ducking chuẩn EBU R128 (-14 LUFS).
+
+---
+
+### 🌐 6. Bảng Điều Khiển Quản Lý Kho Video (Video Library Dashboard)
+
+Khởi động Web UI quản lý kho video thành phẩm:
+```powershell
+npm run dashboard
+```
+*Truy cập tại: `http://localhost:3333` để duyệt, xem trước, tải về video và sao chép metadata YouTube.*
+
+---
+
+## 📁 7. CẤU TRÚC THƯ MỤC THÀNH PHẨM (`output/`)
 
 Tất cả video và dữ liệu sau khi sản xuất được gom gọn tại thư mục `output/`:
 
 ```text
 output/
-├── sample_job.json                  # File kịch bản mẫu chung
-├── news/                            # Thành phẩm Xưởng 1
-│   ├── video.mp4                    # Video tin tức dọc 9:16 (1080x1920)
-│   ├── caption.txt                  # Tiêu đề & Hashtag sẵn sàng đăng bài
-│   ├── voice.mp3                    # Âm thanh hoàn chỉnh đã mix SFX
-│   └── script.txt                   # Lời thoại cho CapCut auto-caption
-├── explainer/                       # Thành phẩm Xưởng 2
-│   ├── job-sample-docker-24.mp4     # Video Remotion Video-as-Code
-│   ├── props.json                   # Dữ liệu props Remotion
-│   ├── sample-still.png             # Frame ảnh thumbnail 9:16
-│   └── sample-still-landscape.png   # Frame ảnh thumbnail 16:9
-└── whiteboard/                      # Thành phẩm Xưởng 3
-    ├── test-whiteboard-stream.mp4   # Video hoạt họa nét vẽ tay
-    └── job-sample-docker-24/
-        ├── input.srt                # File phụ đề SRT chuẩn
-        ├── input.mp3                # Audio ghép chuẩn xác
-        └── scene-01.annotation.json # Tọa độ vùng vẽ
+├── jobs/                                # Nơi lưu trữ các hợp đồng kịch bản job.json
+│   ├── job-sample-docker-24.json
+│   ├── job-hop-dong-100-ty-tong-tai.json
+│   └── job-xianxia-3d-sample.json
+├── news/                                # Thành phẩm Xưởng 1
+│   ├── video.mp4                        # Video tin tức dọc 9:16 (1080x1920)
+│   ├── caption.txt                      # Tiêu đề & Hashtag sẵn sàng đăng bài
+│   ├── voice.mp3                        # Âm thanh hoàn chỉnh đã mix SFX
+│   └── script.txt                       # Lời thoại
+├── explainer/                           # Thành phẩm Xưởng 2
+│   ├── job-sample-docker-24.mp4         # Video Remotion Video-as-Code
+│   ├── props.json                       # Dữ liệu props Remotion
+│   ├── sample-still.png                 # Frame ảnh thumbnail 9:16
+│   └── sample-still-landscape.png       # Frame ảnh thumbnail 16:9
+├── whiteboard/                          # Thành phẩm Xưởng 3
+│   ├── job-hop-dong-100-ty-tong-tai.mp4 # Video vẽ tay 90 FPS hoàn chỉnh (60 phút)
+│   ├── job-hop-dong-100-ty-tong-tai-thumb.png
+│   ├── job-hop-dong-100-ty-tong-tai-youtube.md # SEO, mô tả & Timestamps/Chapters
+│   └── job-hop-dong-100-ty-tong-tai/    # Dữ liệu phân cảnh & âm thanh chi tiết
+│       └── scenes/
+│           ├── scene-01/ ... scene-09/
+├── blender/                             # Thành phẩm Xưởng 4 (Blender 3D)
+│   ├── job-xianxia-3d-sample.mp4        # Video 3D EEVEE Next 60 FPS
+│   └── job-xianxia-3d-sample-thumb.png  # Thumbnail 3D render
+└── cinematic/                           # Thành phẩm Xưởng 4 (FlowKit Veo 2 / Imagen 3)
+    ├── job-xianxia-3d-sample-flowkit.json # Bản ghi ánh xạ FlowKit SQLite
+    └── job-xianxia-3d-sample/           # Video các cảnh, bumpers & master film
 ```

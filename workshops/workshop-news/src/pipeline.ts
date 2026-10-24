@@ -14,8 +14,8 @@ import { renderWithHyperframes } from "./render/hyperframes-runner.js";
 import { log } from "./utils/logger.js";
 
 const TOTAL_STEPS = 8;
-const DURATION_MIN_SEC = 48;
-const DURATION_MAX_SEC = 72;
+const DURATION_MIN_SEC = 30;
+const DURATION_MAX_SEC = 300;
 const SCENE_GAP_SEC = 0.3;
 /**
  * Extra seconds added to the outro scene visual duration AFTER the voice ends.
@@ -191,7 +191,7 @@ export async function runPipeline(scriptPath: string): Promise<void> {
   // Bundled avatar can be jpg/jpeg/png/webp — pick whichever exists
   const findBundledAvatar = (): string => {
     const baseDir = join(__dirname, "..", "assets");
-    for (const ext of ["jpg", "jpeg", "png", "webp"]) {
+    for (const ext of ["png", "jpg", "jpeg", "webp"]) {
       const p = join(baseDir, `avatar.${ext}`);
       if (existsSync(p)) return p;
     }

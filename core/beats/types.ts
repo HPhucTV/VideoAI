@@ -8,7 +8,8 @@ export type BeatArchetype =
   | "explainer"      // Kỹ thuật / Kiến thức (PAS: Problem - Agitate - Solve)
   | "versus"         // So sánh đối đầu A vs B
   | "mythbuster"     // Lật tẩy lầm tưởng / Phá bỏ định kiến
-  | "news";          // Tin tức / Thời sự công nghệ (Inverted Pyramid)
+  | "news"           // Tin tức / Thời sự công nghệ (Inverted Pyramid)
+  | "cinematic";     // Phim Điện Ảnh 3D & Donghua (5-Act Dramatic Structure)
 
 export interface VisualCue {
   /** Hiệu ứng camera: zoom đột ngột, lia ngang, rung nhẹ */
@@ -25,6 +26,12 @@ export interface VisualCue {
   bgmDucking?: "none" | "light" | "heavy" | "mute";
   /** Đánh dấu nhịp này là điểm tái kích thích giữ chân khán giả (giây thứ 20-30) */
   isRehook?: boolean;
+  /** Đánh dấu nhịp này là vòng lặp kết nối liền mạch với câu mở đầu (The Infinite Loop) */
+  isLoopEnding?: boolean;
+  /** Cụm từ bắc cầu vòng lặp về câu mở đầu */
+  loopConnectingPhrase?: string;
+  /** Kích thích vi mô mỗi 3.5 giây để giữ sự tỉnh táo của não bộ */
+  microStimulation?: "zoom_punch" | "sound_pop" | "glitch_flash" | "particle_burst";
 }
 
 export interface BeatVoiceOverride {
@@ -66,6 +73,10 @@ export interface UnifiedBeatV2 {
     region?: { x: number; y: number; width: number; height: number };
     [key: string]: any;
   };
+  /** Đánh dấu nhịp này là vòng lặp kết nối liền mạch với câu mở đầu */
+  isLoopEnding?: boolean;
+  /** Cụm từ nối vòng lặp */
+  loopConnectingPhrase?: string;
   /** Thời lượng tính bằng giây sau khi tổng hợp TTS & ffprobe */
   durationSec?: number;
   /** Thời điểm bắt đầu tính bằng giây trong timeline video */

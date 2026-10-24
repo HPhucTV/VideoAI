@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html class="dark" lang="vi">
+<html class="light" lang="vi">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OmniVideo Studio - Video AI Production Dashboard</title>
-  
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>OmniVideo Studio - Antigravity 2.0 & Omni-Commander (Sakura Rose)</title>
+
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  
-  <!-- Tailwind CSS -->
+
+  <!-- Tailwind CSS CDN with White & Rose Sakura Palette -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -19,31 +19,26 @@
       theme: {
         extend: {
           colors: {
-            background: "#0b1326",
-            surface: "#0b1326",
-            "surface-dim": "#0b1326",
-            "surface-container-lowest": "#060e20",
-            "surface-container-low": "#131b2e",
-            "surface-container": "#171f33",
-            "surface-container-high": "#222a3d",
-            "surface-container-highest": "#2d3449",
-            "surface-bright": "#31394d",
-            "on-surface": "#dae2fd",
-            "on-surface-variant": "#bbcabf",
-            outline: "#86948a",
-            "outline-variant": "#3c4a42",
-            primary: "#4edea3",
-            "primary-container": "#10b981",
-            "on-primary": "#003824",
-            "on-primary-container": "#00422b",
-            secondary: "#4cd7f6",
-            "secondary-container": "#03b5d3",
-            "on-secondary": "#003640",
-            "on-secondary-container": "#00424e",
-            tertiary: "#d0bcff",
-            "tertiary-container": "#b090ff",
-            error: "#ffb4ab",
-            "error-container": "#93000a"
+            "surface": "#fff5f7",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#fff8f9",
+            "surface-container": "#fdf2f8",
+            "surface-container-high": "#fce7f3",
+            "surface-container-highest": "#fbcfe8",
+            "on-surface": "#1f1724",
+            "on-surface-variant": "#4b5563",
+            "outline": "#9ca3af",
+            "outline-variant": "#fce7f3",
+            "primary": "#ec4899",
+            "primary-container": "#db2777",
+            "on-primary": "#ffffff",
+            "secondary": "#f43f5e",
+            "secondary-container": "#ffe4e6",
+            "on-secondary": "#ffffff",
+            "tertiary": "#0090a9",
+            "tertiary-container": "#e0f7fa",
+            "error": "#ef4444",
+            "error-container": "#fee2e2"
           },
           fontFamily: {
             sans: ["Inter", "sans-serif"],
@@ -54,501 +49,1764 @@
       }
     };
   </script>
-  
-  <!-- Dashboard Custom Styles for Modals & Interactive Elements -->
+
+  <!-- Production Styles -->
   <link rel="stylesheet" href="styles.css"/>
 
   <style>
     .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      display: inline-block;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.15rem;
       vertical-align: middle;
-      line-height: 1;
+      display: inline-block;
     }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #060e20; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #222a3d; border-radius: 9999px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3c4a42; }
-    @keyframes sweep {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(200%); }
-    }
-    .animate-sweep { animation: sweep 2.2s infinite ease-in-out; }
   </style>
 </head>
 
-<body class="bg-background text-on-surface min-h-screen flex flex-col font-sans overflow-x-hidden selection:bg-primary selection:text-on-primary">
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans antialiased selection:bg-pink-100 selection:text-pink-600 overflow-x-hidden">
 
-  <!-- ================= TOP APP BAR ================= -->
-  <header class="docked top-0 z-40 bg-surface-container-low shadow-sm backdrop-blur-md flex justify-between items-center w-full px-6 py-3 h-16 fixed left-0 border-b border-outline-variant/30">
-    <!-- Brand & Live Channel Status -->
-    <div class="flex items-center gap-6">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center relative overflow-hidden shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <div class="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30"></div>
-          <span class="material-symbols-outlined text-primary text-[22px] relative z-10">videocam</span>
+  <!-- ================= 1. TOP APP BAR (WHITE & ROSE SAKURA) ================= -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-pink-100 w-full h-16 fixed top-0 left-0 z-50 px-4 lg:px-6 flex items-center justify-between shadow-xs select-none">
+    
+    <!-- LEFT: Brand Logo & Connected Core -->
+    <div class="flex items-center gap-3 shrink-0">
+      <!-- Logo Icon & Brand Text -->
+      <div class="flex items-center gap-2.5 cursor-pointer shrink-0" onclick="location.reload()" title="Tải lại OmniVideo Studio">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-pink-500/20 shrink-0">
+          <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">movie</span>
         </div>
-        <div class="flex flex-col">
-          <span class="text-lg font-headline font-bold text-primary tracking-tight">OmniVideo Studio</span>
-          <span class="text-xs font-mono text-on-surface-variant flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-            Kênh: Storyverse VN • 100% Local (Chi phí 0đ)
+        <div class="flex flex-col shrink-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm font-headline font-bold text-gray-900 tracking-tight whitespace-nowrap">OmniVideo Studio</span>
+            <span class="text-[9px] font-mono font-bold bg-pink-100 text-pink-700 px-1.5 py-0.2 rounded-full border border-pink-200 shrink-0">🌸 Sakura 2.0</span>
+          </div>
+          <span class="text-[10px] font-mono text-gray-500 flex items-center gap-1 whitespace-nowrap">
+            <span>Storyverse VN</span>
+            <span class="text-pink-300">•</span>
+            <span class="text-rose-500 font-semibold">RTX 4090 GPU</span>
           </span>
         </div>
       </div>
 
-      <!-- Quick Metrics Pill -->
-      <div class="hidden lg:flex items-center gap-4 bg-surface-container-lowest/80 border border-outline-variant/30 px-3.5 py-1.5 rounded-lg text-xs font-mono">
-        <div>Tổng video: <span class="text-primary font-bold" id="stat-total-videos">0</span></div>
-        <span class="text-outline">•</span>
-        <div>Dung lượng: <span class="text-secondary font-bold" id="stat-total-size">0 MB</span></div>
+      <!-- Compact IDE 2.0 Bridge Chip -->
+      <div id="antigravity-pill" class="hidden 2xl:flex items-center gap-1.5 bg-pink-50 border border-pink-200 rounded-full px-2.5 py-1 text-[11px] font-mono text-pink-700 shrink-0" title="Kết nối hai chiều Antigravity 2.0 IDE">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-bold">IDE 2.0</span>
+        <span class="text-pink-300">•</span>
+        <span class="text-gray-500" id="mission-convo-id">0acabd2b...</span>
+        <span class="text-[9px] font-bold text-purple-700 bg-purple-100 px-1.5 rounded-full" id="antigravity-gate-badge">Cổng 7</span>
+      </div>
+
+      <!-- Telegram Status Indicator -->
+      <div id="telegram-status-pill" class="hidden 2xl:flex items-center gap-1.5 bg-pink-50 border border-pink-200 rounded-full px-2.5 py-1 text-[11px] font-mono text-pink-700 shrink-0" title="Bot Telegram đã sẵn sàng">
+        <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
+        <span>@Boiz120</span>
       </div>
     </div>
 
-    <!-- Actions & User Profile -->
-    <div class="flex items-center gap-3">
-      <!-- Search Input -->
-      <div class="relative hidden sm:block w-64">
-        <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[18px]">search</span>
-        <input class="w-full bg-surface-container-lowest/90 border border-outline-variant/30 rounded-lg pl-8 pr-3 py-1.5 text-xs font-mono text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/40 transition-all" id="search-input" placeholder="Tìm kiếm kịch bản, beat..." type="text"/>
-      </div>
+    <!-- RIGHT: Action Toolbar (Never Wraps, Clean Responsive Hiding) -->
+    <div class="flex items-center gap-2 shrink-0">
+      
+      <!-- 🛑 Emergency Stop Button (Global Abort) -->
+      <button id="btn-global-abort" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white text-xs font-headline font-bold shadow-sm shadow-red-500/25 active:scale-95 transition-all shrink-0 cursor-pointer" onclick="triggerGlobalAbort()" title="Dừng khẩn cấp toàn bộ tiến trình và hàng đợi">
+        <span class="material-symbols-outlined text-[16px]">dangerous</span>
+        <span class="hidden sm:inline">DỪNG KHẨN CẤP</span>
+      </button>
 
-      <!-- New Video Project Button -->
-      <button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline font-semibold text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-[0_0_16px_rgba(16,185,129,0.35)] active:scale-[0.98] transition-all" id="btn-open-create">
+      <!-- 📋 Task Queue Launcher with Live Badge -->
+      <button id="btn-open-queue" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold transition-all shadow-xs active:scale-95 shrink-0 cursor-pointer" onclick="openTaskQueueModal()" title="Xem hàng đợi nhiệm vụ đa tác vụ">
+        <span class="material-symbols-outlined text-[16px] text-pink-500">checklist</span>
+        <span>Hàng Đợi</span>
+        <span id="queue-badge-count-header" class="text-[10px] font-mono font-bold bg-pink-500 text-white px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+
+      <!-- Voice Briefing 30s Button -->
+      <button id="btn-top-voice-briefing" class="hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold transition-all shrink-0 cursor-pointer" onclick="playVoiceBriefing()" title="Nghe báo cáo nhanh 30 giây bằng giọng nói AI">
+        <span class="material-symbols-outlined text-[15px] text-pink-500">volume_up</span>
+        <span class="hidden xl:inline">Voice 30s</span>
+      </button>
+
+      <!-- Quick YouTube Launcher -->
+      <button class="hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-all shrink-0 cursor-pointer" onclick="triggerOpenFirstVideoYouTube()" title="Mở YouTube Direct Uploader">
+        <span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">smart_display</span>
+        <span class="hidden xl:inline">YouTube</span>
+      </button>
+
+      <!-- Quick Create Video Button -->
+      <button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-xs font-headline font-bold shadow-sm shadow-pink-500/20 active:scale-95 transition-all shrink-0 cursor-pointer" id="btn-open-create" onclick="openCreateModal()">
         <span class="material-symbols-outlined text-[16px]">add</span>
         <span>Tạo Video Mới</span>
       </button>
 
-      <!-- Refresh Library Button -->
-      <button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors" onclick="loadVideos()" title="Tải lại danh sách">
-        <span class="material-symbols-outlined text-[20px]">refresh</span>
-      </button>
+      <!-- Theme & Refresh Icon Buttons -->
+      <div class="flex items-center gap-1 pl-1 border-l border-pink-100 shrink-0">
+        <button id="btn-theme-toggle" class="p-1.5 text-gray-500 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-colors cursor-pointer" onclick="toggleTheme()" title="Chuyển chế độ Sáng / Tối">
+          <span class="material-symbols-outlined text-[18px]" id="theme-toggle-icon">dark_mode</span>
+        </button>
+        <button class="p-1.5 text-gray-500 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-colors cursor-pointer" onclick="loadVideos()" title="Tải lại thư viện">
+          <span class="material-symbols-outlined text-[18px]">refresh</span>
+        </button>
+      </div>
+
     </div>
   </header>
 
   <!-- ================= MAIN LAYOUT WITH SIDEBAR ================= -->
   <div class="flex pt-16 min-h-screen">
-    
+
     <!-- ================= SIDEBAR ================= -->
-    <aside class="docked h-[calc(100vh-4rem)] left-0 top-16 w-64 z-30 fixed bg-surface-container-lowest border-r border-outline-variant/30 shadow-md backdrop-blur-lg flex flex-col justify-between py-4 px-3 custom-scrollbar overflow-y-auto">
-      <div class="flex flex-col gap-4">
-        <div class="px-3 py-1 flex items-center justify-between border-b border-outline-variant/20 pb-3">
-          <div>
-            <h2 class="text-sm font-headline font-bold text-primary">Phân Xưởng Sản Xuất</h2>
-            <p class="text-[11px] font-mono text-on-surface-variant">Pipeline Trực Tuyến</p>
+    <aside id="sidebarNav" class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-4 px-3 bg-white border-r border-pink-100 docked left-0 top-16 z-30 shadow-[4px_0_16px_rgba(244,63,94,0.02)] fixed overflow-y-auto transition-all duration-300">
+      <div>
+        <div class="px-2 mb-3 pb-3 border-b border-pink-100 flex items-center justify-between">
+          <div id="sidebar-brand-text" class="truncate">
+            <div class="text-sm font-headline font-bold text-gray-800">5 Phân Xưởng Sản Xuất</div>
+            <p class="text-[10px] font-mono text-pink-500 font-medium">Neural NLE Engine • AG 2.0</p>
           </div>
-          <span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#4edea3]"></span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-pink-500 shadow-[0_0_6px_#ec4899]" title="Online"></span>
+            <button id="btn-toggle-sidebar" class="p-1 rounded-lg bg-pink-50 text-gray-500 hover:text-pink-600 hover:bg-pink-100 transition-colors border border-pink-100 flex items-center justify-center shrink-0 ml-1" title="Thu gọn / Mở rộng Sidebar">
+              <span id="sidebar-toggle-icon" class="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+          </div>
         </div>
 
         <!-- Filter Tabs / Workshop Selectors -->
-        <nav class="flex flex-col gap-1 filter-tabs">
-          <span class="text-[10px] font-mono text-outline uppercase tracking-wider px-3 pt-1">Bộ Lọc Phân Xưởng</span>
-          
-          <button class="tab-btn active text-left px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs font-semibold" data-workshop="all">
+        <nav class="space-y-1 filter-tabs">
+          <!-- All -->
+          <button class="tab-btn active w-full text-left bg-pink-50 text-pink-600 border-l-2 border-pink-500 font-semibold px-3 py-2 rounded-r-xl flex items-center justify-between text-xs transition-all shadow-sm" data-workshop="all" title="Tất Cả Video (5 Xưởng)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">space_dashboard</span>
-              <span>Tất Cả Video</span>
+              <span class="material-symbols-outlined text-pink-500 text-[18px]">space_dashboard</span>
+              <span class="tab-text">Tất Cả Video</span>
             </div>
-            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            <span class="tab-badge text-[10px] font-mono text-pink-600 font-bold bg-pink-100 px-1.5 py-0.5 rounded-full">ALL</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="news">
+          <!-- Workshop 5: Threads -->
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="threads" title="Xưởng 5: Threads Social Drama (9:16 Shorts)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-primary">flash_on</span>
-              <span>Xưởng 1: Tin Tức Shorts</span>
+              <span class="material-symbols-outlined text-pink-500 text-[18px] group-hover:scale-110 transition-transform">flash_on</span>
+              <span class="tab-text truncate">Xưởng 5: Threads Social</span>
             </div>
-            <span class="bg-primary/20 text-primary text-[10px] font-mono px-1.5 py-0.5 rounded border border-primary/30 font-bold">9:16</span>
+            <span class="tab-badge text-[10px] font-mono font-bold bg-pink-100 text-pink-700 border border-pink-200 px-1.5 rounded-full uppercase">9:16</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="explainer">
+          <!-- Workshop 4: Cinematic -->
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="cinematic" title="Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 4K)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-secondary">code_blocks</span>
-              <span>Xưởng 2: Remotion Explainer</span>
+              <span class="material-symbols-outlined text-amber-500 text-[18px] group-hover:scale-110 transition-transform">movie_filter</span>
+              <span class="tab-text truncate">Xưởng 4: Phim 3D / Donghua</span>
             </div>
-            <span class="bg-secondary/20 text-secondary text-[10px] font-mono px-1.5 py-0.5 rounded border border-secondary/30">React</span>
+            <span class="tab-badge text-[10px] font-mono bg-amber-100 text-amber-700 border border-amber-200 px-1.5 rounded-full font-bold">4K</span>
           </button>
 
-          <button class="tab-btn text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between transition-colors text-xs" data-workshop="whiteboard">
+          <!-- Workshop 3: Whiteboard -->
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="whiteboard" title="Xưởng 3: Bảng Trắng Vẽ Tay (Audio Drama 90 FPS)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-tertiary">history_edu</span>
-              <span>Xưởng 3: Bảng Trắng Vẽ Tay</span>
+              <span class="material-symbols-outlined text-purple-500 text-[18px] group-hover:scale-110 transition-transform">history_edu</span>
+              <span class="tab-text truncate">Xưởng 3: Bảng Trắng</span>
             </div>
-            <span class="bg-tertiary/20 text-tertiary text-[10px] font-mono px-1.5 py-0.5 rounded border border-tertiary/30">60m Audio</span>
+            <span class="tab-badge text-[10px] font-mono text-purple-700 bg-purple-100 px-1.5 rounded-full">60m</span>
+          </button>
+
+          <!-- Workshop 2: Explainer -->
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="explainer" title="Xưởng 2: Remotion Code Explainer (TypeScript NLE)">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-cyan-500 text-[18px] group-hover:scale-110 transition-transform">code_blocks</span>
+              <span class="tab-text truncate">Xưởng 2: Remotion Tech</span>
+            </div>
+            <span class="tab-badge text-[10px] font-mono text-cyan-700 bg-cyan-100 px-1.5 rounded-full">TS</span>
+          </button>
+
+          <!-- Workshop 1: News -->
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="news" title="Xưởng 1: Tin Tức Nhanh (HyperFrames Shorts)">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-500 text-[18px] group-hover:scale-110 transition-transform">bolt</span>
+              <span class="tab-text truncate">Xưởng 1: Tin Tức Nhanh</span>
+            </div>
+            <span class="tab-badge text-[10px] font-mono text-emerald-700 font-bold bg-emerald-100 px-1.5 rounded-full">9:16</span>
           </button>
         </nav>
       </div>
 
-      <!-- Telemetry Widget -->
-      <div class="flex flex-col gap-2 pt-4 border-t border-outline-variant/30">
-        <div class="bg-surface-container-low/90 border border-outline-variant/40 rounded-lg p-3 flex flex-col gap-2">
-          <div class="flex items-center justify-between text-xs font-mono">
-            <span class="text-on-surface-variant flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px] text-primary">memory</span>
-              Độ trễ Engine: 14ms
-            </span>
-            <span class="text-primary font-bold">READY</span>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <div class="flex justify-between text-[11px] font-mono text-outline">
-              <span>Trạng thái Render Engine</span>
-              <span class="text-primary font-semibold">100% Cục bộ</span>
-            </div>
-            <div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
-              <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: 100%;"></div>
-            </div>
-          </div>
+      <!-- Bottom Local Telemetry Dock -->
+      <div id="sidebar-telemetry-full" class="bg-pink-50/70 rounded-2xl p-3.5 border border-pink-100 space-y-2 mt-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-gray-600 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-xs text-pink-500">memory</span>
+            GPU Latency
+          </span>
+          <span class="text-pink-600 font-bold">11ms</span>
         </div>
-
-        <button class="w-full bg-surface-container-high hover:bg-surface-container text-secondary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all" onclick="openCreateModal()">
-          <span class="material-symbols-outlined text-[16px]">terminal</span>
-          <span>Khởi Động Pipeline Mới</span>
+        <div class="text-[11px] font-mono text-gray-500 truncate">
+          GitHub Quota: <strong>4,999 / 5,000</strong> req/h
+        </div>
+        <div class="flex items-center gap-1.5 text-[11px] font-mono text-pink-600 font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
+          <span>Antigravity Radar Active</span>
+        </div>
+        <button class="w-full text-left text-[11px] font-mono text-gray-600 hover:text-pink-600 flex items-center justify-between pt-1 border-t border-pink-200/60 transition-colors" onclick="openShiftReportModal()">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">assignment</span>
+            Báo Cáo Ca Trực 24h
+          </span>
+          <span class="material-symbols-outlined text-xs">arrow_forward_ios</span>
         </button>
+      </div>
+
+      <!-- Bottom Compact Icon (Collapsed Mode) -->
+      <div id="sidebar-telemetry-collapsed" class="hidden flex-col items-center gap-2 p-2 mt-4 bg-pink-50 rounded-xl border border-pink-100">
+        <span class="material-symbols-outlined text-pink-500 text-base" title="Node: LocalHost:3333">memory</span>
+        <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse" title="Antigravity Online"></span>
       </div>
     </aside>
 
-    <!-- ================= MAIN CONTENT CANVAS ================= -->
-    <main class="flex-1 ml-64 p-6 lg:p-8 flex flex-col gap-8 max-w-[1720px] mx-auto w-full">
+    <!-- ================= MAIN WORKSPACE CONTENT CANVAS ================= -->
+    <main id="mainContent" class="flex-1 lg:ml-64 p-6 lg:p-8 space-y-6 max-w-[1720px] mx-auto w-full transition-all duration-300">
 
-      <!-- ================= HERO ACTIVE JOB MONITOR ================= -->
-      <section class="relative bg-surface-container-low/90 border border-outline-variant/40 rounded-xl p-5 lg:p-6 shadow-md backdrop-blur-xl overflow-hidden">
-        <div class="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- ================= 2. ANTIGRAVITY 2.0 MISSION CONTROL & 7-GATE PRODUCTION STEPPER ================= -->
+      <section class="w-full bg-white rounded-2xl border border-pink-100 shadow-[0_4px_24px_rgba(244,63,94,0.06)] p-5 relative overflow-hidden" id="antigravity-mission-control">
+        <div class="absolute -top-16 -right-16 w-64 h-64 bg-pink-100/60 rounded-full filter blur-3xl pointer-events-none"></div>
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30 relative z-10">
+        <!-- Section Top Header & Fast HITL Approval Buttons -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-pink-100 relative z-10">
           <div class="flex flex-col gap-1">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="px-2.5 py-0.5 rounded-full bg-primary/15 border border-primary/40 text-primary text-xs font-mono font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(78,222,163,0.2)]">
-                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                Dự Án 1-Giờ YouTube Sẵn Sàng
+              <span class="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-300 text-pink-700 text-xs font-mono font-bold flex items-center gap-2 shadow-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-pink-500 animate-pulse"></span>
+                <span>QUY CHUẨN 7 CỔNG SẢN XUẤT (THE 7-GATE PRODUCTION PROTOCOL)</span>
               </span>
-              <span class="text-xs font-mono text-outline">Job #job-hop-dong-100-ty-tong-tai</span>
-              <span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-secondary">1080p 90fps • OpenCV Stream Whiteboard</span>
+              <span class="text-xs font-mono text-pink-600 font-bold bg-pink-50 border border-pink-200 px-2.5 py-0.5 rounded-full" id="gate-overall-progress">Tiến độ: 100% (Hoàn Tất Cổng 7 🎉)</span>
             </div>
-
-            <h1 class="text-2xl font-headline font-bold text-on-surface tracking-tight mt-1">
-              Phim Hoạt Cảnh Bảng Trắng: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-on-surface">Bản Hợp Đồng 100 Tỷ (Full 60 Phút)</span>
-            </h1>
-            <p class="text-xs font-mono text-on-surface-variant">
-              Cấu trúc: <span class="text-on-surface font-semibold">9 Phân Cảnh (Chương I → IX) • 27 Beats Lời Thoại • Bút Vẽ Bảng Trắng 90 FPS</span>
+            <p class="text-xs font-mono text-gray-500 mt-1">
+              Đồng bộ hai chiều thời gian thực giữa Web Dashboard và Antigravity IDE 2.0 qua Zero-Cost Local IPC.
             </p>
           </div>
 
-          <!-- Quick Controls -->
-          <div class="flex items-center gap-2 self-start lg:self-center">
-            <button class="bg-primary/20 hover:bg-primary hover:text-on-primary-container text-primary border border-primary/40 text-xs font-mono px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm" onclick="triggerRender('job-hop-dong-100-ty-tong-tai')">
+          <!-- Fast HITL Approval Controls -->
+          <div class="flex items-center gap-2 flex-wrap self-start lg:self-center">
+            <button class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-mono font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer" onclick="quickApproveGate('Gate 3 (Asset Master Sets & Characters)')" title="Phê duyệt dàn nhân vật và bối cảnh Cổng 3">
+              <span class="material-symbols-outlined text-[16px] text-amber-600">verified</span>
+              <span>Duyệt Cổng 3</span>
+            </button>
+            <button class="bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-300 text-xs font-mono font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer" onclick="quickApproveGate('Gate 5 (Storyboard Frame Sequences)')" title="Phê duyệt khung ảnh storyboard Cổng 5">
+              <span class="material-symbols-outlined text-[16px] text-cyan-600">photo_library</span>
+              <span>Duyệt Cổng 5</span>
+            </button>
+            <button class="bg-pink-500 hover:bg-pink-600 text-white border border-pink-600 text-xs font-mono font-bold px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-pink-500/20 active:scale-95 cursor-pointer" onclick="quickApproveGate('Tiếp tục bước sản xuất tiếp theo')" title="Phê duyệt và chuyển tiếp cổng">
               <span class="material-symbols-outlined text-[16px]">play_arrow</span>
-              <span>Re-render Toàn Bộ 9 Phân Cảnh</span>
-            </button>
-            <button class="bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 text-on-surface text-xs font-mono px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all" onclick="openPlayer('job-hop-dong-100-ty-tong-tai')">
-              <span class="material-symbols-outlined text-[16px] text-secondary">visibility</span>
-              <span>Kiểm Tra Beats</span>
+              <span>Tiếp Tục Cổng Kế</span>
             </button>
           </div>
         </div>
 
-        <!-- 3-Panel Storyboard Live Preview Strip -->
-        <div class="mt-4 flex flex-col gap-2 relative z-10">
-          <div class="flex items-center justify-between text-xs font-mono text-outline">
-            <span>Bản Vẽ Minh Họa Độc Quyền Từng Phân Cảnh (Không Trùng Lặp):</span>
-            <span class="text-primary font-semibold">1920x1080 Notion Art • Giấy Kem #F5EBD7</span>
+        <!-- 7-Gate Production Protocol Visual Stepper -->
+        <div class="mt-4 relative z-10">
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5" id="seven-gates-container">
+            <!-- Gate 1 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 1</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-1">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Ý Tưởng & Đề Tài</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">3 Cốt truyện AI</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-1"></div>
+              </div>
+            </div>
+
+            <!-- Gate 2 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 2</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-2">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Kịch Bản 5 Hồi</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">Thoại ≤ 20 từ (1.25x)</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-2"></div>
+              </div>
+            </div>
+
+            <!-- Gate 3 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 3</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-3">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Dàn Asset & Sets</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">Master Sets + Avatar thật</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-3"></div>
+              </div>
+            </div>
+
+            <!-- Gate 4 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-4">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 4</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-4">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Lồng Tiếng 48kHz</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">Edge-TTS + Ducking</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-4"></div>
+              </div>
+            </div>
+
+            <!-- Gate 5 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 5</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-5">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Khung Storyboard</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">Khớp beat / Card PNG</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-5"></div>
+              </div>
+            </div>
+
+            <!-- Gate 6 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-6">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 6</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-6">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Master Film & 3D</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">Gen V / NLE 60fps</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-6"></div>
+              </div>
+            </div>
+
+            <!-- Gate 7 -->
+            <div class="gate-card p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col gap-1.5 transition-all shadow-xs" id="gate-card-7">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-gray-500">CỔNG 7</span>
+                <span class="material-symbols-outlined text-[15px] text-emerald-600 font-bold" id="gate-icon-7">check_circle</span>
+              </div>
+              <div class="text-xs font-headline font-bold text-gray-800 truncate">Xuất Bản YouTube</div>
+              <div class="text-[10px] font-mono text-gray-500 truncate">Unlisted + Kit SEO</div>
+              <div class="w-full bg-pink-100/80 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="bg-emerald-500 h-full rounded-full w-full" id="gate-bar-7"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two-Way Dispatcher Control & Parameters Bar (STITCH MCP BENTO BOX) -->
+        <div class="mt-4 p-4 rounded-2xl bg-white border border-pink-200/80 shadow-xs flex flex-col gap-3.5 relative z-10">
+          
+          <!-- TIER 1: Mode Switcher & Intake Selector -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-pink-100">
+            <!-- Mode Switcher -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[10px] font-mono font-bold text-pink-600 uppercase tracking-wider">CHẾ ĐỘ SẢN XUẤT:</span>
+              <div class="inline-flex items-center gap-1 bg-pink-50/70 p-1 rounded-xl border border-pink-100 text-xs">
+                <button type="button" class="dispatch-mode-pill active" id="mode-pill-ai" onclick="setDispatchMode('ai_leader')">
+                  🤖 AI Leader Tự Hành (IDE 2.0)
+                </button>
+                <button type="button" class="dispatch-mode-pill" id="mode-pill-local" onclick="setDispatchMode('local_worker')">
+                  ⚡ Worker Cục Bộ Nhanh
+                </button>
+              </div>
+            </div>
+
+            <!-- Intake Tabs: Single Link vs Batch -->
+            <div class="flex items-center gap-1 bg-pink-50/70 p-1 rounded-xl border border-pink-100 text-xs">
+              <button type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-pink-500 text-white shadow-xs transition-all cursor-pointer" id="tab-intake-single" onclick="setIntakeMode('single')">
+                Link Đơn / Lệnh NLP
+              </button>
+              <button type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-600 hover:text-pink-600 transition-all cursor-pointer" id="tab-intake-batch" onclick="setIntakeMode('batch')">
+                📋 Dán Nhiều Link (Batch)
+              </button>
+            </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Panel 1: Scene 01 -->
-            <div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-2.5 flex flex-col gap-2">
-              <div class="flex items-center justify-between text-xs font-mono">
-                <span class="text-on-surface font-semibold">Chương I: Đêm Mưa Định Mệnh</span>
-                <span class="text-primary flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                  Scene 01
-                </span>
+          <!-- TIER 2: Main Input Grid (Workshop + Link Input) -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+            <!-- Workshop Dropdown -->
+            <div class="md:col-span-4">
+              <label class="text-[10px] font-mono text-gray-500 font-bold block mb-1">PHÂN XƯỞNG SẢN XUẤT:</label>
+              <select id="dispatch-workshop" onchange="onWorkshopChange(this.value)" class="w-full bg-pink-50/30 border border-pink-200 focus:border-pink-500 rounded-xl py-2 px-3 text-xs font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-200 shadow-xs">
+                <option value="threads" selected>Xưởng 5: Threads Social Drama (9:16 Shorts)</option>
+                <option value="cinematic">Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 4K)</option>
+                <option value="explainer">Xưởng 2: Remotion Code Explainer (React 9:16/16:9)</option>
+                <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (Audio Drama)</option>
+                <option value="news">Xưởng 1: Tin Tức HyperFrames (Thời Sự 9:16)</option>
+              </select>
+            </div>
+
+            <!-- Input Box -->
+            <div class="md:col-span-8 flex flex-col gap-1">
+              <div class="flex items-center justify-between">
+                <label class="text-[10px] font-mono text-gray-500 font-bold" id="label-intake-input">
+                  DÁN LINK BÀI VIẾT HOẶC GÕ LỆNH TIẾNG VIỆT TỰ NHIÊN:
+                </label>
+                <span id="nlp-feedback-badge" class="hidden text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">✓ NLP Đã Hiểu</span>
               </div>
-              <div class="relative aspect-video rounded overflow-hidden border border-outline-variant/30">
-                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-01/scene-01.png" alt="Chương I"/>
+
+              <!-- Single Input -->
+              <div id="intake-single-box" class="w-full relative">
+                <input id="leader-command-input" class="w-full bg-white border border-pink-200 focus:border-pink-500 rounded-xl py-2 pl-3 pr-10 text-xs font-sans text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-200 shadow-xs" placeholder="vd: https://www.threads.net/@yennhiii1209/post/DU0c7p_kvpI hoặc 'Dựng video Threads game Subway'..." type="text" onkeydown="if(event.key==='Enter') handleUnifiedDispatch()"/>
+                <span class="material-symbols-outlined absolute right-3 top-2 text-pink-400 text-[18px] pointer-events-none">auto_awesome</span>
+              </div>
+
+              <!-- Batch Input -->
+              <div id="intake-batch-box" class="w-full hidden">
+                <textarea id="leader-batch-textarea" class="w-full bg-white border border-pink-200 focus:border-pink-500 rounded-xl p-2.5 text-xs font-mono text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-200 shadow-xs resize-none h-20" placeholder="Dán 5-10 link (mỗi dòng 1 link):&#10;https://www.threads.net/@user1/post/abc&#10;https://www.threads.net/@user2/post/xyz"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- TIER 3: Parameters Row & Primary Action Button -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2.5 border-t border-pink-100 text-xs font-mono">
+            
+            <!-- Dynamic Parameters per Workshop -->
+            <div class="flex items-center gap-3 flex-wrap flex-1" id="dynamic-params-container">
+              
+              <!-- PARAMS FOR WORKSHOP 5: THREADS -->
+              <div id="params-workshop-threads" class="flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Gameplay:</span>
+                  <select id="dispatch-bg" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="minecraft_parkour.mp4" selected>Minecraft</option>
+                    <option value="subway_surfers.mp4">Subway Surfers</option>
+                    <option value="gta5_car.mp4">GTA 5</option>
+                  </select>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Voice:</span>
+                  <select id="dispatch-speed" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="1.25" selected>1.25x Chuẩn</option>
+                    <option value="1.0">1.0x Tự nhiên</option>
+                  </select>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <input type="checkbox" id="dispatch-memes" class="rounded border-pink-300 text-pink-600 focus:ring-0" checked />
+                  <label for="dispatch-memes" class="text-gray-700 text-[11px] cursor-pointer">Meme SFX</label>
+                </div>
+              </div>
+
+              <!-- PARAMS FOR WORKSHOP 4: CINEMATIC 3D -->
+              <div id="params-workshop-cinematic" class="hidden flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Phong cách 3D:</span>
+                  <select id="dispatch-style-3d" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="PRESET_DONGHUA_3D">Donghua 3D (1:7)</option>
+                    <option value="PRESET_CHIBI_3D">Chibi 3D (1:3)</option>
+                    <option value="PRESET_ANIME_25D">Anime 2.5D</option>
+                  </select>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Bối cảnh:</span>
+                  <select id="dispatch-set-3d" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="set_xianxia_temple">Điện Cổ Phong</option>
+                    <option value="set_cyber_lab">Cyber Lab 2026</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- PARAMS FOR WORKSHOP 2: EXPLAINER CODE -->
+              <div id="params-workshop-explainer" class="hidden flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Theme Code:</span>
+                  <select id="dispatch-theme-code" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="OneDarkPro">One Dark Pro</option>
+                    <option value="Dracula">Dracula</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- PARAMS FOR WORKSHOP 3: WHITEBOARD -->
+              <div id="params-workshop-whiteboard" class="hidden flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Bút vẽ:</span>
+                  <select id="dispatch-brush" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="marker_black">Bút dạ đen</option>
+                    <option value="chalk_white">Phấn trắng</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- PARAMS FOR WORKSHOP 1: NEWS -->
+              <div id="params-workshop-news" class="hidden flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 text-[11px]">Bản tin:</span>
+                  <select id="dispatch-news-preset" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-[11px] text-gray-700">
+                    <option value="breaking_news">Breaking News</option>
+                    <option value="tech_radar">Tech Radar</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Common auto-publish Cổng 7 checkbox -->
+              <div class="flex items-center gap-1.5 pl-2 border-l border-pink-200">
+                <input type="checkbox" id="dispatch-publish" class="rounded border-pink-300 text-pink-600 focus:ring-0" checked />
+                <label for="dispatch-publish" class="text-gray-700 text-[11px] cursor-pointer">
+                  Đăng YouTube Cổng 7
+                </label>
               </div>
             </div>
 
-            <!-- Panel 2: Scene 02 -->
-            <div class="bg-surface-container-lowest/90 border-2 border-primary/60 rounded-lg p-2.5 flex flex-col gap-2 shadow-[0_0_16px_rgba(78,222,163,0.15)]">
-              <div class="flex items-center justify-between text-xs font-mono">
-                <span class="text-primary font-bold">Chương II: Bản Hợp Đồng 100 Tỷ</span>
-                <span class="text-secondary flex items-center gap-1 font-bold">
-                  <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                  Scene 02
-                </span>
-              </div>
-              <div class="relative aspect-video rounded overflow-hidden border border-primary/40">
-                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-02/scene-02.png" alt="Chương II"/>
-              </div>
+            <!-- 🚀 SINGLE PRIMARY ACTION BUTTON -->
+            <button id="btn-unified-dispatch" class="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-headline text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm shadow-pink-500/25 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0" onclick="handleUnifiedDispatch()">
+              <span class="material-symbols-outlined text-[15px]">rocket_launch</span>
+              <span id="btn-unified-dispatch-text">Bắt Đầu Sản Xuất Ngay (AI Leader)</span>
+            </button>
+          </div>
+
+          <!-- Quick Suggestions Tags -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-[10px] font-mono text-gray-400 font-bold">GỢI Ý NHANH:</span>
+            <button class="px-2.5 py-0.5 rounded-full border border-pink-200 bg-white text-gray-700 text-[11px] hover:border-pink-400 hover:text-pink-600 transition-all flex items-center gap-1 cursor-pointer" onclick="handleLeaderShortcut('scout_github')">
+              <span class="text-pink-500 font-bold">⚡</span> GitHub Repo Trending
+            </button>
+            <button class="px-2.5 py-0.5 rounded-full border border-pink-200 bg-white text-gray-700 text-[11px] hover:border-pink-400 hover:text-pink-600 transition-all flex items-center gap-1 cursor-pointer" onclick="handleLeaderShortcut('shift_report')">
+              <span class="text-pink-500 font-bold">📋</span> Báo Cáo Ca Trực 24h
+            </button>
+            <button class="px-2.5 py-0.5 rounded-full border border-pink-200 bg-white text-gray-700 text-[11px] hover:border-pink-400 hover:text-pink-600 transition-all flex items-center gap-1 cursor-pointer" onclick="handleLeaderShortcut('quality_audit')">
+              <span class="text-pink-500 font-bold">🛡️</span> Kiểm Tra Chất Lượng
+            </button>
+            <button class="px-2.5 py-0.5 rounded-full border border-pink-200 bg-white text-gray-700 text-[11px] hover:border-pink-400 hover:text-pink-600 transition-all flex items-center gap-1 cursor-pointer" onclick="handleLeaderShortcut('threads_crawl')">
+              <span class="text-pink-500 font-bold">🔥</span> Threads Confessions Săn Tin
+            </button>
+          </div>
+
+          <!-- Feedback Toast Container -->
+          <div id="dispatch-feedback" class="hidden p-2.5 rounded-lg text-xs font-mono"></div>
+        </div>
+
+        <!-- ================= KHUNG LOG BÁO CÁO & LUỒNG SUY NGHĨ ANTIGRAVITY 2.0 (LIVE CONSOLE) ================= -->
+        <div id="leader-console-wrap" class="leader-console-wrap mt-4">
+          <!-- Console Header -->
+          <div class="leader-console-header">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-500 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-500"></span>
+              </span>
+              <span class="font-headline font-bold text-xs text-pink-700">ANTIGRAVITY 2.0 & LEADER LIVE CONSOLE</span>
+              <span class="text-pink-300">•</span>
+              <span class="text-[10px] font-mono text-gray-500" id="terminal-step-indicator">Đang trực chiến 24/7 (SSE Stream Online)</span>
             </div>
 
-            <!-- Panel 3: Scene 03 -->
-            <div class="bg-surface-container-lowest/90 border border-outline-variant/40 rounded-lg p-2.5 flex flex-col gap-2">
-              <div class="flex items-center justify-between text-xs font-mono">
-                <span class="text-on-surface font-semibold">Chương III: Cửa Hào Môn</span>
-                <span class="text-tertiary flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                  Scene 03
-                </span>
+            <!-- Terminal Filter Buttons & Toolbar -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <!-- Filter Buttons -->
+              <div class="flex items-center gap-1 bg-pink-50 p-0.5 rounded-lg border border-pink-200 text-[10px] font-mono">
+                <button class="terminal-filter-btn active px-2 py-0.5 rounded bg-pink-500 text-white font-bold transition-all cursor-pointer" data-filter="all">Tất Cả</button>
+                <button class="terminal-filter-btn px-2 py-0.5 rounded text-gray-600 hover:text-pink-600 transition-all cursor-pointer" data-filter="thought">Thinking</button>
+                <button class="terminal-filter-btn px-2 py-0.5 rounded text-gray-600 hover:text-pink-600 transition-all cursor-pointer" data-filter="tool">Tools</button>
+                <button class="terminal-filter-btn px-2 py-0.5 rounded text-gray-600 hover:text-pink-600 transition-all cursor-pointer" data-filter="gate">Gates</button>
               </div>
-              <div class="relative aspect-video rounded overflow-hidden border border-outline-variant/30">
-                <img class="w-full h-full object-cover" src="/media/whiteboard/job-hop-dong-100-ty-tong-tai/scenes/scene-03/scene-03.png" alt="Chương III"/>
-              </div>
+
+              <!-- Play Voice Briefing -->
+              <button class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer" onclick="playVoiceBriefing()" title="Nghe báo cáo bằng giọng đọc AI">
+                <span class="material-symbols-outlined text-[13px]">volume_up</span>
+                <span class="hidden sm:inline">Nghe Giọng 30s</span>
+              </button>
+
+              <!-- Send Telegram Ping -->
+              <button class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer" onclick="sendTelegramReport()" title="Gửi báo cáo tóm tắt về Telegram của sếp">
+                <span class="material-symbols-outlined text-[13px]">send</span>
+                <span class="hidden sm:inline">Báo Cáo Telegram</span>
+              </button>
+
+              <!-- Task Queue Toggle -->
+              <button class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer" onclick="openTaskQueueModal()" title="Xem hàng đợi nhiệm vụ đa tác vụ">
+                <span class="material-symbols-outlined text-[13px]">checklist</span>
+                <span class="hidden sm:inline">Hàng Đợi</span>
+                <span id="queue-badge-count" class="bg-pink-500 text-white text-[9px] px-1 rounded-full font-bold">3</span>
+              </button>
+
+              <!-- Clear Log -->
+              <button class="p-1 rounded-lg text-gray-400 hover:text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer" onclick="clearLeaderLog()" title="Xóa lịch sử log">
+                <span class="material-symbols-outlined text-sm">delete_sweep</span>
+              </button>
+
+              <!-- Minimize / Expand -->
+              <button class="p-1 rounded-lg text-gray-400 hover:text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer" onclick="toggleLeaderLog()" title="Thu gọn / Mở rộng khung log">
+                <span id="btn-toggle-log-icon" class="material-symbols-outlined text-sm">expand_less</span>
+              </button>
             </div>
+          </div>
+
+          <!-- Console Stream Body -->
+          <div id="leader-log-stream" class="leader-console-body">
+            <!-- Initial logs & live thinking stream rendered dynamically by app.js -->
+          </div>
+
+          <!-- Interactive Action Bar (HITL Quick Decisions) -->
+          <div id="leader-hitl-actions" class="hitl-action-bar">
+            <span class="text-[10px] font-mono text-pink-600 font-bold uppercase tracking-wider">HÀNH ĐỘNG NHANH 1 CHẠM:</span>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs cursor-pointer" onclick="handleHitlAction('run_workshop2')">
+              ⚡ Bấm Máy Xưởng 2 Ngay
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs cursor-pointer" onclick="handleHitlAction('rewrite_humor')">
+              ✏️ Viết Lại Kịch Bản Hài Hơn
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs cursor-pointer" onclick="handleHitlAction('change_topic')">
+              🔄 Đổi Đề Tài Khác
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs cursor-pointer" onclick="handleHitlAction('upload_youtube')">
+              🚀 Đăng Luôn Lên YouTube
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-pink-700 text-[11px] font-bold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs cursor-pointer" onclick="sendTelegramReport()">
+              📱 Gửi Báo Cáo Telegram
+            </button>
           </div>
         </div>
       </section>
 
-      <!-- ================= 3 WORKSHOP QUICK CARDS ================= -->
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Workshop 1 -->
-        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-200">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-primary shadow-[0_0_10px_rgba(78,222,163,0.2)]">
-                <span class="material-symbols-outlined text-[24px]">flash_on</span>
-              </div>
-              <span class="bg-primary/15 text-primary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-primary/30">9:16 SHORTS</span>
-            </div>
-            <div>
-              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 1: Tin Tức HyperFrames</h3>
-              <p class="text-xs text-on-surface-variant mt-1">Xuất video tin tức ngắn 45-60s tốc độ cao, kinetic subtitle tự động, phong cách thời sự quốc tế.</p>
-            </div>
+      <!-- ================= 3. SHIFT BRIEFING & RADAR TELEMETRY WIDGET (4 STAT CARDS) ================= -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Kho Video 24h -->
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all cursor-pointer" onclick="filterByWorkshop('all')">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-pink-700">KHO VIDEO 24H</span>
+            <span class="material-symbols-outlined text-[20px] text-pink-500">movie</span>
           </div>
-          <button class="mt-4 w-full bg-surface-container-high hover:bg-primary hover:text-on-primary-container text-primary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('news')">
-            Lọc Kịch Bản Xưởng 1
-          </button>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight" id="widget-total-videos">1</span>
+            <span class="text-xs text-gray-500">video</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center gap-1.5 text-xs text-pink-600 font-semibold">
+            <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+            <span>+1 hoàn tất đêm qua</span>
+          </div>
         </div>
 
-        <!-- Workshop 2 -->
-        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-secondary/60 transition-all duration-200">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-secondary shadow-[0_0_10px_rgba(76,215,246,0.2)]">
-                <span class="material-symbols-outlined text-[24px]">code_blocks</span>
-              </div>
-              <span class="bg-secondary/15 text-secondary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-secondary/30">REACT 16:9 & 9:16</span>
-            </div>
-            <div>
-              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 2: Remotion Tech Explainer</h3>
-              <p class="text-xs text-on-surface-variant mt-1">Video đồ họa giải thích công nghệ, 6-beat tâm lý học giữ chân người xem, biểu đồ và hiệu ứng chuyển động code.</p>
-            </div>
+        <!-- Card 2: Đã Đăng YouTube API -->
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all cursor-pointer" onclick="filterPublishedVideos()">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-red-600">ĐÃ ĐĂNG YOUTUBE API</span>
+            <span class="material-symbols-outlined text-red-500 text-[20px]" style="font-variation-settings: 'FILL' 1;">play_circle</span>
           </div>
-          <button class="mt-4 w-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary-container text-secondary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('explainer')">
-            Lọc Kịch Bản Xưởng 2
-          </button>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight" id="widget-published-videos">1</span>
+            <span class="text-xs text-gray-500">Shorts / Cinema</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center justify-between text-xs text-gray-500">
+            <span>Trạng thái:</span>
+            <span class="font-bold text-emerald-600 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Đã Xuất Bản
+            </span>
+          </div>
         </div>
 
-        <!-- Workshop 3 -->
-        <div class="bg-surface-container-low border border-outline-variant/40 rounded-xl p-5 flex flex-col justify-between hover:border-tertiary/60 transition-all duration-200">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-tertiary shadow-[0_0_10px_rgba(208,188,255,0.2)]">
-                <span class="material-symbols-outlined text-[24px]">history_edu</span>
-              </div>
-              <span class="bg-tertiary/15 text-tertiary text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-tertiary/30">1-HOUR AUDIO</span>
-            </div>
-            <div>
-              <h3 class="text-base font-headline font-bold text-on-surface">Xưởng 3: Bảng Trắng Storyteller</h3>
-              <p class="text-xs text-on-surface-variant mt-1">Video audio truyện dài 60 phút, tự động tạo Storyboard 3 ô tranh Notion độc quyền cho từng chương, lồng nhạc nền ducking thông minh.</p>
-            </div>
+        <!-- Card 3: Star Velocity Radar -->
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all cursor-pointer" onclick="openScoutModal()">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-cyan-700">STAR VELOCITY RADAR</span>
+            <span class="material-symbols-outlined text-cyan-500 text-[20px]">satellite_alt</span>
           </div>
-          <button class="mt-4 w-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary-container text-tertiary border border-outline-variant/40 text-xs font-mono py-2 rounded-lg transition-all" onclick="filterByWorkshop('whiteboard')">
-            Lọc Kịch Bản Xưởng 3
-          </button>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight" id="widget-radar-count">6</span>
+            <span class="text-xs text-gray-500">repos / 24h</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center gap-1.5 text-xs text-cyan-600 font-semibold">
+            <span class="relative flex h-1.5 w-1.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500"></span>
+            </span>
+            <span>GitHub Token: 5,000 req/h</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Hệ Thống & GPU Worker -->
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-pink-700">HỆ THỐNG & GPU WORKER</span>
+            <span class="material-symbols-outlined text-pink-500 text-[20px]">memory</span>
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight">99.8%</span>
+            <span class="text-xs text-emerald-600 font-semibold">Uptime</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center justify-between text-xs text-gray-500">
+            <span>Remotion + Edge-TTS:</span>
+            <span class="font-bold text-gray-800">58.4 fps</span>
+          </div>
         </div>
       </section>
 
-      <!-- ================= VIDEO LIBRARY & PRODUCTION LEDGER ================= -->
-      <section class="bg-surface-container-low/80 border border-outline-variant/40 rounded-xl p-6 shadow-sm backdrop-blur-md flex flex-col gap-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30">
-          <div>
-            <h2 class="text-xl font-headline font-bold text-on-surface">Kho Dự Án Video Cục Bộ</h2>
-            <p class="text-xs text-on-surface-variant">Quản lý và kích hoạt render toàn bộ các video từ thư mục output/jobs/</p>
+      <!-- ================= 5. VIDEO LIBRARY ('KHO VIDEO ĐÃ SẢN XUẤT') ================= -->
+      <section class="flex flex-col gap-4">
+        <!-- Filter Bar & Section Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-pink-100">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-headline font-bold text-gray-800">Kho Video Đã Sản Xuất</h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 text-xs font-mono font-bold" id="badge-total-assets">1 Video</span>
           </div>
 
-          <button class="bg-gradient-to-r from-primary-container to-secondary-container hover:opacity-95 text-on-primary-container font-headline font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all self-start sm:self-center" onclick="openCreateModal()">
-            <span class="material-symbols-outlined text-[16px]">add</span>
-            <span>+ Thêm Video Mới</span>
-          </button>
+          <!-- View Mode & Category Tabs -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="workshop-filter-bar" id="workshop-filter-bar">
+              <button class="workshop-filter-btn active" data-filter="all" onclick="setActiveWorkshopFilter('all', this)" id="btn-filter-all">
+                <span>🌸 Tất cả</span>
+                <span class="badge-count" id="badge-count-all">0</span>
+              </button>
+              <button class="workshop-filter-btn" data-filter="threads" onclick="setActiveWorkshopFilter('threads', this)">
+                <span>⚡ Threads</span>
+                <span class="badge-count" id="badge-count-threads">0</span>
+              </button>
+              <button class="workshop-filter-btn" data-filter="cinematic" onclick="setActiveWorkshopFilter('cinematic', this)">
+                <span>🎬 3D Phim</span>
+                <span class="badge-count" id="badge-count-cinematic">0</span>
+              </button>
+              <button class="workshop-filter-btn" data-filter="explainer" onclick="setActiveWorkshopFilter('explainer', this)">
+                <span>💻 Remotion</span>
+                <span class="badge-count" id="badge-count-explainer">0</span>
+              </button>
+              <button class="workshop-filter-btn" data-filter="whiteboard" onclick="setActiveWorkshopFilter('whiteboard', this)">
+                <span>🎨 Bảng Trắng</span>
+                <span class="badge-count" id="badge-count-whiteboard">0</span>
+              </button>
+              <button class="workshop-filter-btn" data-filter="news" onclick="setActiveWorkshopFilter('news', this)">
+                <span>📰 Tin Tức</span>
+                <span class="badge-count" id="badge-count-news">0</span>
+              </button>
+            </div>
+
+            <!-- Grid vs Table View Switcher -->
+            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-pink-100 shadow-xs">
+              <button id="view-mode-grid" class="p-1.5 rounded-lg text-gray-500 hover:text-pink-600" onclick="setViewMode('grid')" title="Dạng Lưới (Bento Cards)">
+                <span class="material-symbols-outlined text-[18px]">grid_view</span>
+              </button>
+              <button id="view-mode-table" class="p-1.5 rounded-lg text-gray-500 hover:text-pink-600" onclick="setViewMode('table')" title="Dạng Bảng (Dense Table)">
+                <span class="material-symbols-outlined text-[18px]">table_rows</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- Video Grid Container (Filled by app.js) -->
-        <div class="video-grid" id="video-grid">
-          <div class="loading-state py-12 text-center text-outline">
-            <div class="spinner mb-2"></div>
-            <p>Đang tải danh sách kho video từ server...</p>
-          </div>
+        <!-- Bento Grid of Videos -->
+        <div id="video-grid" class="video-grid">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Table View of Videos -->
+        <div id="video-table-wrap" class="video-table-wrap hidden">
+          <table class="video-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Thumbnail</th>
+                <th>Tiêu Đề & Task ID</th>
+                <th>Phân Xưởng</th>
+                <th>Định Dạng & Beats</th>
+                <th>Trạng Thái YouTube</th>
+                <th>Dung Lượng</th>
+                <th style="text-align: right;">Hành Động</th>
+              </tr>
+            </thead>
+            <tbody id="video-table-body">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- ================= MODAL: VIDEO PLAYER & BEATS ================= -->
-  <div class="modal" id="player-modal">
-    <div class="modal-backdrop" onclick="closePlayerModal()"></div>
-    <div class="modal-content player-modal-content">
-      <div class="modal-header">
-        <div class="header-info flex items-center gap-3">
-          <span class="badge" id="modal-workshop-badge">XƯỞNG</span>
-          <h2 id="modal-video-title" class="text-base font-bold">Tiêu đề video</h2>
+  <!-- ================= 6. TASK QUEUE MODAL (STITCH MCP REDESIGN) ================= -->
+  <div class="modal" id="task-queue-modal">
+    <div class="modal-backdrop" onclick="closeTaskQueueModal()"></div>
+    <div class="modal-content max-w-4xl w-full" style="max-height: 88vh;">
+      <div class="modal-header flex items-center justify-between pb-3 border-b border-pink-100">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-pink-500 text-2xl">checklist</span>
+          <div>
+            <h3 class="font-headline font-bold text-base text-gray-800">Hàng Đợi Nhiệm Vụ Tự Hành (Commander Task Queue)</h3>
+            <p class="text-[11px] font-mono text-gray-500">Điều phối đa tác vụ tuần tự • Lưu bền vững tasks.json</p>
+          </div>
         </div>
-        <button class="btn-close" id="btn-close-player">✕</button>
+        <div class="flex items-center gap-2">
+          <!-- Batch Generate SEO Button -->
+          <button type="button" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-xs font-bold transition-all flex items-center gap-1 shadow-xs cursor-pointer" onclick="generateAllSeoKits()" title="Tự động sinh tiêu đề, caption & SEO cho tất cả các task hoàn tất">
+            <span class="material-symbols-outlined text-xs">auto_awesome</span> Sinh SEO Tất Cả
+          </button>
+          <!-- Queue Action Controls -->
+          <button type="button" class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer" onclick="clearTaskQueue(true)" title="Xóa các task đã hoàn tất hoặc bị hủy">
+            <span class="material-symbols-outlined text-xs">cleaning_services</span> Dọn Đã Xong
+          </button>
+          <button type="button" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-700 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer" onclick="clearTaskQueue(false)" title="Xóa toàn bộ hàng đợi">
+            <span class="material-symbols-outlined text-xs">delete_sweep</span> Xóa Hết
+          </button>
+          <button type="button" class="btn-close ml-2" onclick="closeTaskQueueModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
       </div>
 
-      <div class="modal-body player-layout">
-        <div class="player-left flex flex-col gap-3">
-          <div class="video-wrapper bg-black rounded-lg overflow-hidden">
-            <video id="main-video" controls playsinline preload="metadata" class="w-full max-h-[500px]">
-              Trình duyệt của bạn không hỗ trợ video.
-            </video>
-          </div>
-          <div class="player-toolbar flex flex-wrap gap-2">
-            <button class="btn btn-sm btn-outline text-xs" id="btn-copy-link">📋 Sao chép link</button>
-            <a class="btn btn-sm btn-outline text-xs" id="btn-download-mp4" download>⬇ Tải MP4</a>
-            <a class="btn btn-sm btn-outline text-xs" id="btn-download-srt" download>⬇ Tải SRT</a>
-            <a class="btn btn-sm btn-outline text-xs" id="btn-download-json" download>⬇ Tải JSON</a>
+      <div class="modal-body overflow-y-auto space-y-4 p-5">
+        <!-- Add multiple tasks box -->
+        <div class="p-3.5 rounded-xl border border-pink-200 bg-pink-50/50 flex flex-col gap-2">
+          <label class="text-xs font-mono font-bold text-pink-700">THÊM NHANH CÁC TASK MỚI VÀO HÀNG ĐỢI (MỖI DÒNG 1 TASK/LINK):</label>
+          <textarea id="queue-multi-tasks-input" class="w-full bg-white border border-pink-200 rounded-lg p-2.5 text-xs font-sans text-gray-800 focus:outline-none focus:border-pink-500 resize-none h-18" placeholder="https://www.threads.net/@user/post/111&#10;Quét 3 repo GitHub trending mới nhất&#10;Tạo video giải thích code TypeScript Remotion..."></textarea>
+          <div class="flex justify-end gap-2">
+            <button type="button" class="px-3.5 py-1.5 rounded-lg bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1 cursor-pointer" onclick="submitMultipleTasks()">
+              <span class="material-symbols-outlined text-xs">playlist_add</span> Nạp Vào Hàng Đợi
+            </button>
           </div>
         </div>
 
-        <div class="player-right flex flex-col gap-2">
-          <div class="section-title flex items-center justify-between border-b border-outline-variant/30 pb-2">
-            <span class="text-xs font-bold font-mono">Dòng Thời Gian Phân Cảnh (Beats)</span>
-            <span class="count-badge text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-primary" id="beats-count-badge">0 beats</span>
-          </div>
-          <div class="beats-timeline custom-scrollbar overflow-y-auto max-h-[480px] flex flex-col gap-2 pr-1" id="beats-timeline">
-            <!-- Rendered by app.js -->
-          </div>
+        <!-- Task List Container -->
+        <div class="space-y-2.5" id="task-queue-list">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer flex items-center justify-between">
+        <div class="text-xs font-mono text-gray-500">
+          Tổng số: <span id="queue-footer-count" class="font-bold text-pink-600">0</span> tác vụ
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" class="btn btn-sm btn-outline" onclick="closeTaskQueueModal()">Đóng</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="sendTelegramReport()">
+            <span class="material-symbols-outlined text-xs">send</span> Báo Cáo Telegram
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ================= MODAL: CREATE JOB ================= -->
+  <!-- ================= 6B. TASK DETAIL INSPECTOR MODAL ================= -->
+  <div class="modal" id="task-detail-modal">
+    <div class="modal-backdrop" onclick="closeTaskDetailModal()"></div>
+    <div class="modal-content max-w-3xl w-full" style="max-height: 90vh;">
+      <div class="modal-header pb-3 border-b border-pink-100 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-pink-500 text-2xl">troubleshoot</span>
+          <div>
+            <h3 class="font-headline font-bold text-base text-gray-800" id="detail-task-title">Chi Tiết Tác Vụ</h3>
+            <p class="text-[11px] font-mono text-gray-500" id="detail-task-sub">ID: ...</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close" onclick="closeTaskDetailModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body overflow-y-auto space-y-4 p-5">
+        <!-- Status & Gate Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-pink-50/60 border border-pink-100 text-xs font-mono">
+          <div>
+            <span class="text-gray-400 block text-[10px]">TRẠNG THÁI:</span>
+            <span id="detail-status-badge" class="font-bold text-emerald-700">Đang chạy</span>
+          </div>
+          <div>
+            <span class="text-gray-400 block text-[10px]">TIẾN TRÌNH CỔNG:</span>
+            <span id="detail-gate-badge" class="font-bold text-pink-700">Cổng 6</span>
+          </div>
+          <div>
+            <span class="text-gray-400 block text-[10px]">PHÂN XƯỞNG:</span>
+            <span id="detail-workshop-badge" class="font-bold text-gray-800">Xưởng 5</span>
+          </div>
+          <div>
+            <span class="text-gray-400 block text-[10px]">TIẾN ĐỘ:</span>
+            <span id="detail-progress-badge" class="font-bold text-pink-600">85%</span>
+          </div>
+        </div>
+
+        <!-- Video & Assets Preview Area -->
+        <div id="detail-assets-box" class="space-y-3">
+          <!-- Populated dynamically with video preview player or thumbnail -->
+        </div>
+
+        <!-- SEO Publishing Kit Area -->
+        <div id="detail-seo-box" class="p-3.5 rounded-xl bg-pink-50/70 border border-pink-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-gray-800 flex items-center gap-1.5">
+              <span class="text-pink-500">✨</span> BỘ TIÊU ĐỀ & SEO PUBLISHING KIT
+            </span>
+            <button type="button" id="btn-open-seo-from-detail" class="px-2 py-1 rounded bg-pink-500 hover:bg-pink-600 text-white font-bold text-[10px] flex items-center gap-1 shadow-xs cursor-pointer">
+              <span class="material-symbols-outlined text-[13px]">tune</span> Chỉnh Sửa / Mở Rộng
+            </button>
+          </div>
+          <div id="detail-seo-content" class="text-xs font-sans space-y-1.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Logs Terminal -->
+        <div>
+          <label class="text-xs font-mono font-bold text-gray-700 block mb-1">NHẬT KÝ XỬ LÝ (LOGS):</label>
+          <div id="detail-task-logs" class="bg-gray-900 text-emerald-400 font-mono text-[11px] p-3 rounded-xl max-h-56 overflow-y-auto leading-relaxed border border-gray-800">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer flex items-center justify-between">
+        <button type="button" id="btn-detail-delete" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs">delete</span> Xóa Tác Vụ Này
+        </button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeTaskDetailModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 6B. SEO & PUBLISHING KIT GENERATOR STUDIO ================= -->
+  <div class="modal" id="seo-kit-modal">
+    <div class="modal-backdrop" onclick="closeSeoKitModal()"></div>
+    <div class="modal-content max-w-4xl w-full" style="max-height: 92vh;">
+      <div class="flex flex-col h-full overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="modal-header pb-3 border-b border-pink-100 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="p-2 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 text-white flex items-center justify-center shadow-md shadow-pink-500/20">
+              <span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+            </span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-headline font-bold text-gray-800 text-base" id="seo-modal-title">AI Publishing Kit Studio</h3>
+                <span class="text-[9px] font-mono font-bold bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full border border-pink-200" id="seo-workshop-pill">THREADS</span>
+              </div>
+              <p class="text-[11px] font-mono text-gray-500" id="seo-modal-subtitle">Tự động sinh tiêu đề High-CTR, Caption, Mô tả Timestamps & Tags SEO</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close" onclick="closeSeoKitModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body overflow-y-auto space-y-4 p-5 flex-1 text-xs">
+          
+          <!-- KHUNG 0: THUMBNAIL STUDIO & HIGH-CTR GENERATOR -->
+          <div class="p-3.5 rounded-2xl bg-white border border-pink-200 shadow-xs flex flex-col md:flex-row gap-4 items-start" id="seo-thumb-studio-box">
+            <!-- Cột Trái: Ảnh Preview Thumbnail -->
+            <div class="flex flex-col items-center gap-2 shrink-0 w-full md:w-52">
+              <div class="relative w-full aspect-[9/16] max-h-56 rounded-xl bg-gray-900 border border-pink-200 overflow-hidden group shadow-inner">
+                <img id="seo-thumb-preview" src="" alt="Thumbnail Preview" class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300" />
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <a id="seo-thumb-download-link" href="#" download="thumbnail.jpg" class="p-2 rounded-full bg-white text-pink-600 hover:bg-pink-50 shadow-md transition-all cursor-pointer" title="Tải Thumbnail Về Máy">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                  </a>
+                  <a id="seo-thumb-open-link" href="#" target="_blank" class="p-2 rounded-full bg-white text-gray-700 hover:bg-pink-50 shadow-md transition-all cursor-pointer" title="Mở Ảnh Đầy Đủ">
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                  </a>
+                </div>
+                <span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-mono text-white" id="seo-thumb-res-pill">1080x1920</span>
+                <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-pink-600/90 text-[9px] font-mono font-bold text-white shadow-xs" id="seo-thumb-badge-pill">HIGH-CTR</span>
+              </div>
+              
+              <!-- Action buttons under image -->
+              <div class="w-full flex items-center gap-1.5">
+                <button type="button" class="flex-1 py-1 px-2 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-700 text-[11px] font-bold border border-pink-200 flex items-center justify-center gap-1 transition-all cursor-pointer" onclick="downloadCurrentThumbnail()">
+                  <span class="material-symbols-outlined text-[14px]">download</span> Tải HD
+                </button>
+                <button type="button" class="py-1 px-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-[11px] font-bold border border-gray-200 flex items-center justify-center gap-1 transition-all cursor-pointer" onclick="extractFreshFramesForSeo()" title="Trích thêm frame từ video">
+                  <span class="material-symbols-outlined text-[14px]">camera</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cột Phải: Bộ Công Cụ Sinh Thumbnail High-CTR -->
+            <div class="flex-1 w-full flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <label class="font-mono font-bold text-gray-700 flex items-center gap-1.5">
+                  <span class="text-pink-500">🎨</span> THUMBNAIL STUDIO (HIGH-CTR HOOK BANNER):
+                </label>
+                <span class="text-[10px] font-mono text-pink-600 font-bold bg-pink-50 px-2 py-0.5 rounded border border-pink-200">Rule 11 CINEMATIC</span>
+              </div>
+
+              <!-- Hook text input -->
+              <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-mono text-gray-500 font-semibold">CÂU HOOK GIẬT GÂN TRÊN ẢNH (3-5 từ, Neon Glow & Viền Đen Dày):</span>
+                <div class="flex items-center gap-1.5">
+                  <input id="seo-thumb-hook-input" class="flex-1 bg-pink-50/20 border border-pink-200 focus:border-pink-500 rounded-xl py-1.5 px-3 text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-200" placeholder="VD: MỞ THREADS NHƯ TỦ LẠNH?! 🤯" />
+                  <button type="button" id="btn-generate-thumb" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-xs font-bold shadow-md shadow-pink-500/20 transition-all flex items-center gap-1.5 cursor-pointer shrink-0" onclick="triggerGenerateHighCtrThumbnail()">
+                    <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+                    <span>Sinh Thumbnail High-CTR</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Frame candidates picker -->
+              <div class="flex flex-col gap-1.5 mt-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono text-gray-500 font-semibold flex items-center gap-1">
+                    <span>CHỌN FRAME TỪ VIDEO (Click để đổi nền):</span>
+                    <span id="seo-thumb-loading-frames" class="text-pink-600 hidden animate-pulse">Đang trích frame...</span>
+                  </span>
+                </div>
+                <div id="seo-frame-candidates-list" class="grid grid-cols-4 gap-2">
+                  <!-- Populated dynamically by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KHUNG 1: TIÊU ĐỀ CHÍNH HIGH-CTR -->
+          <div class="p-3.5 rounded-2xl bg-white border border-pink-200 shadow-xs flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <label class="font-mono font-bold text-gray-700 flex items-center gap-1.5">
+                <span class="text-pink-500">🔥</span> TIÊU ĐỀ CHÍNH (HIGH-CTR TITLES):
+              </label>
+              <div class="flex items-center gap-2">
+                <span id="seo-title-count" class="text-[10px] font-mono text-gray-400">0 / 100</span>
+                <button type="button" class="px-2 py-0.5 rounded bg-pink-50 hover:bg-pink-100 text-pink-700 text-[11px] font-bold border border-pink-200 transition-all flex items-center gap-1 cursor-pointer" onclick="copySeoField('seo-title-input', 'Tiêu đề')">
+                  <span class="material-symbols-outlined text-[13px]">content_copy</span> Copy
+                </button>
+              </div>
+            </div>
+            <input id="seo-title-input" class="w-full bg-pink-50/20 border border-pink-200 focus:border-pink-500 rounded-xl py-2 px-3 text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-200" placeholder="Tiêu đề video..." />
+            
+            <!-- 3 Title Variants Options -->
+            <div class="flex flex-col gap-1.5 mt-1" id="seo-title-variants-box">
+              <span class="text-[10px] font-mono text-gray-400">GỢI Ý CÁC BIẾN THỂ TIÊU ĐỀ (Click để áp dụng):</span>
+              <div id="seo-title-options-list" class="space-y-1"></div>
+            </div>
+          </div>
+
+          <!-- KHUNG 2: CAPTION MẠNG XÃ HỘI (THREADS / TIKTOK / SHORTS) -->
+          <div class="p-3.5 rounded-2xl bg-white border border-pink-200 shadow-xs flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <label class="font-mono font-bold text-gray-700 flex items-center gap-1.5">
+                <span class="text-pink-500">💬</span> CAPTION MẠNG XÃ HỘI (THREADS / SHORTS / TIKTOK):
+              </label>
+              <button type="button" class="px-2 py-0.5 rounded bg-pink-50 hover:bg-pink-100 text-pink-700 text-[11px] font-bold border border-pink-200 transition-all flex items-center gap-1 cursor-pointer" onclick="copySeoField('seo-caption-input', 'Caption')">
+                <span class="material-symbols-outlined text-[13px]">content_copy</span> Copy Caption
+              </button>
+            </div>
+            <textarea id="seo-caption-input" rows="3" class="w-full bg-pink-50/20 border border-pink-200 focus:border-pink-500 rounded-xl p-2.5 text-xs font-sans text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none" placeholder="Nội dung caption mạng xã hội..."></textarea>
+          </div>
+
+          <!-- KHUNG 3: MÔ TẢ CHI TIẾT YOUTUBE & TIMESTAMPS -->
+          <div class="p-3.5 rounded-2xl bg-white border border-pink-200 shadow-xs flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <label class="font-mono font-bold text-gray-700 flex items-center gap-1.5">
+                <span class="text-pink-500">📝</span> MÔ TẢ YOUTUBE ĐẦY ĐỦ (TIMESTAMPS & HASHTAGS):
+              </label>
+              <button type="button" class="px-2 py-0.5 rounded bg-pink-50 hover:bg-pink-100 text-pink-700 text-[11px] font-bold border border-pink-200 transition-all flex items-center gap-1 cursor-pointer" onclick="copySeoField('seo-desc-input', 'Mô tả YouTube')">
+                <span class="material-symbols-outlined text-[13px]">content_copy</span> Copy Mô Tả
+              </button>
+            </div>
+            <textarea id="seo-desc-input" rows="5" class="w-full bg-pink-50/20 border border-pink-200 focus:border-pink-500 rounded-xl p-2.5 text-xs font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none" placeholder="Mô tả chi tiết kèm các mốc timestamps..."></textarea>
+          </div>
+
+          <!-- KHUNG 4: DANH SÁCH TAGS SEO -->
+          <div class="p-3.5 rounded-2xl bg-white border border-pink-200 shadow-xs flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <label class="font-mono font-bold text-gray-700 flex items-center gap-1.5">
+                <span class="text-pink-500">🏷️</span> TỪ KHÓA TỐI ƯU TÌM KIẾM (SEO TAGS):
+              </label>
+              <button type="button" class="px-2 py-0.5 rounded bg-pink-50 hover:bg-pink-100 text-pink-700 text-[11px] font-bold border border-pink-200 transition-all flex items-center gap-1 cursor-pointer" onclick="copySeoField('seo-tags-input', 'Tags SEO')">
+                <span class="material-symbols-outlined text-[13px]">content_copy</span> Copy Tags
+              </button>
+            </div>
+            <input id="seo-tags-input" class="w-full bg-pink-50/20 border border-pink-200 focus:border-pink-500 rounded-xl py-2 px-3 text-xs font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-200" placeholder="tag1, tag2, tag3..." />
+            <div id="seo-tags-chips" class="flex flex-wrap gap-1.5 mt-1"></div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer flex items-center justify-between p-4 bg-gray-50/80 border-t border-pink-100">
+          <div class="flex items-center gap-2">
+            <!-- Button Generate Again -->
+            <button type="button" id="btn-regenerate-seo" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-700 text-xs font-bold transition-all cursor-pointer" onclick="triggerRegenerateSeo()">
+              <span class="material-symbols-outlined text-[16px]">refresh</span>
+              <span>Tạo Lại Bằng AI</span>
+            </button>
+            <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-pink-50 text-gray-700 border border-pink-200 text-xs font-bold transition-all cursor-pointer" onclick="copyFullPublishingKit()">
+              <span class="material-symbols-outlined text-[16px]">folder_copy</span>
+              <span>Copy Toàn Bộ Kit</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer flex items-center gap-1.5" onclick="saveSeoKitChanges()">
+              <span class="material-symbols-outlined text-[16px]">save</span>
+              <span>Lưu Bộ Kit</span>
+            </button>
+            <button type="button" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer flex items-center gap-1.5" onclick="transferSeoToYouTubeModal()">
+              <span class="material-symbols-outlined text-[16px]">smart_display</span>
+              <span>Đăng Ngay YouTube</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 7. YOUTUBE DIRECT UPLOAD MODAL ================= -->
+  <div class="modal" id="youtube-upload-modal">
+    <div class="modal-backdrop" onclick="closeYouTubeUploadModal()"></div>
+
+    <div class="modal-content max-w-4xl w-full" style="max-height: 92vh;">
+      <form id="youtube-upload-form" class="flex flex-col h-full overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <div class="flex items-center gap-2.5">
+            <span class="p-1.5 rounded-xl bg-red-500 text-white flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">smart_display</span>
+            </span>
+            <div>
+              <h3 class="font-headline font-bold text-gray-800 text-base">Tải Video Lên YouTube API Direct</h3>
+              <p class="text-xs font-mono text-pink-600">OAuth v2 Verified • Antigravity YouTube Pipeline</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close" onclick="closeYouTubeUploadModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Modal Body (Two-Column Layout) -->
+        <div class="modal-body overflow-y-auto grid grid-cols-1 md:grid-cols-12 gap-5 flex-1">
+          
+          <!-- Left Column (5 Cols): Preview & Keyframe Extractor Dropzone -->
+          <div class="md:col-span-5 flex flex-col gap-4">
+            
+            <!-- Video Preview Card -->
+            <div class="rounded-xl border border-pink-100 p-2.5 bg-pink-50/40 flex flex-col gap-2">
+              <div class="relative w-full aspect-[9/16] max-h-64 rounded-lg bg-gray-900 overflow-hidden cursor-pointer" onclick="openPlayerFromYouTubeModal()">
+                <img id="yt-preview-thumb" src="" alt="Thumbnail Preview" class="w-full h-full object-cover"/>
+                <div class="absolute inset-0 bg-black/25 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                  <div class="w-10 h-10 rounded-full bg-white text-pink-600 flex items-center justify-center shadow-md">
+                    <span class="material-symbols-outlined text-[24px]">play_arrow</span>
+                  </div>
+                </div>
+                <span class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px] font-mono" id="yt-preview-res">1080x1920</span>
+                <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px] font-mono font-bold" id="yt-preview-duration">00:58</span>
+              </div>
+              <div>
+                <span class="text-[11px] font-mono text-pink-600 font-bold" id="yt-preview-workshop">Workshop</span>
+                <p class="text-xs font-bold text-gray-800 line-clamp-1" id="yt-preview-title">Tiêu đề video</p>
+              </div>
+            </div>
+
+            <!-- Keyframe Extraction Zone -->
+            <div class="rounded-xl border-2 border-dashed border-pink-200 p-3 flex flex-col items-center justify-center text-center bg-white gap-2 hover:border-pink-400 transition-colors">
+              <span class="material-symbols-outlined text-pink-400 text-[24px]">image</span>
+              <div class="text-xs font-bold text-gray-800">Thumbnail & Trích Xuất Frame</div>
+              
+              <button type="button" id="btn-extract-frames" class="px-3 py-1.5 rounded-lg border border-pink-200 bg-pink-50 text-pink-700 text-xs font-semibold hover:bg-pink-100 transition-colors flex items-center gap-1.5" onclick="extractFramesForCurrentVideo()">
+                <span class="material-symbols-outlined text-[16px]">camera</span>
+                <span>📸 Trích Frame Đẹp Từ Video</span>
+              </button>
+
+              <!-- Frame Candidates Container -->
+              <div id="frame-candidates-wrap" class="w-full pt-2 border-t border-pink-100 hidden">
+                <div class="text-[10px] font-mono text-gray-500 mb-1.5 text-left font-bold">CHỌN 1 FRAME ĐỂ LÀM THUMBNAIL:</div>
+                <div id="frame-candidates-grid" class="grid grid-cols-3 gap-1.5">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Multi-Platform Copy Tool -->
+            <div class="rounded-xl border border-pink-100 p-3 bg-pink-50/50 flex flex-col gap-2">
+              <div class="flex items-center justify-between text-xs font-bold text-gray-800">
+                <span>Phân Phối Đa Nền Tảng</span>
+                <span class="text-[10px] font-mono text-pink-600">TikTok / Reels / Shorts</span>
+              </div>
+              <button type="button" class="w-full py-1.5 px-2 rounded-lg bg-white border border-pink-200 text-gray-700 hover:border-pink-500 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs" onclick="copyMultiPlatformCaption()">
+                <span class="material-symbols-outlined text-[15px]">content_copy</span>
+                <span>📋 Copy Định Dạng TikTok / Reels</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Right Column (7 Cols): Form Controls, Channel, Schedule, SEO -->
+          <div class="md:col-span-7 flex flex-col gap-3.5">
+            
+            <!-- Real-time Upload Status & Progress Bar -->
+            <div id="yt-status-box" class="hidden rounded-xl p-3 border bg-white border-pink-200 shadow-sm transition-all">
+              <div class="flex items-center justify-between mb-1.5">
+                <div id="yt-status-title" class="flex items-center gap-2 text-xs font-bold font-mono text-gray-800">
+                  <span class="animate-spin material-symbols-outlined text-sm text-red-500">progress_activity</span>
+                  <span id="yt-status-title-text">Đang tải video lên YouTube...</span>
+                </div>
+                <span id="yt-status-pct" class="text-xs font-mono font-bold text-red-500">0%</span>
+              </div>
+              <div class="w-full bg-pink-100 rounded-full h-2 overflow-hidden mb-1.5">
+                <div id="yt-progress-bar" class="bg-gradient-to-r from-red-500 to-rose-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <p id="yt-status-msg" class="text-[11px] text-gray-500 font-mono">
+                Khởi tạo kết nối Resumable Upload với máy chủ YouTube...
+              </p>
+            </div>
+
+            <!-- Channel Selector & Category -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">KÊNH YOUTUBE ĐÍCH</label>
+                <div class="relative">
+                  <select id="yt-channel" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 appearance-none pr-8">
+                    <option value="HanShin">Storyverse VN (Verified Shorts)</option>
+                    <option value="Giai Ma Tech">Giai Ma Tech (AI & Tech)</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-gray-400 pointer-events-none text-base">expand_more</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">THỂ LOẠI VIDEO</label>
+                <div class="relative">
+                  <select id="yt-category" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 appearance-none pr-8">
+                    <option value="24" selected>Giải Trí (Entertainment)</option>
+                    <option value="28">Khoa học & Công nghệ (Tech)</option>
+                    <option value="23">Hài kịch (Comedy)</option>
+                    <option value="1">Điện ảnh & Hoạt họa (Film)</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-gray-400 pointer-events-none text-base">expand_more</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Privacy Mode Selector -->
+            <div>
+              <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">CHẾ ĐỘ HIỂN THỊ (PRIVACY)</label>
+              <div class="grid grid-cols-3 gap-2" id="yt-privacy-group">
+                <label class="yt-privacy-card flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-pink-200 cursor-pointer hover:border-pink-400 text-center transition-all">
+                  <input type="radio" name="yt_privacy" value="public" class="sr-only"/>
+                  <span class="material-symbols-outlined text-base text-gray-400">public</span>
+                  <span class="text-xs font-semibold text-gray-800 mt-0.5">Công Khai</span>
+                </label>
+
+                <label class="yt-privacy-card active flex flex-col items-center justify-center p-2 rounded-xl bg-pink-50 border-2 border-pink-500 cursor-pointer text-center transition-all shadow-xs">
+                  <input type="radio" name="yt_privacy" value="unlisted" class="sr-only" checked/>
+                  <span class="material-symbols-outlined text-base text-pink-600">link</span>
+                  <span class="text-xs font-bold text-pink-700 mt-0.5">Không Công Khai ✓</span>
+                </label>
+
+                <label class="yt-privacy-card flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-pink-200 cursor-pointer hover:border-pink-400 text-center transition-all">
+                  <input type="radio" name="yt_privacy" value="private" class="sr-only"/>
+                  <span class="material-symbols-outlined text-base text-gray-400">lock</span>
+                  <span class="text-xs font-semibold text-gray-800 mt-0.5">Riêng Tư</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Smart Scheduled Publishing Buttons -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-mono text-gray-600 font-bold">ĐẶT LỊCH PHÁT GIỜ VÀNG (SMART SCHEDULE):</label>
+                <button type="button" class="text-[10px] font-mono text-red-500 hover:underline" onclick="clearScheduledPublishTime()">Xóa lịch hẹn</button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" class="flex-1 py-1.5 px-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-gray-800 text-xs font-semibold transition-all" id="btn-sched-lunch" onclick="selectScheduledTime('11:30')">
+                  ☀️ 11:30 Trưa
+                </button>
+                <button type="button" class="flex-1 py-1.5 px-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-gray-800 text-xs font-semibold transition-all" id="btn-sched-evening" onclick="selectScheduledTime('20:00')">
+                  🌙 20:00 Tối
+                </button>
+                <button type="button" class="flex-1 py-1.5 px-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-gray-800 text-xs font-semibold transition-all" id="btn-sched-night" onclick="selectScheduledTime('22:30')">
+                  🦉 22:30 Đêm
+                </button>
+              </div>
+
+              <div id="yt-schedule-indicator" class="hidden mt-1.5 px-3 py-1.5 rounded-lg bg-pink-100 border border-pink-200 text-pink-800 text-xs font-mono font-bold flex items-center justify-between">
+                <span id="yt-schedule-text">⏰ Đã chọn: Hôm nay lúc 20:00</span>
+                <span class="text-[10px] text-pink-600 font-normal">(YouTube tự đổi sang Public)</span>
+              </div>
+            </div>
+
+            <!-- Video Title Input -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-mono text-gray-600 font-bold flex items-center gap-2">
+                  <span>TIÊU ĐỀ VIDEO YOUTUBE:</span>
+                  <button type="button" id="btn-yt-ai-suggest" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-pink-100 text-pink-700 border border-pink-200 hover:bg-pink-200 transition-all">
+                    <span class="material-symbols-outlined text-[13px]">auto_awesome</span>
+                    <span>AI Gợi Ý Tiêu Đề</span>
+                  </button>
+                </label>
+                <span class="text-[10px] font-mono text-gray-400" id="yt-title-counter">0 / 100</span>
+              </div>
+              <input id="yt-title" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-sans text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 font-medium" type="text" maxlength="100" required/>
+
+              <!-- Title Options List -->
+              <div id="yt-title-options" class="hidden mt-1.5 space-y-1">
+                <span class="text-[10px] font-mono text-gray-500 font-bold">Gợi ý tiêu đề viral khác:</span>
+                <div id="yt-title-options-list" class="flex flex-col gap-1"></div>
+              </div>
+            </div>
+
+            <!-- Description & Chapters -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-mono text-gray-600 font-bold">MÔ TẢ & TIMESTAMPS:</label>
+                <span class="text-[10px] font-mono text-pink-600 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">auto_awesome</span> AI Chapters
+                </span>
+              </div>
+              <textarea id="yt-description" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 resize-none h-20 leading-relaxed" rows="3"></textarea>
+            </div>
+
+            <!-- Tags Input -->
+            <div>
+              <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">THẺ TỪ KHÓA (TAGS):</label>
+              <input id="yt-tags" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300" type="text" placeholder="HanShin, Threads, Shorts, Teamwork, SinhVien"/>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="modal-footer">
+          <div class="flex items-center gap-2 text-xs font-mono text-gray-500 mr-auto">
+            <span class="material-symbols-outlined text-xs text-pink-500">verified</span>
+            <span>Content ID YouTube 100% Verified</span>
+          </div>
+
+          <button type="button" class="btn btn-sm btn-outline" onclick="closeYouTubeUploadModal()">
+            Hủy
+          </button>
+          
+          <button type="submit" id="btn-yt-submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-headline font-bold text-xs flex items-center gap-2 shadow-md shadow-red-500/25 active:scale-[0.98] transition-all">
+            <span class="material-symbols-outlined text-base">cloud_upload</span>
+            <span id="btn-yt-submit-text">🚀 Bắt Đầu Upload YouTube</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= 8. SCOUT GITHUB TRENDING MODAL ================= -->
+  <div class="modal" id="scout-modal">
+    <div class="modal-backdrop" onclick="closeScoutModal()"></div>
+    <div class="modal-content max-w-3xl w-full" style="max-height: 85vh;">
+      <div class="modal-header">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-cyan-600 text-xl">satellite_alt</span>
+          <h3 class="font-headline font-bold text-base text-gray-800">Radar Săn Tin: GitHub Trending Repos</h3>
+        </div>
+        <button type="button" class="btn-close" onclick="closeScoutModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body overflow-y-auto space-y-4" id="scout-modal-body">
+        <div class="text-center py-8 text-gray-500 font-mono text-xs">
+          <span class="animate-spin material-symbols-outlined text-2xl mb-2 text-pink-500">progress_activity</span>
+          <p>Đang quét radar GitHub Trending qua Cloudflare & Token 5,000 req/h...</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeScoutModal()">Đóng</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="refreshScoutGitHub()">
+          <span class="material-symbols-outlined text-xs">refresh</span> Quét Lại Radar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 9. SHIFT BRIEFING REPORT MODAL ================= -->
+  <div class="modal" id="report-modal">
+    <div class="modal-backdrop" onclick="closeShiftReportModal()"></div>
+    <div class="modal-content max-w-3xl w-full" style="max-height: 85vh;">
+      <div class="modal-header">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-pink-500 text-xl">assignment</span>
+          <h3 class="font-headline font-bold text-base text-gray-800">Báo Cáo Tổng Kết Ca Trực Studio (24h)</h3>
+        </div>
+        <button type="button" class="btn-close" onclick="closeShiftReportModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body overflow-y-auto">
+        <div id="report-modal-content" class="text-xs font-mono text-gray-800 whitespace-pre-wrap leading-relaxed bg-pink-50/50 p-4 rounded-xl border border-pink-100">
+          Đang tải báo cáo ca trực...
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeShiftReportModal()">Đóng</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="sendTelegramReport()">
+          <span class="material-symbols-outlined text-xs">send</span> Gửi Báo Cáo Telegram
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <!-- ================= 10. STITCH CINEMATIC THEATER PLAYER MODAL ================= -->
+  <div class="modal" id="player-modal" style="background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px);">
+    <div class="modal-backdrop" onclick="closePlayerModal()"></div>
+    <div class="modal-content max-w-[1360px] w-full p-0 bg-[#090b12] border border-white/10 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.95)] flex flex-col overflow-hidden text-slate-100" style="max-height: 94vh;">
+      
+      <!-- MODAL TOP BAR / HEADER -->
+      <header class="flex-none px-6 py-3.5 bg-[#0f121d] border-b border-white/10 flex items-center justify-between gap-4">
+        <!-- Left: Title & Workshop Pill -->
+        <div class="flex items-center gap-3.5 min-w-0">
+          <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/40 text-pink-300 text-[10px] font-mono font-bold tracking-wider shadow-[0_0_12px_rgba(219,41,101,0.25)] shrink-0">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
+            <span id="modal-workshop-badge">✦ THREADS SOCIAL DRAMA</span>
+          </div>
+          <div class="h-4 w-px bg-white/15 hidden sm:block"></div>
+          <div class="flex items-center gap-2 min-w-0">
+            <h1 class="text-sm md:text-base font-bold text-white truncate tracking-tight" id="modal-video-title">
+              Tên Video Đang Phát
+            </h1>
+            <button type="button" class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-[11px] font-mono transition-colors cursor-pointer shrink-0" onclick="copyPlayerTitle()" title="Sao chép tiêu đề">
+              <span class="material-symbols-outlined text-[13px]">content_copy</span>
+              <span>Sao Chép</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Specs Badge & Close Button -->
+        <div class="flex items-center gap-3 flex-none">
+          <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-mono" id="modal-video-specs">
+            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+            <span id="player-res-spec">1080x1920</span>
+            <span class="opacity-30">•</span>
+            <span>60 FPS</span>
+            <span class="opacity-30">•</span>
+            <span class="text-cyan-300">48kHz Stereo</span>
+          </div>
+          <button type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-pink-500/20 border border-white/10 hover:border-pink-500/40 text-slate-300 hover:text-pink-300 text-xs font-mono transition-all cursor-pointer group" onclick="closePlayerModal()">
+            <span class="material-symbols-outlined text-sm group-hover:rotate-90 transition-transform duration-200">close</span>
+            <span class="font-bold">Esc</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- DUAL-COLUMN THEATER WORKSPACE -->
+      <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 divide-y lg:divide-y-0 lg:divide-x divide-white/10 bg-[#07090f]/90 overflow-hidden">
+        
+        <!-- LEFT COLUMN: CINEMATIC SCREEN & PLAYER STAGE (Col 7) -->
+        <section class="lg:col-span-7 flex flex-col justify-between p-4 lg:p-6 min-h-0 bg-gradient-to-b from-transparent to-black/50 overflow-y-auto">
+          <!-- Aspect Toggle & Live HUD -->
+          <div class="flex items-center justify-between mb-2 flex-none">
+            <div class="flex items-center p-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono">
+              <button type="button" id="player-aspect-btn-vertical" class="px-3 py-1 rounded-full bg-pink-600 text-white font-bold shadow-[0_0_12px_rgba(219,41,101,0.4)] flex items-center gap-1.5 transition-all cursor-pointer" onclick="setPlayerAspectRatio('9:16')">
+                <span class="material-symbols-outlined text-[13px]">smartphone</span>
+                <span>9:16 Dọc Shorts/TikTok</span>
+              </button>
+              <button type="button" id="player-aspect-btn-horizontal" class="px-3 py-1 rounded-full text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer" onclick="setPlayerAspectRatio('16:9')">
+                <span class="material-symbols-outlined text-[13px]">laptop_chromebook</span>
+                <span>16:9 Ngang YouTube</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <span class="flex items-center gap-1 text-cyan-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span>CINEMA THEATER READY</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Video Canvas Stage Container -->
+          <div class="relative flex-1 flex items-center justify-center min-h-[360px] my-auto py-2">
+            <div id="player-stage-box" class="relative h-full max-h-[500px] aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 bg-black shadow-[0_0_50px_rgba(0,194,224,0.15)] group flex items-center justify-center transition-all duration-300">
+              <video id="main-video" playsinline class="w-full h-full object-cover select-none cursor-pointer" onclick="playerTogglePlay()"></video>
+
+              <!-- Live HUD On-screen Overlays -->
+              <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <div class="px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-cyan-300 text-[10px] font-mono font-bold flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[12px] text-pink-500">videocam</span>
+                  <span id="player-shot-badge">AI RENDER MASTER</span>
+                </div>
+                <div class="px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-slate-200 text-[10px] font-mono font-bold">
+                  60 FPS HD
+                </div>
+              </div>
+
+              <!-- Center Big Play Button -->
+              <button type="button" id="player-big-play-btn" class="absolute inset-0 m-auto w-16 h-16 rounded-full bg-pink-600/90 hover:bg-pink-600 text-white flex items-center justify-center shadow-[0_0_24px_rgba(219,41,101,0.6)] backdrop-blur-md border border-white/30 transform transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100" onclick="playerTogglePlay()">
+                <span class="material-symbols-outlined text-4xl ml-1">play_arrow</span>
+              </button>
+
+              <!-- Audio Ducking Waveform Indicator -->
+              <div class="absolute bottom-3 left-3 right-3 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/15 flex items-center justify-between pointer-events-none">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-cyan-400 text-sm">graphic_eq</span>
+                  <span class="text-[10px] font-mono text-slate-300">Edge-TTS Vietnamese Neural (48kHz)</span>
+                </div>
+                <div class="flex items-end gap-1 h-3.5">
+                  <div class="w-1 bg-cyan-400 rounded-full animate-pulse" style="height: 60%;"></div>
+                  <div class="w-1 bg-pink-500 rounded-full animate-pulse" style="height: 100%; animation-delay: 0.15s;"></div>
+                  <div class="w-1 bg-cyan-400 rounded-full animate-pulse" style="height: 40%; animation-delay: 0.3s;"></div>
+                  <div class="w-1 bg-pink-500 rounded-full animate-pulse" style="height: 80%; animation-delay: 0.2s;"></div>
+                  <div class="w-1 bg-cyan-400 rounded-full animate-pulse" style="height: 50%; animation-delay: 0.4s;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PLAYER SCRUBBER & CONTROLS DOCK -->
+          <div class="mt-2 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex-none space-y-2">
+            <!-- Timeline Scrubber Bar -->
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-mono text-slate-400">
+                <div class="flex items-center gap-2">
+                  <span class="text-white font-bold" id="player-time-current">00:00</span>
+                  <span class="text-slate-600">/</span>
+                  <span id="player-time-duration">00:00</span>
+                  <span class="text-slate-600">•</span>
+                  <span class="text-cyan-400 font-semibold" id="player-time-shot-label">Phân cảnh tự hành</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-pink-500"></span>
+                  <span>Audio Ducking -18dB</span>
+                </div>
+              </div>
+              <!-- Progress Track -->
+              <div class="relative h-2 w-full bg-white/10 hover:bg-white/15 rounded-full cursor-pointer flex items-center transition-colors" id="player-timeline-rail" onclick="playerScrubClick(event)">
+                <div id="player-progress-bar" class="absolute left-0 h-full w-0 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full shadow-[0_0_10px_rgba(219,41,101,0.5)]"></div>
+                <div id="player-scrub-pip" class="absolute left-0 -ml-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-pink-500 shadow-[0_0_10px_#db2965] transition-transform"></div>
+              </div>
+            </div>
+
+            <!-- Playback Control Cluster -->
+            <div class="flex items-center justify-between pt-1">
+              <div class="flex items-center gap-2">
+                <button type="button" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" onclick="playerSkip(-5)" title="Lùi 5s">
+                  <span class="material-symbols-outlined text-lg">replay_5</span>
+                </button>
+                <button type="button" id="player-play-btn" class="p-2 rounded-full bg-gradient-to-tr from-pink-600 to-rose-500 text-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_14px_rgba(219,41,101,0.45)] cursor-pointer" onclick="playerTogglePlay()">
+                  <span class="material-symbols-outlined text-2xl" id="player-play-icon">play_arrow</span>
+                </button>
+                <button type="button" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" onclick="playerSkip(5)" title="Tiến 5s">
+                  <span class="material-symbols-outlined text-lg">forward_5</span>
+                </button>
+                <!-- Volume Slider -->
+                <div class="hidden sm:flex items-center gap-2 ml-2 pl-2 border-l border-white/10">
+                  <button type="button" class="text-slate-300 hover:text-white cursor-pointer" onclick="playerToggleMute()">
+                    <span class="material-symbols-outlined text-lg" id="player-vol-icon">volume_up</span>
+                  </button>
+                  <input id="player-volume-slider" class="w-16 h-1 bg-white/20 accent-cyan-400 rounded-full cursor-pointer" max="100" min="0" type="range" value="90" oninput="playerSetVolume(this.value)"/>
+                </div>
+              </div>
+
+              <!-- Speed Selector Pills & Fullscreen -->
+              <div class="flex items-center gap-2">
+                <div class="flex items-center p-0.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono">
+                  <button type="button" class="px-2 py-0.5 rounded-full text-slate-300 hover:text-white speed-pill" onclick="playerSetSpeed(1.0, this)">1.0x</button>
+                  <button type="button" class="px-2 py-0.5 rounded-full bg-white/20 text-white font-bold speed-pill" onclick="playerSetSpeed(1.25, this)">1.25x</button>
+                  <button type="button" class="px-2 py-0.5 rounded-full text-slate-300 hover:text-white speed-pill" onclick="playerSetSpeed(1.5, this)">1.5x</button>
+                </div>
+                <div class="flex items-center gap-1 pl-1 border-l border-white/10">
+                  <button type="button" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" onclick="playerToggleFullscreen()" title="Toàn màn hình">
+                    <span class="material-symbols-outlined text-lg">fullscreen</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN: STUDIO INSPECTOR & QUICK ACTIONS (Col 5) -->
+        <section class="lg:col-span-5 flex flex-col justify-between p-4 lg:p-6 min-h-0 bg-[#0c0e18]/90 space-y-3.5 overflow-y-auto">
+          
+          <!-- SECTION 1: Telemetry Data Grid -->
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+            <div class="flex items-center justify-between border-b border-white/10 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-cyan-400 text-lg">tune</span>
+                <span class="font-bold text-white text-xs tracking-tight">Thông Số Kỹ Thuật Render</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold" id="player-telemetry-status">
+                ✓ HOÀN TẤT 100%
+              </span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <div class="p-2 rounded-xl bg-black/40 border border-white/5">
+                <div class="text-slate-400 text-[10px]">DUNG LƯỢNG</div>
+                <div class="text-white font-bold mt-0.5" id="player-telemetry-size">48.6 MB</div>
+              </div>
+              <div class="p-2 rounded-xl bg-black/40 border border-white/5">
+                <div class="text-slate-400 text-[10px]">THỜI LƯỢNG / BEATS</div>
+                <div class="text-white font-bold mt-0.5" id="player-telemetry-duration">00:58 (6 Beats)</div>
+              </div>
+              <div class="p-2 rounded-xl bg-black/40 border border-white/5 col-span-2 flex items-center justify-between">
+                <div>
+                  <div class="text-slate-400 text-[10px]">GIỌNG ĐỌC AI NATIVE (48KHZ)</div>
+                  <div class="text-white font-semibold text-xs mt-0.5" id="player-telemetry-voice">vi-VN-NamMinhNeural (Rate +25%)</div>
+                </div>
+                <span class="material-symbols-outlined text-slate-400 text-lg">record_voice_over</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: Dòng Thời Gian Phân Cảnh (Chapters) -->
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-pink-500 text-base">segment</span>
+                <span>Phân Đoạn & Điểm Cắt Cảnh (Chapters)</span>
+              </span>
+              <span class="text-slate-400 text-[10px] font-mono" id="beats-count-badge">0 mục</span>
+            </div>
+            <div class="space-y-1.5 max-h-40 overflow-y-auto" id="beats-timeline">
+              <!-- Dynamically populated chapters -->
+            </div>
+          </div>
+
+          <!-- SECTION 3: Quick Action Command Deck -->
+          <div class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white font-bold text-xs shadow-md shadow-pink-600/30 transition-all cursor-pointer" onclick="openSeoKitFromPlayer()">
+                <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+                <span>✨ Mở SEO Kit</span>
+              </button>
+              <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-500 hover:from-cyan-500 hover:to-teal-400 text-white font-bold text-xs shadow-md shadow-cyan-600/30 transition-all cursor-pointer" onclick="openYouTubeFromPlayer()">
+                <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+                <span>🚀 Đăng YouTube</span>
+              </button>
+            </div>
+
+            <!-- Download and CDN Tools -->
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <a id="btn-download-mp4" download class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition-colors cursor-pointer text-center">
+                <span class="material-symbols-outlined text-base">download</span>
+                <span>Tải MP4 HD</span>
+              </a>
+              <button type="button" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition-colors cursor-pointer" onclick="copyPlayerVideoLink()">
+                <span class="material-symbols-outlined text-base">link</span>
+                <span>Copy Link Video</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- SECTION 4: Social Caption Snippet -->
+          <div class="p-3 rounded-xl bg-black/40 border border-white/5 text-xs text-slate-300 space-y-1">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+              <span>CAPTION XUẤT BẢN MẠNG XÃ HỘI</span>
+              <button type="button" class="hover:text-white flex items-center gap-0.5 text-xs text-cyan-400 cursor-pointer" onclick="copyPlayerCaption()">
+                <span class="material-symbols-outlined text-[12px]">content_copy</span> Sao chép
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed line-clamp-2" id="player-caption-snippet">
+              Khám phá nội dung câu chuyện xuất bản tự hành bởi OmniVideo Studio...
+            </p>
+          </div>
+
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 11. CREATE VIDEO MODAL (STITCH MCP REDESIGN) ================= -->
   <div class="modal" id="create-modal">
     <div class="modal-backdrop" onclick="closeCreateModal()"></div>
     <div class="modal-content form-modal-content">
       <div class="modal-header">
-        <h2 class="text-base font-bold">Tạo Kịch Bản Video Mới</h2>
-        <button class="btn-close" id="btn-close-create">✕</button>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-pink-500 text-xl">video_call</span>
+          <h2 class="font-headline font-bold text-base text-gray-800">Khởi Tạo Video Mới (7 Cổng Tự Hành)</h2>
+        </div>
+        <button type="button" class="btn-close" onclick="closeCreateModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
-      <div class="modal-body">
-        <form id="create-job-form">
-          <div class="form-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="form-group flex flex-col gap-1">
-              <label for="new-job-id" class="text-xs font-mono text-on-surface-variant">Mã Job (ID duy nhất, viết liền)</label>
-              <input type="text" id="new-job-id" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface" placeholder="vd: job-react-vs-vue-60s" required/>
-            </div>
-            <div class="form-group flex flex-col gap-1">
-              <label for="new-title" class="text-xs font-mono text-on-surface-variant">Tiêu Đề Video</label>
-              <input type="text" id="new-title" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface" placeholder="vd: React vs Vue: Lựa Chọn Nào Cho Năm 2026?" required/>
-            </div>
-            <div class="form-group flex flex-col gap-1">
-              <label for="new-workshop" class="text-xs font-mono text-on-surface-variant">Chọn Phân Xưởng</label>
-              <select id="new-workshop" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
-                <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (60m Audio / OpenCV)</option>
-                <option value="explainer">Xưởng 2: Explainer Kiến Thức (Remotion 9:16 & 16:9)</option>
-                <option value="news">Xưởng 1: Tin Tức Đồ Họa Nhanh (HyperFrames 9:16)</option>
-              </select>
-            </div>
-            <div class="form-group flex flex-col gap-1">
-              <label for="new-archetype" class="text-xs font-mono text-on-surface-variant">Archetype Kịch Bản</label>
-              <select id="new-archetype" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
-                <option value="storytelling">Storytelling (Cổ tích, Truyện ngôn tình, Drama 60m)</option>
-                <option value="explainer">Tech Explainer (PAS: Problem - Agitate - Solve)</option>
-                <option value="versus">Versus Battle (So sánh đối đầu A vs B)</option>
-                <option value="news">Breaking News (Thời sự kim tự tháp ngược)</option>
-              </select>
-            </div>
-            <div class="form-group flex flex-col gap-1">
-              <label for="new-voice" class="text-xs font-mono text-on-surface-variant">Giọng Đọc Mặc Định</label>
-              <select id="new-voice" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
-                <option value="vi-VN-NamMinhNeural">Nam Minh (Giọng nam trầm ấm, dứt khoát)</option>
-                <option value="vi-VN-HoaiMyNeural">Hoài My (Giọng nữ truyền cảm, ngọt ngào)</option>
-              </select>
-            </div>
-            <div class="form-group flex flex-col gap-1">
-              <label for="new-platform" class="text-xs font-mono text-on-surface-variant">Tỉ Lệ Khung Hình</label>
-              <select id="new-platform" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface">
-                <option value="youtube_long">YouTube (Ngang 1920x1080 16:9)</option>
-                <option value="tiktok">TikTok / Shorts / Reels (Dọc 1080x1920 9:16)</option>
-              </select>
-            </div>
+      <form id="create-job-form">
+        <div class="modal-body form-vertical-stack p-5">
+          <div class="form-field">
+            <label for="create-title">Tiêu Đề / Đề Tài Video *</label>
+            <input type="text" id="create-title" required placeholder="Nhập tiêu đề hoặc chủ đề video..."/>
           </div>
 
-          <div class="form-group flex flex-col gap-1 mt-4">
-            <label class="text-xs font-mono text-on-surface-variant">Nội Dung Kịch Bản (Mỗi dòng một beat hoặc phân đoạn):</label>
-            <textarea id="new-raw-script" rows="6" class="bg-surface-container border border-outline-variant/40 rounded p-3 text-xs text-on-surface font-mono" placeholder="Nhập kịch bản video tại đây..."></textarea>
+          <div class="form-field">
+            <label for="create-workshop">Phân Xưởng Sản Xuất *</label>
+            <select id="create-workshop" required onchange="onModalWorkshopChange(this.value)">
+              <option value="threads">Xưởng 5: Threads & Social Drama (9:16 Shorts)</option>
+              <option value="cinematic">Xưởng 4: Phim Điện Ảnh 3D & Donghua (16:9 4K)</option>
+              <option value="explainer">Xưởng 2: Video Giải Thích Code Remotion</option>
+              <option value="whiteboard">Xưởng 3: Bảng Trắng Vẽ Tay (Audio Drama)</option>
+              <option value="news">Xưởng 1: Tin Tức & Đồ Họa Nhanh (9:16)</option>
+            </select>
           </div>
 
-          <div class="modal-footer flex items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/30">
-            <button type="button" class="btn btn-outline text-xs px-4 py-2" id="btn-cancel-create">Hủy</button>
-            <button type="submit" class="btn btn-primary text-xs px-4 py-2 bg-primary text-on-primary font-semibold rounded">Lưu Kịch Bản & Tạo Job</button>
+          <div class="form-field">
+            <label for="create-voice">Giọng Lồng Tiếng Edge-TTS (Tốc Độ x1.25) *</label>
+            <select id="create-voice" required>
+              <option value="vi-VN-HoaiMyNeural">Hoài My (Nữ tính, cảm xúc, chuẩn drama)</option>
+              <option value="vi-VN-NamMinhNeural">Nam Minh (Trầm ấm, thời sự, uy nghiêm)</option>
+            </select>
           </div>
-        </form>
-      </div>
+
+          <div class="form-field">
+            <label for="create-content">Nội Dung / Link Bài Viết Gốc</label>
+            <textarea id="create-content" rows="4" placeholder="Dán link Threads, bài viết GitHub, hoặc nội dung kịch bản thô..."></textarea>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="create-auto-publish" class="rounded border-pink-300 text-pink-600 focus:ring-0" checked />
+            <label for="create-auto-publish" class="text-xs font-mono text-gray-700 cursor-pointer">
+              Tự động đóng gói & đăng YouTube Unlisted (Cổng 7)
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeCreateModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-create">
+            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+            <span>Bắt Đầu Sản Xuất & Nạp Hàng Đợi</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- ================= MODAL: EDIT JOB ================= -->
+  <!-- ================= 12. EDIT SCRIPT MODAL ================= -->
   <div class="modal" id="edit-modal">
     <div class="modal-backdrop" onclick="closeEditModal()"></div>
     <div class="modal-content form-modal-content">
       <div class="modal-header">
-        <h2 class="text-base font-bold">Chỉnh Sửa Kịch Bản Video</h2>
-        <button class="btn-close" id="btn-close-edit">✕</button>
+        <h2 id="edit-modal-title">Chỉnh Sửa Kịch Bản Beats</h2>
+        <button class="btn-close" onclick="closeEditModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
-      <div class="modal-body">
-        <form id="edit-job-form">
-          <input type="hidden" id="edit-job-id"/>
-          <div class="form-group flex flex-col gap-1">
-            <label for="edit-title" class="text-xs font-mono text-on-surface-variant">Tiêu Đề Video</label>
-            <input type="text" id="edit-title" class="bg-surface-container border border-outline-variant/40 rounded px-3 py-1.5 text-xs text-on-surface" required/>
+      <form id="edit-job-form">
+        <input type="hidden" id="edit-job-id"/>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="form-group">
+            <label for="edit-title">Tiêu Đề Video</label>
+            <input type="text" id="edit-title" required/>
           </div>
 
-          <div class="section-title text-xs font-bold font-mono border-b border-outline-variant/30 pb-2 mt-4">
-            Chỉnh Sửa Chi Tiết Từng Beat
+          <div class="form-group">
+            <label for="edit-beats-json">Dữ Liệu Beats (JSON)</label>
+            <textarea id="edit-beats-json" rows="12" style="font-family: var(--font-mono); font-size: 12px;"></textarea>
           </div>
-
-          <div class="edit-beats-container flex flex-col gap-3 mt-3 max-h-[360px] overflow-y-auto custom-scrollbar pr-1" id="edit-beats-container">
-            <!-- Rendered by app.js -->
-          </div>
-
-          <div class="modal-footer flex items-center justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/30">
-            <button type="button" class="btn btn-outline text-xs px-4 py-2" id="btn-cancel-edit">Hủy</button>
-            <button type="button" class="btn btn-success text-xs px-4 py-2 bg-secondary text-on-secondary font-semibold rounded" id="btn-save-and-render">⚡ Lưu & Render Ngay</button>
-            <button type="submit" class="btn btn-primary text-xs px-4 py-2 bg-primary text-on-primary font-semibold rounded">Lưu Kịch Bản</button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeEditModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- ================= MODAL: RENDER SSE TERMINAL ================= -->
+  <!-- ================= 13. RENDER TERMINAL MODAL ================= -->
   <div class="modal" id="render-modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content console-modal-content">
       <div class="modal-header">
-        <div class="header-info flex items-center gap-2">
-          <span class="badge badge-pulse text-xs font-mono bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded">● ĐANG RENDER</span>
-          <h2 id="render-modal-title" class="text-sm font-bold font-mono">Tiến trình Render Video</h2>
-        </div>
-        <button class="btn-close" id="btn-close-render" disabled>✕</button>
+        <h2 id="render-modal-title">Đang Render Video...</h2>
+        <button class="btn-close" id="btn-close-render" onclick="closeRenderModal()" style="display: none;">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
-      <div class="modal-body flex flex-col gap-3">
-        <div class="w-full bg-surface-container-lowest h-3 rounded-full overflow-hidden p-0.5 border border-outline-variant/30">
-          <div class="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full relative overflow-hidden transition-all duration-300" id="render-progress-bar" style="width: 5%;">
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-sweep"></div>
-          </div>
+      <div class="modal-body">
+        <div class="render-progress-bar-wrap">
+          <div class="render-progress-bar" id="render-progress-bar"></div>
         </div>
-        <div class="render-terminal bg-surface-container-lowest border border-outline-variant/40 rounded-lg p-3 font-mono text-xs text-on-surface max-h-[320px] overflow-y-auto custom-scrollbar flex flex-col gap-1" id="render-terminal">
-          <div class="text-outline">[SYSTEM] Kết nối Server-Sent Events để theo dõi log render trực tiếp...</div>
+        <div class="render-terminal" id="render-terminal">
+          <div class="terminal-line">[INFO] Kết nối WebSocket / SSE Engine...</div>
         </div>
       </div>
-      <div class="modal-footer flex items-center justify-between text-[11px] font-mono text-outline px-4 py-3 border-t border-outline-variant/30" id="render-modal-footer">
-        <span>Quá trình render chạy 100% cục bộ trên CPU/GPU của bạn...</span>
+      <div class="modal-footer" id="render-modal-footer" style="display: none;">
+        <button type="button" class="btn btn-primary" onclick="closeRenderModal()">Hoàn Tất</button>
       </div>
     </div>
   </div>
