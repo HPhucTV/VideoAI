@@ -161,8 +161,9 @@ def upload_unlisted_video(
     privacy_status: str = "unlisted",
     category_id: str = "28",
     status_file: Optional[Path | str] = None,
+    publish_at: Optional[str] = None,
 ) -> dict:
-    """Upload video to YouTube in unlisted or public mode with thumbnail, subtitles and status progress support."""
+    """Upload video to YouTube in unlisted, public, private, or scheduled mode with thumbnail, subtitles and status progress support."""
     if get_authenticated_service is None:
         raise RuntimeError("Google API client is not installed.")
 
@@ -191,10 +192,13 @@ def upload_unlisted_video(
             "categoryId": category_id,
         },
         "status": {
-            "privacyStatus": privacy_status,
+            "privacyStatus": "private" if publish_at else privacy_status,
             "selfDeclaredMadeForKids": False,
         },
     }
+
+    if publish_at:
+        body["status"]["publishAt"] = publish_at
 
     try:
         media = MediaFileUpload(
@@ -271,20 +275,23 @@ def upload_unlisted_video(
                 if attempt < 3:
                     time.sleep(10)
 
+    effective_privacy = "scheduled" if publish_at else privacy_status
     result_payload = {
         "status": "completed",
         "progress": 100,
         "video_id": video_id,
         "url": url,
-        "privacy": privacy_status,
-        "message": "Upload YouTube thành công!",
+        "privacy": effective_privacy,
+        "publish_at": publish_at,
+        "message": f"Upload YouTube thành công! ({'Đã lên lịch' if publish_at else effective_privacy.upper()})",
     }
     _update_status(result_payload)
 
     return {
         "video_id": video_id,
         "url": url,
-        "privacy": privacy_status,
+        "privacy": effective_privacy,
+        "publish_at": publish_at,
     }
 
 
@@ -304,6 +311,7 @@ if __name__ == "__main__":
     parser.add_argument("--description", default="", help="Video Description")
     parser.add_argument("--tags", default="", help="Comma-separated tags")
     parser.add_argument("--privacy", default="unlisted", choices=["public", "unlisted", "private"])
+    parser.add_argument("--publish-at", default=None, help="Scheduled publish time (ISO 8601 string)")
     parser.add_argument("--thumb", default=None, help="Path to thumbnail image")
     parser.add_argument("--srt", default=None, help="Path to SRT subtitle file")
     parser.add_argument("--category", default="24", help="YouTube Category ID (default: 24 Entertainment)")
@@ -326,6 +334,7 @@ if __name__ == "__main__":
             privacy_status=args.privacy,
             category_id=args.category,
             status_file=args.status_file,
+            publish_at=args.publish_at,
         )
         if args.json:
             print(json.dumps({"success": True, **res}, ensure_ascii=False))

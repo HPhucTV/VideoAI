@@ -1,25 +1,36 @@
 /**
  * OmniVideo Studio - Video Library SPA Client Logic
- * Handles Video Grid, Modal Players, CRUD operations & SSE Re-render Streaming
+ * Antigravity 2.0 & Omni-Commander Mission Control
+ * Porcelain Light Theme & YouTube Multi-Platform Automation
  */
 
 let allVideos = [];
 let currentFilter = "all";
 let currentSearch = "";
+let currentViewMode = localStorage.getItem("omni_view_mode") || "grid";
+let currentTheme = localStorage.getItem("omni_theme") || "light";
+let currentYouTubeJob = null;
+let selectedPublishAt = null;
 let activeEventSource = null;
+let antigravityEventSource = null;
 
 // DOM Elements
 const videoGrid = document.getElementById("video-grid");
 const searchInput = document.getElementById("search-input");
-const filterTabs = document.querySelectorAll(".tab-btn");
 const statTotalVideos = document.getElementById("stat-total-videos");
 const statTotalSize = document.getElementById("stat-total-size");
+const widgetTotalVideos = document.getElementById("widget-total-videos");
+const widgetPublishedVideos = document.getElementById("widget-published-videos");
+const badgeTotalAssets = document.getElementById("badge-total-assets");
 
 // Modals
 const playerModal = document.getElementById("player-modal");
 const createModal = document.getElementById("create-modal");
 const editModal = document.getElementById("edit-modal");
 const renderModal = document.getElementById("render-modal");
+const scoutModal = document.getElementById("scout-modal");
+const reportModal = document.getElementById("report-modal");
+const ytModal = document.getElementById("youtube-upload-modal");
 
 // Player Elements
 const mainVideo = document.getElementById("main-video");
@@ -37,35 +48,168 @@ const renderProgressBar = document.getElementById("render-progress-bar");
 const renderModalTitle = document.getElementById("render-modal-title");
 const btnCloseRender = document.getElementById("btn-close-render");
 
+// ── UTILITY HELPERS ──
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return "0 MB";
   const mb = bytes / (1024 * 1024);
   return mb.toFixed(2) + " MB";
 }
 
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function playSuccessChime() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    // Note 1: 880 Hz (A5)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(880, ctx.currentTime);
+    gain1.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.35);
+
+    // Note 2: 1760 Hz (A6 bell overtone)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(1760, ctx.currentTime + 0.1);
+    gain2.gain.setValueAtTime(0.2, ctx.currentTime + 0.1);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.65);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(ctx.currentTime + 0.1);
+    osc2.stop(ctx.currentTime + 0.65);
+  } catch (e) {
+    console.warn("Audio chime unsupported:", e);
+  }
+}
+
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = `fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-lg text-xs font-mono font-bold shadow-xl border flex items-center gap-2 animate-in fade-in slide-in-from-bottom-3 duration-200 ${
+    type === "success" 
+      ? "bg-secondary text-white border-emerald-600" 
+      : "bg-error text-white border-red-600"
+  }`;
+  toast.innerHTML = `<span class="material-symbols-outlined text-sm">${type === "success" ? "check_circle" : "info"}</span> <span>${escapeHtml(message)}</span>`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s ease";
+    setTimeout(() => toast.remove(), 300);
+  }, 3200);
+}
+
+// ── THEME CONTROLLER (PORCELAIN LIGHT / DARK) ──
+function initTheme() {
+  if (currentTheme === "dark") {
+    document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("light");
+    const icon = document.getElementById("theme-toggle-icon");
+    if (icon) icon.textContent = "light_mode";
+  } else {
+    document.documentElement.classList.add("light");
+    document.documentElement.classList.remove("dark");
+    const icon = document.getElementById("theme-toggle-icon");
+    if (icon) icon.textContent = "dark_mode";
+  }
+}
+
+function toggleTheme() {
+  if (document.documentElement.classList.contains("dark")) {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+    currentTheme = "light";
+    localStorage.setItem("omni_theme", "light");
+    const icon = document.getElementById("theme-toggle-icon");
+    if (icon) icon.textContent = "dark_mode";
+    showToast("Đã bật giao diện Sáng (Porcelain Light)");
+  } else {
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+    currentTheme = "dark";
+    localStorage.setItem("omni_theme", "dark");
+    const icon = document.getElementById("theme-toggle-icon");
+    if (icon) icon.textContent = "light_mode";
+    showToast("Đã bật giao diện Tối (Night Shift)");
+  }
+}
+
+// ── DATA LOADING & STATS ──
 async function loadVideos() {
   try {
     const res = await fetch("/api/videos");
     const data = await res.json();
     if (data.success) {
-      allVideos = data.videos;
+      allVideos = data.videos || [];
       updateStats();
       renderGrid();
     }
   } catch (err) {
-    console.error("Loi khi tai danh sach video:", err);
-    videoGrid.innerHTML = `<div class="error-state">Khong the ket noi den server: ${err.message}</div>`;
+    console.error("Lỗi khi tải danh sách video:", err);
+    if (videoGrid) {
+      videoGrid.innerHTML = `<div class="p-8 text-center text-xs font-mono text-error">Không thể kết nối đến server: ${escapeHtml(err.message)}</div>`;
+    }
   }
 }
 
-let currentViewMode = localStorage.getItem("omni_view_mode") || "grid";
-
 function updateStats() {
-  statTotalVideos.textContent = allVideos.length;
+  const totalCount = allVideos.length;
+  const publishedCount = allVideos.filter(v => v.isPublished).length;
   const totalBytes = allVideos.reduce((acc, v) => acc + (v.sizeBytes || 0), 0);
-  statTotalSize.textContent = formatBytes(totalBytes);
+
+  if (statTotalVideos) statTotalVideos.textContent = totalCount;
+  if (statTotalSize) statTotalSize.textContent = formatBytes(totalBytes);
+  if (widgetTotalVideos) widgetTotalVideos.textContent = totalCount;
+  if (widgetPublishedVideos) widgetPublishedVideos.textContent = publishedCount;
+  if (badgeTotalAssets) badgeTotalAssets.textContent = `${totalCount} Video`;
 }
 
+function filterPublishedVideos() {
+  currentFilter = "all";
+  currentSearch = "";
+  if (searchInput) searchInput.value = "";
+  
+  const filtered = allVideos.filter(v => v.isPublished);
+  renderCustomList(filtered, "Chưa có video nào đã đăng YouTube API.");
+  showToast(`Hiển thị ${filtered.length} video đã đăng YouTube`);
+}
+
+function renderCustomList(list, emptyMsg) {
+  const videoTableWrap = document.getElementById("video-table-wrap");
+  const videoTableBody = document.getElementById("video-table-body");
+
+  if (list.length === 0) {
+    videoGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--text-dim);">
+        <p style="font-size: 28px; margin-bottom: 8px;">📭</p>
+        <p style="font-size: 14px; font-weight: 600;">${escapeHtml(emptyMsg)}</p>
+      </div>
+    `;
+    if (videoTableWrap) videoTableWrap.classList.add("hidden");
+    return;
+  }
+
+  // Render Grid
+  renderGridItems(list);
+}
+
+// ── GRID & TABLE VIEW CONTROLLER ──
 function renderGrid() {
   const filtered = allVideos.filter(v => {
     const matchesWorkshop = currentFilter === "all" || v.workshop === currentFilter;
@@ -82,10 +226,10 @@ function renderGrid() {
 
   if (filtered.length === 0) {
     videoGrid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--text-dim);">
         <p style="font-size: 32px; margin-bottom: 12px;">📭</p>
-        <p style="font-size: 16px; font-weight: 600;">Chưa có video nào phù hợp</p>
-        <p style="font-size: 13px; margin-top: 6px;">Bấm nút "+ Tạo Video Mới" ở góc phải để bắt đầu sản xuất!</p>
+        <p style="font-size: 15px; font-weight: 600;">Chưa có video nào trong danh mục này</p>
+        <p style="font-size: 12px; margin-top: 6px;">Bấm nút "+ Tạo Video Mới" ở góc phải để bắt đầu sản xuất!</p>
       </div>
     `;
     if (videoTableWrap) videoTableWrap.classList.add("hidden");
@@ -98,18 +242,20 @@ function renderGrid() {
 
     videoTableBody.innerHTML = filtered.map(v => {
       const badgeClass = `badge-${v.workshop}`;
+      const isPublished = Boolean(v.isPublished && v.youtubeUrl);
+
       return `
         <tr>
           <td>
-            <div class="w-12 h-12 rounded bg-surface-container-high overflow-hidden cursor-pointer shrink-0 border border-outline-variant/30 relative" onclick="openPlayer('${v.id}')">
+            <div class="w-12 h-12 rounded bg-surface-container-high overflow-hidden cursor-pointer shrink-0 border border-surface-container-highest relative" onclick="openPlayer('${v.id}')">
               ${v.thumbUrl 
-                ? `<img src="${v.thumbUrl}" class="w-full h-full object-cover" alt="${v.title}">` 
+                ? `<img src="${v.thumbUrl}" class="w-full h-full object-cover" alt="${escapeHtml(v.title)}">` 
                 : `<div class="w-full h-full flex items-center justify-center text-xs text-outline">🎬</div>`}
               <span class="absolute bottom-0.5 right-0.5 px-0.5 rounded text-[7px] font-mono bg-black/80 text-white">${v.sizeBytes ? formatBytes(v.sizeBytes) : ''}</span>
             </div>
           </td>
           <td>
-            <div class="font-bold text-on-surface hover:text-primary cursor-pointer line-clamp-1 text-xs" onclick="openPlayer('${v.id}')">${escapeHtml(v.title)}</div>
+            <div class="font-bold text-on-surface hover:text-secondary cursor-pointer line-clamp-1 text-xs" onclick="openPlayer('${v.id}')">${escapeHtml(v.title)}</div>
             <div class="text-[10px] font-mono text-outline">${escapeHtml(v.id)}</div>
           </td>
           <td>
@@ -120,13 +266,31 @@ function renderGrid() {
             <div class="text-[10px] font-mono text-outline">🎙️ ${v.voice?.voiceId ? v.voice.voiceId.replace('vi-VN-', '') : 'NamMinh'}</div>
           </td>
           <td>
+            ${isPublished 
+              ? `<a href="${v.youtubeUrl}" target="_blank" class="badge-published-table" title="Xem trên YouTube">
+                  <span class="material-symbols-outlined text-[10px]">play_circle</span>
+                  <span>ĐÃ ĐĂNG YT</span>
+                </a>`
+              : `<span class="text-[10px] font-mono text-outline">Chưa đăng</span>`
+            }
+          </td>
+          <td>
             <span class="text-xs font-mono font-bold text-secondary">${formatBytes(v.sizeBytes)}</span>
           </td>
           <td style="text-align: right;">
             <div class="inline-flex items-center gap-1.5 justify-end">
-              <button class="btn-youtube" onclick="openYouTubeUploadModal('${v.id}')" title="Upload lên YouTube">
-                <span class="material-symbols-outlined text-[13px]">cloud_upload</span>
-                <span>Upload YT</span>
+              ${isPublished 
+                ? `<a href="${v.youtubeUrl}" target="_blank" class="btn-youtube" title="Xem trên YouTube">
+                    <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                    <span>Xem YT</span>
+                  </a>`
+                : `<button class="btn-youtube" onclick="openYouTubeUploadModal('${v.id}')" title="Upload lên YouTube">
+                    <span class="material-symbols-outlined text-[13px]">cloud_upload</span>
+                    <span>Upload YT</span>
+                  </button>`
+              }
+              <button class="btn btn-sm btn-outline" onclick="openYouTubeUploadModal('${v.id}', true)" title="Trích Frame Thumbnail">
+                📸
               </button>
               <button class="btn btn-sm btn-primary" onclick="openPlayer('${v.id}')" title="Xem Video">
                 ▶
@@ -148,22 +312,37 @@ function renderGrid() {
     return;
   }
 
-  // Default: Compact Bento Grid View
+  // Grid Mode Default
   if (videoTableWrap) videoTableWrap.classList.add("hidden");
   videoGrid.classList.remove("hidden");
+  renderGridItems(filtered);
+}
 
-  videoGrid.innerHTML = filtered.map(v => {
+function renderGridItems(items) {
+  videoGrid.innerHTML = items.map(v => {
     const isPortrait = v.canvas.height > v.canvas.width;
     const badgeClass = `badge-${v.workshop}`;
+    const isPublished = Boolean(v.isPublished && v.youtubeUrl);
 
     return `
       <div class="video-card" data-id="${v.id}">
         <div class="card-thumb-wrap ${isPortrait ? 'portrait-preview' : ''}" onclick="openPlayer('${v.id}')">
           ${v.thumbUrl 
-            ? `<img class="card-thumb-img" src="${v.thumbUrl}" alt="${v.title}">` 
+            ? `<img class="card-thumb-img" src="${v.thumbUrl}" alt="${escapeHtml(v.title)}">` 
             : `<div class="card-thumb-placeholder">🎬</div>`}
           
+          <!-- Category Workshop Badge -->
           <span class="badge-tag ${badgeClass}">${v.workshop}</span>
+
+          <!-- Published YouTube Badge (If Published) -->
+          ${isPublished 
+            ? `<a href="${v.youtubeUrl}" target="_blank" class="badge-published" onclick="event.stopPropagation()" title="Mở trên YouTube: ${v.youtubeUrl}">
+                <span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+                <span>🔴 ĐÃ ĐĂNG YOUTUBE</span>
+              </a>`
+            : ''}
+
+          <!-- Duration Badge -->
           ${v.sizeBytes ? `<span class="badge-duration">${formatBytes(v.sizeBytes)}</span>` : ''}
 
           <div class="thumb-overlay">
@@ -172,7 +351,7 @@ function renderGrid() {
         </div>
 
         <div class="card-body">
-          <h3 class="card-title" title="${v.title}">${v.title}</h3>
+          <h3 class="card-title" title="${escapeHtml(v.title)}" onclick="openPlayer('${v.id}')">${escapeHtml(v.title)}</h3>
           
           <div class="card-meta">
             <span>⏱️ ${v.beatsCount} beats</span>
@@ -181,15 +360,29 @@ function renderGrid() {
           </div>
 
           <div class="card-actions">
-            <!-- Dedicated YouTube Direct Upload Button -->
-            <button class="btn-youtube btn-youtube-full" onclick="openYouTubeUploadModal('${v.id}')" title="Upload lên kênh YouTube (Public / Unlisted / Private)">
-              <span class="material-symbols-outlined text-[14px]">cloud_upload</span>
-              <span>Upload YouTube Direct</span>
-            </button>
+            <!-- Dedicated YouTube Actions -->
+            ${isPublished 
+              ? `<div class="grid grid-cols-2 gap-1.5">
+                  <a href="${v.youtubeUrl}" target="_blank" class="btn-youtube-view" title="Xem trên YouTube">
+                    <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                    <span>Xem YouTube</span>
+                  </a>
+                  <button class="btn btn-sm btn-outline text-error text-[11px] font-bold" onclick="openYouTubeUploadModal('${v.id}')" title="Upload Lại">
+                    Tải Lại
+                  </button>
+                </div>`
+              : `<button class="btn-youtube btn-youtube-full" onclick="openYouTubeUploadModal('${v.id}')" title="Upload lên kênh YouTube (Public / Unlisted / Private)">
+                  <span class="material-symbols-outlined text-[14px]">cloud_upload</span>
+                  <span>Upload YouTube Direct</span>
+                </button>`
+            }
 
             <!-- Secondary Actions Row -->
             <div class="card-actions-row">
               <div class="btn-icon-group">
+                <button class="btn btn-sm btn-outline" onclick="openYouTubeUploadModal('${v.id}', true)" title="Trích Frame Thumbnail">
+                  📸 Frame
+                </button>
                 <button class="btn btn-sm btn-primary" onclick="openPlayer('${v.id}')" title="Xem Video">
                   ▶ Phát
                 </button>
@@ -210,6 +403,627 @@ function renderGrid() {
       </div>
     `;
   }).join("");
+}
+
+function setViewMode(mode) {
+  currentViewMode = mode;
+  localStorage.setItem("omni_view_mode", mode);
+  renderGrid();
+}
+
+function triggerOpenFirstVideoYouTube() {
+  if (allVideos.length > 0) {
+    openYouTubeUploadModal(allVideos[0].id);
+  } else {
+    showToast("Chưa có video nào trong thư viện!", "error");
+  }
+}
+
+// ── LEADER COMMAND & DISPATCH LOGIC ──
+function handleLeaderShortcut(type) {
+  if (type === "scout_github") {
+    openScoutModal();
+  } else if (type === "shift_report") {
+    openShiftReportModal();
+  } else if (type === "quality_audit") {
+    if (allVideos.length > 0) {
+      runQualityAudit(allVideos[0].id);
+    } else {
+      showToast("Chưa có video để kiểm tra chất lượng!", "error");
+    }
+  } else if (type === "threads_crawl") {
+    const feedback = document.getElementById("leader-feedback-box");
+    if (feedback) {
+      feedback.classList.remove("hidden");
+      feedback.className = "mt-3 pt-3 border-t border-surface-container-highest text-xs font-mono text-secondary";
+      feedback.innerHTML = `
+        <div class="flex items-center gap-2 font-bold mb-1">
+          <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+          <span>OMNI-COMMANDER ĐANG SĂN TIN THREADS TỰ ĐỘNG...</span>
+        </div>
+        <p class="text-on-surface-variant">Vũ khí Cloudflare Bypass & Puppeteer Stealth đang quét các hashtag: <code>#confessions #drama #sinhvien #genz</code>...</p>
+      `;
+      setTimeout(() => {
+        feedback.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-secondary mb-1">
+            <span class="material-symbols-outlined text-sm">check_circle</span>
+            <span>PHÁT HIỆN 3 THREADS VIRAL NÓNG HỔI:</span>
+          </div>
+          <ul class="list-disc pl-5 space-y-1 text-on-surface">
+            <li>"Bạn thân vay 200 triệu đi Đà Lạt không trả..." (14.2K likes)</li>
+            <li>"Khi sếp bảo làm việc vì đam mê nhưng lương 5 triệu..." (9.8K likes)</li>
+            <li>"Teamwork đại học và những pha gánh team còng lưng..." (22.5K likes)</li>
+          </ul>
+        `;
+      }, 1500);
+    }
+  }
+}
+
+const btnDispatchLeader = document.getElementById("btn-dispatch-leader");
+const leaderInput = document.getElementById("leader-command-input");
+if (btnDispatchLeader && leaderInput) {
+  const executeLeaderCommand = () => {
+    const cmd = leaderInput.value.trim().toLowerCase();
+    if (!cmd) return;
+
+    if (cmd.includes("github") || cmd.includes("trending") || cmd.includes("repo")) {
+      openScoutModal();
+    } else if (cmd.includes("báo cáo") || cmd.includes("report") || cmd.includes("ca trực")) {
+      openShiftReportModal();
+    } else if (cmd.includes("kiểm tra") || cmd.includes("gatekeeper") || cmd.includes("audit") || cmd.includes("chất lượng")) {
+      if (allVideos.length > 0) {
+        runQualityAudit(allVideos[0].id);
+      }
+    } else {
+      const feedback = document.getElementById("leader-feedback-box");
+      if (feedback) {
+        feedback.classList.remove("hidden");
+        feedback.className = "mt-3 pt-3 border-t border-surface-container-highest text-xs font-mono text-secondary";
+        feedback.innerHTML = `
+          <div class="flex items-center gap-2 font-bold mb-1">
+            <span class="material-symbols-outlined text-sm">smart_toy</span>
+            <span>OMNI-COMMANDER AI ĐÃ TIẾP NHẬN CHỈ ĐẠO:</span>
+          </div>
+          <p class="text-on-surface">"${escapeHtml(leaderInput.value)}"</p>
+          <p class="text-on-surface-variant text-[11px] mt-1">Đang phân tích yêu cầu và điều phối phân xưởng sản xuất tự hành tương ứng...</p>
+        `;
+      }
+    }
+  };
+
+  btnDispatchLeader.onclick = executeLeaderCommand;
+  leaderInput.onkeydown = (e) => {
+    if (e.key === "Enter") executeLeaderCommand();
+  };
+}
+
+async function runQualityAudit(jobId) {
+  const feedback = document.getElementById("leader-feedback-box");
+  if (feedback) {
+    feedback.classList.remove("hidden");
+    feedback.className = "mt-3 pt-3 border-t border-surface-container-highest text-xs font-mono text-on-surface";
+    feedback.innerHTML = `<span class="animate-spin material-symbols-outlined text-sm text-secondary mr-1">progress_activity</span> Đang chạy Quality Gatekeeper cho video: <code>${escapeHtml(jobId)}</code>...`;
+  }
+
+  try {
+    const res = await fetch("/api/commander/quality-audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jobId }),
+    });
+    const data = await res.json();
+    if (data.success && data.audit) {
+      const a = data.audit;
+      if (feedback) {
+        feedback.innerHTML = `
+          <div class="flex items-center gap-2 font-bold ${a.passed ? 'text-secondary' : 'text-error'} mb-1">
+            <span class="material-symbols-outlined text-sm">${a.passed ? 'verified' : 'error'}</span>
+            <span>KẾT QUẢ AUDIT CHẤT LƯỢNG: ${a.score}/100 • ${a.status}</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-on-surface-variant">
+            <div>Video MP4: <strong>${a.checks.video_file ? 'PASS' : 'FAIL'}</strong></div>
+            <div>Âm Thanh 48k: <strong>${a.checks.audio_streams ? 'PASS' : 'FAIL'}</strong></div>
+            <div>Phụ Đề SRT: <strong>${a.checks.subtitle_srt ? 'PASS' : 'FAIL'}</strong></div>
+            <div>Publishing Kit: <strong>${a.checks.publishing_kit ? 'PASS' : 'FAIL'}</strong></div>
+          </div>
+        `;
+      }
+      showToast(`Audit hoàn tất: ${a.score}/100 (${a.status})`);
+    }
+  } catch (err) {
+    if (feedback) feedback.innerHTML = `<span class="text-error font-bold">Lỗi audit: ${escapeHtml(err.message)}</span>`;
+  }
+}
+
+// ── SCOUT GITHUB MODAL CONTROLLER ──
+async function openScoutModal() {
+  if (scoutModal) scoutModal.classList.add("active");
+  refreshScoutGitHub();
+}
+
+function closeScoutModal() {
+  if (scoutModal) scoutModal.classList.remove("active");
+}
+
+async function refreshScoutGitHub() {
+  const container = document.getElementById("scout-modal-body");
+  if (!container) return;
+  container.innerHTML = `
+    <div class="text-center py-8 text-on-surface-variant font-mono text-xs">
+      <span class="animate-spin material-symbols-outlined text-2xl mb-2 text-secondary">progress_activity</span>
+      <p>Đang quét radar GitHub Trending qua Cloudflare & trích xuất README...</p>
+    </div>
+  `;
+
+  try {
+    const res = await fetch("/api/commander/scout-github?limit=4");
+    const data = await res.json();
+    if (data.success && data.repos) {
+      container.innerHTML = data.repos.map(item => {
+        const r = item.repo || item;
+        const name = r.full_name || r.name || "Repo";
+        const url = r.html_url || r.url || "#";
+        const stars = (r.stars || 0).toLocaleString();
+        const lang = r.language || "OpenSource";
+        const desc = r.description || "Dự án mã nguồn mở xu hướng trên GitHub.";
+        const workshop = item.recommended_workshop || "workshop-explainer";
+        const topTitle = (item.title_options && item.title_options[0]) || `Giải Mã Repo: ${r.name}`;
+
+        return `
+          <div class="p-3.5 rounded-xl border border-surface-container-highest bg-surface-container-low flex flex-col gap-2 hover:border-secondary transition-colors">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                <a href="${url}" target="_blank" class="font-headline font-bold text-xs text-on-surface hover:text-secondary hover:underline">${escapeHtml(name)}</a>
+                <span class="px-1.5 py-0.2 rounded bg-surface-container text-[10px] font-mono text-on-surface-variant">${escapeHtml(lang)}</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-secondary">⭐ ${stars}</span>
+            </div>
+
+            <p class="text-xs text-on-surface-variant line-clamp-2">${escapeHtml(desc)}</p>
+
+            <div class="p-2 rounded bg-surface-container-lowest border border-surface-container-highest text-[11px] font-mono text-on-surface flex items-center justify-between">
+              <span class="truncate font-semibold">🎬 ${escapeHtml(topTitle)}</span>
+              <span class="text-secondary font-bold shrink-0 ml-2">Xưởng 2 (Remotion)</span>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-surface-container-highest text-[11px] font-mono">
+              <span class="text-outline">Đã sinh sẵn ${item.script_beats?.length || 5} Beats kịch bản</span>
+              <button class="px-3 py-1 rounded bg-primary text-white text-[11px] font-bold hover:bg-primary-container transition-colors" onclick="createVideoFromRepo('${escapeHtml(r.name)}', '${escapeHtml(url)}', '${escapeHtml(topTitle)}')">
+                ⚡ Bấm Máy Xưởng 2
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+  } catch (err) {
+    container.innerHTML = `<div class="p-4 text-xs font-mono text-error">Không thể quét GitHub: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function createVideoFromRepo(repoName, repoUrl, topTitle) {
+  closeScoutModal();
+  openCreateModal();
+  const titleInput = document.getElementById("create-title");
+  const wsSelect = document.getElementById("create-workshop");
+  const contentInput = document.getElementById("create-content");
+  if (titleInput) titleInput.value = topTitle || `Giải Mã Repo Trending: ${repoName}`;
+  if (wsSelect) wsSelect.value = "explainer";
+  if (contentInput) contentInput.value = `Nguồn: ${repoUrl}\nChủ đề: Phân tích kiến trúc mã nguồn và giải thuật của ${repoName}.`;
+}
+
+// ── SHIFT REPORT MODAL CONTROLLER ──
+async function openShiftReportModal() {
+  if (reportModal) reportModal.classList.add("active");
+  const content = document.getElementById("report-modal-content");
+  if (content) content.textContent = "Đang tổng hợp dữ liệu ca trực 24h...";
+
+  try {
+    const res = await fetch("/api/commander/report");
+    const data = await res.json();
+    if (data.success && data.markdown) {
+      if (content) content.textContent = data.markdown;
+    }
+  } catch (err) {
+    if (content) content.textContent = `Lỗi tải báo cáo: ${err.message}`;
+  }
+}
+
+function closeShiftReportModal() {
+  if (reportModal) reportModal.classList.remove("active");
+}
+
+// ── YOUTUBE DIRECT UPLOAD MODAL & SMART SCHEDULING ──
+function openYouTubeUploadModal(jobId, autoExtract = false) {
+  const video = allVideos.find(v => v.id === jobId);
+  if (!video) return;
+  currentYouTubeJob = video;
+  selectedPublishAt = null;
+
+  const ytThumb = document.getElementById("yt-preview-thumb");
+  const ytDuration = document.getElementById("yt-preview-duration");
+  const ytRes = document.getElementById("yt-preview-res");
+  const ytWorkshop = document.getElementById("yt-preview-workshop");
+  const ytTitle = document.getElementById("yt-title");
+  const ytPreviewTitle = document.getElementById("yt-preview-title");
+  const ytDescription = document.getElementById("yt-description");
+  const ytTags = document.getElementById("yt-tags");
+  const ytStatusBox = document.getElementById("yt-status-box");
+  const ytTitleCounter = document.getElementById("yt-title-counter");
+  const schedIndicator = document.getElementById("yt-schedule-indicator");
+
+  if (schedIndicator) schedIndicator.classList.add("hidden");
+  document.querySelectorAll(".schedule-quick-btn").forEach(b => b.classList.remove("active"));
+
+  if (ytStatusBox) ytStatusBox.classList.add("hidden");
+  const ytProgressBar = document.getElementById("yt-progress-bar");
+  const ytStatusPct = document.getElementById("yt-status-pct");
+  const ytStatusMsg = document.getElementById("yt-status-msg");
+  if (ytProgressBar) ytProgressBar.style.width = "0%";
+  if (ytStatusPct) ytStatusPct.textContent = "0%";
+  if (ytStatusMsg) ytStatusMsg.textContent = "Khởi tạo kết nối Resumable Upload...";
+
+  if (ytThumb) {
+    ytThumb.src = video.thumbUrl || "";
+  }
+  if (ytPreviewTitle) ytPreviewTitle.textContent = video.title;
+  if (ytRes) ytRes.textContent = `${video.canvas.width}x${video.canvas.height}`;
+  if (ytDuration) ytDuration.textContent = formatBytes(video.sizeBytes);
+  if (ytWorkshop) ytWorkshop.textContent = `Phân Xưởng: ${video.workshop.toUpperCase()}`;
+
+  // Pre-fill Title with SEO tags
+  let defaultTitle = video.title;
+  if (!defaultTitle.toLowerCase().includes("#shorts") && video.canvas.height > video.canvas.width) {
+    defaultTitle = `${defaultTitle} #Shorts #OmniVideo`;
+  }
+  if (ytTitle) {
+    ytTitle.value = defaultTitle.slice(0, 100);
+    if (ytTitleCounter) ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+    ytTitle.oninput = () => {
+      ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+    };
+  }
+
+  // Pre-fill Description & Timestamps
+  let desc = `${video.title}\n\n`;
+  desc += `Sản xuất tự hành bởi OmniVideo Studio (Phân xưởng ${video.workshop.toUpperCase()})\n\n`;
+  if (video.beats && video.beats.length > 0) {
+    desc += "TIMESTAMPS & PHÂN ĐOẠN:\n00:00 - Mở đầu & Hook\n";
+    let curSec = 2;
+    video.beats.slice(1, 8).forEach((b, i) => {
+      const mins = Math.floor(curSec / 60);
+      const secs = curSec % 60;
+      const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const beatName = b.visual?.headline || b.rawText?.slice(0, 30) || `Nhịp ${i + 2}`;
+      desc += `${timeStr} - ${beatName}\n`;
+      curSec += 4;
+    });
+    desc += "\n";
+  }
+  desc += "#OmniVideo #Antigravity #AI #VideoAI #Shorts #Remotion";
+  if (ytDescription) ytDescription.value = desc;
+
+  // Pre-fill Tags
+  const defaultTags = ["OmniVideo", "Antigravity", "AI Video", video.workshop, "Storyverse", "Shorts"];
+  if (ytTags) ytTags.value = defaultTags.join(", ");
+
+  // Setup Privacy Radios
+  const privacyCards = document.querySelectorAll(".yt-privacy-card");
+  privacyCards.forEach(card => {
+    card.onclick = () => {
+      privacyCards.forEach(c => {
+        c.classList.remove("active", "border-2", "border-secondary", "bg-surface-container-low");
+        c.classList.add("bg-surface-container-lowest", "border-surface-container-highest");
+      });
+      card.classList.add("active", "border-2", "border-secondary", "bg-surface-container-low");
+      card.classList.remove("bg-surface-container-lowest", "border-surface-container-highest");
+      const radio = card.querySelector("input[type=radio]");
+      if (radio) radio.checked = true;
+    };
+  });
+
+  if (ytModal) ytModal.classList.add("active");
+
+  if (autoExtract) {
+    extractFramesForCurrentVideo();
+  }
+}
+
+function closeYouTubeUploadModal() {
+  if (ytModal) ytModal.classList.remove("active");
+}
+
+function openPlayerFromYouTubeModal() {
+  if (currentYouTubeJob) {
+    closeYouTubeUploadModal();
+    openPlayer(currentYouTubeJob.id);
+  }
+}
+
+// ── KEYFRAME EXTRACTION FOR THUMBNAIL ──
+async function extractFramesForCurrentVideo() {
+  if (!currentYouTubeJob) return;
+
+  const btn = document.getElementById("btn-extract-frames");
+  const wrap = document.getElementById("frame-candidates-wrap");
+  const grid = document.getElementById("frame-candidates-grid");
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs">progress_activity</span> <span>Đang trích xuất frame...</span>`;
+  }
+
+  try {
+    const res = await fetch("/api/video/extract-frames", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jobId: currentYouTubeJob.id,
+        timestamps: ["00:00:03", "00:00:12", "00:00:25"]
+      }),
+    });
+    const data = await res.json();
+
+    if (data.success && data.frames && data.frames.length > 0) {
+      if (wrap) wrap.classList.remove("hidden");
+      if (grid) {
+        grid.innerHTML = data.frames.map(f => `
+          <div class="frame-candidate-card group" onclick="selectFrameAsThumbnail('${escapeHtml(f.filename)}', '${escapeHtml(f.url)}')">
+            <div class="aspect-square bg-surface-container overflow-hidden">
+              <img src="${f.url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="Frame ${f.time}"/>
+            </div>
+            <span class="absolute bottom-1 left-1 text-[9px] font-mono font-bold bg-black/80 text-white px-1 rounded">${f.time}</span>
+            <span class="absolute top-1 right-1 text-[8px] font-mono font-bold bg-secondary text-white px-1 rounded">SCORE 98%</span>
+          </div>
+        `).join("");
+      }
+      showToast("Đã trích xuất 3 frame ứng viên từ video!");
+    } else {
+      showToast("Không thể trích xuất frame: " + (data.error || "Lỗi ffmpeg"), "error");
+    }
+  } catch (err) {
+    showToast("Lỗi kết nối trích xuất frame: " + err.message, "error");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">camera</span> <span>📸 Trích Frame Đẹp Từ Video</span>`;
+    }
+  }
+}
+
+async function selectFrameAsThumbnail(filename, url) {
+  if (!currentYouTubeJob) return;
+
+  try {
+    const res = await fetch("/api/video/set-thumbnail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jobId: currentYouTubeJob.id,
+        customThumbPath: filename
+      }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      currentYouTubeJob.thumbUrl = data.thumbUrl || url;
+      const previewThumb = document.getElementById("yt-preview-thumb");
+      if (previewThumb) previewThumb.src = data.thumbUrl || url;
+      renderGrid();
+      showToast("Đã lưu frame làm thumbnail chính thức cho video!");
+    }
+  } catch (err) {
+    showToast("Lỗi khi đặt thumbnail: " + err.message, "error");
+  }
+}
+
+// ── SMART SCHEDULED PUBLISHING ──
+function selectScheduledTime(timeStr) {
+  const [targetH, targetM] = timeStr.split(":").map(Number);
+  const now = new Date();
+  const schedDate = new Date();
+  schedDate.setHours(targetH, targetM, 0, 0);
+
+  // If time has already passed today, schedule for tomorrow
+  if (schedDate.getTime() <= now.getTime()) {
+    schedDate.setDate(schedDate.getDate() + 1);
+  }
+
+  selectedPublishAt = schedDate.toISOString();
+
+  // Highlight button
+  document.querySelectorAll(".schedule-quick-btn").forEach(b => b.classList.remove("active"));
+  if (timeStr === "11:30") document.getElementById("btn-sched-lunch")?.classList.add("active");
+  if (timeStr === "20:00") document.getElementById("btn-sched-evening")?.classList.add("active");
+  if (timeStr === "22:30") document.getElementById("btn-sched-night")?.classList.add("active");
+
+  // Select "Riêng Tư (Private)" because YouTube API mandates private mode for scheduled videos
+  const privateRadio = document.querySelector('input[name="yt_privacy"][value="private"]');
+  if (privateRadio) {
+    privateRadio.checked = true;
+    const cards = document.querySelectorAll(".yt-privacy-card");
+    cards.forEach(c => {
+      c.classList.remove("active", "border-2", "border-secondary", "bg-surface-container-low");
+      c.classList.add("bg-surface-container-lowest", "border-surface-container-highest");
+    });
+    privateRadio.closest(".yt-privacy-card")?.classList.add("active", "border-2", "border-secondary", "bg-surface-container-low");
+  }
+
+  // Show Indicator
+  const indicator = document.getElementById("yt-schedule-indicator");
+  const text = document.getElementById("yt-schedule-text");
+  const isTomorrow = schedDate.getDate() !== now.getDate();
+  const dayStr = isTomorrow ? "Ngày Mai" : "Hôm Nay";
+  if (indicator && text) {
+    text.textContent = `⏰ Đã Đặt Lịch: ${dayStr} lúc ${timeStr}`;
+    indicator.classList.remove("hidden");
+  }
+
+  showToast(`Đã hẹn giờ phát: ${dayStr} lúc ${timeStr}`);
+}
+
+function clearScheduledPublishTime() {
+  selectedPublishAt = null;
+  document.querySelectorAll(".schedule-quick-btn").forEach(b => b.classList.remove("active"));
+  const indicator = document.getElementById("yt-schedule-indicator");
+  if (indicator) indicator.classList.add("hidden");
+  showToast("Đã xóa lịch hẹn phát.");
+}
+
+// ── MULTI-PLATFORM PACKAGING (TIKTOK / REELS) ──
+function copyMultiPlatformCaption() {
+  if (!currentYouTubeJob) return;
+
+  const title = document.getElementById("yt-title")?.value || currentYouTubeJob.title;
+  const caption = `${title}\n\nXem trọn bộ trên kênh Storyverse VN!\n\n#storyverse #drama #threads #viral #fyp #xuhuong #vietnam`;
+  
+  navigator.clipboard.writeText(caption).then(() => {
+    showToast("Đã copy caption định dạng TikTok / Instagram Reels!");
+  }).catch(() => {
+    showToast("Không thể copy caption vào clipboard.", "error");
+  });
+}
+
+// ── YOUTUBE UPLOAD FORM SUBMIT ──
+const youtubeUploadForm = document.getElementById("youtube-upload-form");
+if (youtubeUploadForm) {
+  youtubeUploadForm.onsubmit = async (e) => {
+    e.preventDefault();
+    if (!currentYouTubeJob) return;
+
+    const btnSubmit = document.getElementById("btn-yt-submit");
+    const btnText = document.getElementById("btn-yt-submit-text");
+    const statusBox = document.getElementById("yt-status-box");
+    const progressBar = document.getElementById("yt-progress-bar");
+    const statusPct = document.getElementById("yt-status-pct");
+    const statusTitleText = document.getElementById("yt-status-title-text");
+    const statusMsg = document.getElementById("yt-status-msg");
+
+    const channel = document.getElementById("yt-channel").value;
+    const category = document.getElementById("yt-category").value;
+    const title = document.getElementById("yt-title").value.trim();
+    const description = document.getElementById("yt-description").value.trim();
+    const tags = document.getElementById("yt-tags").value.trim();
+    const privacy = document.querySelector('input[name="yt_privacy"]:checked')?.value || "unlisted";
+
+    btnSubmit.disabled = true;
+    btnText.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs inline-block mr-1">progress_activity</span><span>Đang truyền file lên YouTube...</span>`;
+    
+    statusBox.classList.remove("hidden");
+    statusBox.className = "rounded-xl p-3.5 border bg-surface-container border-red-500/30 transition-all";
+    if (progressBar) progressBar.style.width = "5%";
+    if (statusPct) statusPct.textContent = "5%";
+    if (statusTitleText) statusTitleText.textContent = `Đang kết nối kênh: ${channel} (${privacy.toUpperCase()})`;
+    if (statusMsg) statusMsg.textContent = selectedPublishAt 
+      ? `Đang truyền video và đăng ký giờ phát: ${selectedPublishAt}...` 
+      : "Đang khởi tạo phiên Resumable Upload...";
+
+    const jobId = currentYouTubeJob.id;
+    let pollInterval = setInterval(async () => {
+      try {
+        const sRes = await fetch(`/api/youtube/upload-status?jobId=${encodeURIComponent(jobId)}`);
+        const sData = await sRes.json();
+        if (sData.success) {
+          if (typeof sData.progress === "number" && progressBar && statusPct) {
+            progressBar.style.width = `${Math.min(100, Math.max(5, sData.progress))}%`;
+            statusPct.textContent = `${Math.min(100, Math.max(5, sData.progress))}%`;
+          }
+          if (sData.message && statusMsg) {
+            statusMsg.textContent = sData.message;
+          }
+          if (sData.progress) {
+            btnText.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs inline-block mr-1">progress_activity</span><span>Đang upload: ${sData.progress}%</span>`;
+          }
+          if (sData.status === "completed" || sData.status === "error") {
+            clearInterval(pollInterval);
+          }
+        }
+      } catch (pollErr) {
+        // ignore minor polling jitter
+      }
+    }, 800);
+
+    try {
+      const res = await fetch("/api/youtube/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobId: currentYouTubeJob.id,
+          channel,
+          category,
+          title,
+          description,
+          tags,
+          privacy,
+          publishAt: selectedPublishAt
+        }),
+      });
+
+      clearInterval(pollInterval);
+      const result = await res.json();
+
+      if (result.success) {
+        playSuccessChime();
+        if (progressBar) progressBar.style.width = "100%";
+        if (statusPct) statusPct.textContent = "100%";
+        
+        currentYouTubeJob.isPublished = true;
+        currentYouTubeJob.youtubeUrl = result.url;
+        currentYouTubeJob.youtubeId = result.video_id;
+        updateStats();
+        renderGrid();
+
+        statusBox.className = "rounded-xl p-4 border bg-secondary-container/40 border-secondary text-secondary space-y-2.5 transition-all";
+        statusBox.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-secondary">
+            <span class="material-symbols-outlined text-lg">check_circle</span>
+            <span class="text-sm">UPLOAD YOUTUBE HOÀN TẤT 100%!</span>
+          </div>
+          <div class="text-xs font-mono">
+            Link video: <a href="${result.url}" target="_blank" class="underline font-bold text-primary hover:text-secondary">${result.url}</a>
+          </div>
+          <div class="text-[11px] font-mono text-on-surface-variant">
+            Chế độ: <strong>${result.privacy?.toUpperCase() || privacy.toUpperCase()}</strong> • Video ID: <code>${result.video_id || ''}</code>
+            ${selectedPublishAt ? `• Hẹn giờ: <strong>${selectedPublishAt}</strong>` : ''}
+          </div>
+          <div class="pt-1 flex items-center gap-2">
+            <a href="${result.url}" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-secondary text-white font-bold text-xs inline-flex items-center gap-1.5 hover:bg-emerald-600 transition-colors">
+              <span class="material-symbols-outlined text-xs">open_in_new</span> Xem trên YouTube
+            </a>
+            <button type="button" class="px-3 py-1.5 rounded-lg bg-surface-container border border-surface-container-highest text-xs text-on-surface hover:bg-surface-container-high transition-colors" onclick="navigator.clipboard.writeText('${result.url}').then(()=>showToast('Đã copy link YouTube!'))">
+              Sao chép Link
+            </button>
+          </div>
+        `;
+        showToast("Upload YouTube thành công 100%!");
+      } else {
+        statusBox.className = "rounded-xl p-3.5 border bg-error-container/40 border-error text-error transition-all";
+        statusBox.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-error mb-1">
+            <span class="material-symbols-outlined text-base">error</span>
+            <span>LỖI UPLOAD YOUTUBE</span>
+          </div>
+          <p class="text-xs font-mono text-on-surface">${escapeHtml(result.error || "Không thể tải lên YouTube")}</p>
+        `;
+      }
+    } catch (err) {
+      clearInterval(pollInterval);
+      statusBox.className = "rounded-xl p-3.5 border bg-error-container/40 border-error text-error transition-all";
+      statusBox.innerHTML = `
+        <div class="flex items-center gap-2 font-bold text-error mb-1">
+          <span class="material-symbols-outlined text-base">wifi_off</span>
+          <span>LỖI KẾT NỐI MẠNG</span>
+        </div>
+        <p class="text-xs font-mono text-on-surface">${escapeHtml(err.message)}</p>
+      `;
+    } finally {
+      clearInterval(pollInterval);
+      btnSubmit.disabled = false;
+      btnText.innerHTML = `🚀 Bắt Đầu Upload YouTube`;
+    }
+  };
 }
 
 // ── PLAY VIDEO MODAL ──
@@ -247,10 +1061,10 @@ function openPlayer(jobId) {
     return `
       <div class="beat-item" onclick="seekVideoBeat(${idx})">
         <div class="beat-header">
-          <span class="beat-role-tag">${beat.role || 'beat'}</span>
-          <span class="beat-speaker">${beat.voice?.speaker || `Nhịp ${idx + 1}`}</span>
+          <span class="beat-role-tag">${escapeHtml(beat.role || 'beat')}</span>
+          <span class="beat-speaker">${escapeHtml(beat.speaker || 'Narrator')}</span>
         </div>
-        <div class="beat-text">${beat.rawText}</div>
+        <div class="beat-text">${escapeHtml(beat.rawText || '')}</div>
       </div>
     `;
   }).join("");
@@ -259,160 +1073,88 @@ function openPlayer(jobId) {
 }
 
 function seekVideoBeat(index) {
-  if (mainVideo.duration && allVideos.length) {
-    const activeCard = beatsTimeline.querySelectorAll(".beat-item");
-    activeCard.forEach((c, i) => c.classList.toggle("active", i === index));
-    // Chia đều thời gian theo beat
-    const timePerBeat = mainVideo.duration / Math.max(1, activeCard.length);
-    mainVideo.currentTime = index * timePerBeat;
+  if (mainVideo && mainVideo.duration) {
+    mainVideo.currentTime = index * 4;
     mainVideo.play();
   }
 }
 
 // ── CREATE JOB MODAL ──
-const createForm = document.getElementById("create-job-form");
-document.getElementById("btn-open-create").onclick = () => {
-  createModal.classList.add("active");
-};
-document.getElementById("btn-close-create").onclick = () => {
-  createModal.classList.remove("active");
-};
-document.getElementById("btn-cancel-create").onclick = () => {
-  createModal.classList.remove("active");
-};
+const createJobForm = document.getElementById("create-job-form");
+if (createJobForm) {
+  createJobForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const title = document.getElementById("create-title").value.trim();
+    const workshop = document.getElementById("create-workshop").value;
+    const voiceId = document.getElementById("create-voice").value;
+    const rawContent = document.getElementById("create-content").value.trim();
 
-createForm.onsubmit = async (e) => {
-  e.preventDefault();
-  const id = document.getElementById("new-job-id").value.trim();
-  const title = document.getElementById("new-title").value.trim();
-  const workshop = document.getElementById("new-workshop").value;
-  const archetype = document.getElementById("new-archetype").value;
-  const voiceId = document.getElementById("new-voice").value;
-  const platform = document.getElementById("new-platform").value;
-  const rawScript = document.getElementById("new-raw-script").value.trim();
-
-  const lines = rawScript ? rawScript.split("\n").filter(l => l.trim()) : [];
-  const beats = lines.map((line, idx) => ({
-    id: `beat_${String(idx + 1).padStart(2, "0")}`,
-    role: idx === 0 ? "hook" : idx === lines.length - 1 ? "cta" : "story",
-    rawText: line.trim(),
-    visual: { headline: line.trim().slice(0, 40) }
-  }));
-
-  const defaultFps = (workshop === "explainer" || workshop === "whiteboard") ? 90 : 60;
-  const canvas = platform === "tiktok"
-    ? { width: 1080, height: 1920, fps: defaultFps }
-    : { width: 1920, height: 1080, fps: defaultFps };
-
-  const payload = {
-    jobId: id,
-    title,
-    workshop,
-    archetype,
-    targetPlatform: platform,
-    canvas,
-    voice: { voiceId, speed: 1.0, rate: "+0%" },
-    beats: beats.length ? beats : [
-      { id: "beat_01", role: "hook", rawText: title, visual: { headline: title } }
-    ],
-  };
-
-  try {
-    const res = await fetch("/api/videos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const result = await res.json();
-    if (result.success) {
-      createModal.classList.remove("active");
-      createForm.reset();
-      await loadVideos();
-      if (confirm("Kịch bản đã tạo thành công! Bạn có muốn render video ngay bây giờ không?")) {
-        triggerRender(id);
+    try {
+      const res = await fetch("/api/videos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, workshop, voiceId, rawContent }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        closeCreateModal();
+        await loadVideos();
+        showToast("Đã khởi tạo kịch bản video mới!");
+        triggerRender(data.jobId);
+      } else {
+        alert("Lỗi khi tạo video: " + data.error);
       }
-    } else {
-      alert("Lỗi: " + result.error);
+    } catch (err) {
+      alert("Lỗi kết nối: " + err.message);
     }
-  } catch (err) {
-    alert("Không thể lưu: " + err.message);
-  }
-};
+  };
+}
 
 // ── EDIT JOB MODAL ──
 async function openEditor(jobId) {
   const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`);
   const data = await res.json();
   if (!data.success) {
-    alert("Không tìm thấy kịch bản!");
+    alert("Không thể tải thông tin video để chỉnh sửa.");
     return;
   }
-
-  const job = data.job;
-  document.getElementById("edit-job-id").value = job.jobId;
-  document.getElementById("edit-title").value = job.title;
-
-  const container = document.getElementById("edit-beats-container");
-  container.innerHTML = (job.beats || []).map((beat, idx) => {
-    return `
-      <div class="beat-edit-card" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span style="font-size: 12px; font-weight: 700; color: var(--primary);">Beat ${idx + 1} (${beat.role})</span>
-          <input type="text" class="beat-speaker-input" value="${beat.voice?.speaker || ''}" placeholder="Tên nhân vật / vai" style="width: 140px; font-size: 11px; padding: 4px 8px;">
-        </div>
-        <textarea class="beat-raw-text" rows="2" style="width: 100%;">${beat.rawText}</textarea>
-      </div>
-    `;
-  }).join("");
-
+  const video = data.video;
+  document.getElementById("edit-job-id").value = video.id;
+  document.getElementById("edit-title").value = video.title;
+  document.getElementById("edit-beats-json").value = JSON.stringify(video.beats, null, 2);
   editModal.classList.add("active");
 }
 
-document.getElementById("btn-close-edit").onclick = () => editModal.classList.remove("active");
-document.getElementById("btn-cancel-edit").onclick = () => editModal.classList.remove("active");
-
-document.getElementById("edit-job-form").onsubmit = async (e) => {
-  e.preventDefault();
-  await saveEditJob(false);
-};
-
-document.getElementById("btn-save-and-render").onclick = async () => {
-  await saveEditJob(true);
-};
-
-async function saveEditJob(andRender = false) {
-  const jobId = document.getElementById("edit-job-id").value;
-  const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`);
-  const data = await res.json();
-  const job = data.job;
-
-  job.title = document.getElementById("edit-title").value;
-  const textareas = document.querySelectorAll(".beat-raw-text");
-  const speakerInputs = document.querySelectorAll(".beat-speaker-input");
-
-  job.beats.forEach((b, idx) => {
-    if (textareas[idx]) b.rawText = textareas[idx].value.trim();
-    if (speakerInputs[idx]) {
-      if (!b.voice) b.voice = {};
-      b.voice.speaker = speakerInputs[idx].value.trim() || undefined;
+const editJobForm = document.getElementById("edit-job-form");
+if (editJobForm) {
+  editJobForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const jobId = document.getElementById("edit-job-id").value;
+    const title = document.getElementById("edit-title").value.trim();
+    let beats = [];
+    try {
+      beats = JSON.parse(document.getElementById("edit-beats-json").value);
+    } catch (err) {
+      alert("Định dạng JSON của beats không hợp lệ: " + err.message);
+      return;
     }
-  });
 
-  const saveRes = await fetch(`/api/videos/${encodeURIComponent(jobId)}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(job)
-  });
-
-  if (saveRes.ok) {
-    editModal.classList.remove("active");
-    await loadVideos();
-    if (andRender) {
-      triggerRender(jobId);
+    try {
+      const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, beats }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        closeEditModal();
+        await loadVideos();
+        showToast("Đã lưu thay đổi kịch bản thành công!");
+      }
+    } catch (err) {
+      alert("Lỗi kết nối: " + err.message);
     }
-  } else {
-    alert("Lưu thất bại!");
-  }
+  };
 }
 
 // ── DELETE VIDEO ──
@@ -420,87 +1162,67 @@ async function deleteVideo(jobId) {
   if (confirm(`Bạn có chắc chắn muốn xóa video '${jobId}' và kịch bản không?`)) {
     try {
       const res = await fetch(`/api/videos/${encodeURIComponent(jobId)}`, { method: "DELETE" });
-      if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
         await loadVideos();
-      } else {
-        alert("Lỗi khi xóa!");
+        showToast("Đã xóa video khỏi thư viện.");
       }
-    } catch (e) {
-      alert("Lỗi kết nối: " + e.message);
+    } catch (err) {
+      alert("Lỗi khi xóa: " + err.message);
     }
   }
 }
 
-// ── RE-RENDER WITH SSE STREAMING ──
+// ── TRIGGER RENDER ──
 function triggerRender(jobId) {
   if (activeEventSource) {
     activeEventSource.close();
   }
 
-  renderTerminal.innerHTML = `<div class="terminal-line">[SYSTEM] Khởi động render cho ${jobId}...</div>`;
-  renderModalTitle.textContent = `Đang render: ${jobId}`;
-  btnCloseRender.disabled = true;
   renderModal.classList.add("active");
+  renderModalTitle.textContent = `Đang Render: ${jobId}`;
+  renderTerminal.innerHTML = `<div class="terminal-line">[START] Khởi động render pipeline cho job: ${escapeHtml(jobId)}...</div>`;
+  renderProgressBar.style.width = "10%";
+  btnCloseRender.style.display = "none";
+  document.getElementById("render-modal-footer").style.display = "none";
 
-  const encId = encodeURIComponent(jobId);
-  activeEventSource = new EventSource(`/api/render/${encId}`);
+  activeEventSource = new EventSource(`/api/render/${encodeURIComponent(jobId)}`);
 
-  activeEventSource.addEventListener("log", (e) => {
+  activeEventSource.onmessage = (event) => {
     try {
-      const data = JSON.parse(e.data);
-      appendLog(data.text);
-    } catch (_) {
-      appendLog(e.data);
-    }
-  });
-
-  activeEventSource.addEventListener("progress", (e) => {
-    try {
-      const data = JSON.parse(e.data);
-      appendLog(data.text);
-    } catch (_) {
-      appendLog(e.data);
-    }
-  });
-
-  activeEventSource.addEventListener("error", (e) => {
-    let msg = "";
-    if (e.data) {
-      try {
-        const data = JSON.parse(e.data);
-        msg = data.text || e.data;
-      } catch (_) {
-        msg = e.data;
+      const payload = JSON.parse(event.data);
+      if (payload.log) {
+        appendLog(payload.log);
       }
-    }
-    if (msg) {
-      appendLog(`[ERROR] ${msg}`, "error");
-      btnCloseRender.disabled = false;
-      activeEventSource.close();
-    }
-  });
-
-  activeEventSource.onerror = () => {
-    if (activeEventSource.readyState === EventSource.CLOSED) {
-      btnCloseRender.disabled = false;
-    } else if (activeEventSource.readyState === EventSource.CONNECTING) {
-      appendLog("[ERROR] Mất kết nối tới máy chủ render.", "error");
-      btnCloseRender.disabled = false;
-      activeEventSource.close();
+      if (payload.progress) {
+        renderProgressBar.style.width = `${payload.progress}%`;
+      }
+      if (payload.done) {
+        appendLog("[SUCCESS] Render hoàn tất 100%! Đã đóng gói MP4.", "done");
+        renderProgressBar.style.width = "100%";
+        activeEventSource.close();
+        btnCloseRender.style.display = "block";
+        document.getElementById("render-modal-footer").style.display = "flex";
+        playSuccessChime();
+        loadVideos();
+      }
+      if (payload.error) {
+        appendLog(`[ERROR] ${payload.error}`, "error");
+        activeEventSource.close();
+        btnCloseRender.style.display = "block";
+        document.getElementById("render-modal-footer").style.display = "flex";
+      }
+    } catch (e) {
+      appendLog(event.data);
     }
   };
 
-  activeEventSource.addEventListener("done", (e) => {
-    try {
-      const data = JSON.parse(e.data);
-      appendLog(`[SUCCESS] ${data.message}`, "done");
-    } catch (_) {
-      appendLog(`[SUCCESS] Hoàn thành!`, "done");
-    }
-    btnCloseRender.disabled = false;
+  activeEventSource.onerror = () => {
+    appendLog("[DISCONNECT] Kết nối render kết thúc.");
     activeEventSource.close();
-    loadVideos();
-  });
+    btnCloseRender.style.display = "block";
+    document.getElementById("render-modal-footer").style.display = "flex";
+  };
 }
 
 function appendLog(text, type = "normal") {
@@ -511,874 +1233,48 @@ function appendLog(text, type = "normal") {
   renderTerminal.scrollTop = renderTerminal.scrollHeight;
 }
 
-btnCloseRender.onclick = () => renderModal.classList.remove("active");
-document.getElementById("btn-close-player").onclick = () => {
-  playerModal.classList.remove("active");
-  mainVideo.pause();
-};
+function closeRenderModal() {
+  if (activeEventSource) activeEventSource.close();
+  renderModal.classList.remove("active");
+}
 
-// ── EVENT LISTENERS (Filter & Search) ──
-searchInput.oninput = (e) => {
-  currentSearch = e.target.value;
-  renderGrid();
-};
+// ── SIDEBAR CONTROLLER ──
+function initSidebarController() {
+  const btnToggle = document.getElementById("btn-toggle-sidebar");
+  const sidebar = document.getElementById("sidebarNav");
+  const mainContent = document.getElementById("mainContent");
+  const toggleIcon = document.getElementById("sidebar-toggle-icon");
 
-filterTabs.forEach(tab => {
-  tab.onclick = () => {
-    filterTabs.forEach(t => {
-      t.classList.remove("active", "bg-surface-container-high", "text-primary", "border-l-2", "border-primary");
-      t.classList.add("text-on-surface-variant");
-    });
-    tab.classList.add("active", "bg-surface-container-high", "text-primary", "border-l-2", "border-primary");
-    tab.classList.remove("text-on-surface-variant");
-    currentFilter = tab.dataset.workshop;
+  if (!btnToggle || !sidebar || !mainContent) return;
+
+  const isCollapsed = localStorage.getItem("omni_sidebar_collapsed") === "true";
+  if (isCollapsed) {
+    sidebar.classList.add("collapsed");
+    mainContent.classList.add("sidebar-collapsed");
+    if (toggleIcon) toggleIcon.textContent = "chevron_right";
+  }
+
+  btnToggle.onclick = () => {
+    const collapsed = sidebar.classList.toggle("collapsed");
+    mainContent.classList.toggle("sidebar-collapsed");
+    localStorage.setItem("omni_sidebar_collapsed", collapsed);
+    if (toggleIcon) {
+      toggleIcon.textContent = collapsed ? "chevron_right" : "chevron_left";
+    }
+  };
+}
+
+// ── SEARCH CONTROLLER ──
+if (searchInput) {
+  searchInput.oninput = () => {
+    currentSearch = searchInput.value.trim();
     renderGrid();
   };
+}
+
+// ── INITIALIZATION ──
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  initSidebarController();
+  loadVideos();
 });
-
-// Init load
-loadVideos();
-
-// ========================================================
-// ⚡ ANTIGRAVITY 2.0 LIVE BRIDGE & MISSION CONTROL CLIENT
-// ========================================================
-
-let antigravityEventSource = null;
-let liveAntigravityEvents = [];
-let currentTerminalFilter = "all";
-let currentGate = 6;
-
-const antigravityTerminal = document.getElementById("antigravity-live-terminal");
-const terminalStepIndicator = document.getElementById("terminal-step-indicator");
-const terminalMtimeIndicator = document.getElementById("terminal-mtime-indicator");
-const missionConvoId = document.getElementById("mission-convo-id");
-const missionStatusText = document.getElementById("mission-status-text");
-const missionStatusDot = document.getElementById("mission-status-dot");
-const antigravityText = document.getElementById("antigravity-text");
-const antigravityGateBadge = document.getElementById("antigravity-gate-badge");
-const dispatchForm = document.getElementById("antigravity-dispatch-form");
-const dispatchFeedback = document.getElementById("dispatch-feedback");
-const gateOverallProgress = document.getElementById("gate-overall-progress");
-let currentHighestGate = 1;
-let lastAnnouncedGate = 0;
-
-function updateGateStepper(gateNumber, gateName, progressPercent = 75, isCompleted = false, completedGates = []) {
-  currentGate = gateNumber;
-  if (antigravityGateBadge) {
-    if (isCompleted && gateNumber >= 6) {
-      antigravityGateBadge.textContent = `Cổng ${gateNumber}: Hoàn Thành`;
-    } else {
-      antigravityGateBadge.textContent = `Cổng ${gateNumber}`;
-    }
-  }
-
-  if (gateOverallProgress) {
-    if (isCompleted && gateNumber >= 6) {
-      gateOverallProgress.textContent = `Tiến độ: 100% (Cổng ${gateNumber}/7: ${gateName} 🎉)`;
-    } else {
-      const overall = Math.min(100, Math.round(((gateNumber - 1) * 100 + progressPercent) / 7));
-      gateOverallProgress.textContent = `Tiến độ: ${overall}% (Cổng ${gateNumber}/7: ${gateName})`;
-    }
-  }
-
-  const doneSet = new Set(Array.isArray(completedGates) ? completedGates : []);
-  if (isCompleted) {
-    for (let k = 1; k <= gateNumber; k++) doneSet.add(k);
-  }
-
-  for (let i = 1; i <= 7; i++) {
-    const card = document.getElementById(`gate-card-${i}`);
-    const icon = document.getElementById(`gate-icon-${i}`);
-    const bar = document.getElementById(`gate-bar-${i}`);
-    if (!card || !bar) continue;
-
-    card.className = "gate-card p-2.5 rounded-xl border flex flex-col gap-1.5 transition-all ";
-
-    if (doneSet.has(i) || i < gateNumber || (isCompleted && i <= gateNumber)) {
-      // Completed gate
-      card.className += "border-primary/50 bg-surface-container-lowest/90 gate-done";
-      if (icon) {
-        icon.className = "material-symbols-outlined text-[14px] text-primary font-bold";
-        icon.textContent = "check_circle";
-      }
-      bar.className = "bg-primary h-full rounded-full w-full";
-      bar.style.width = "100%";
-    } else if (i === gateNumber) {
-      // Active running gate
-      card.className += "border-2 border-secondary bg-surface-container-lowest/95 gate-active";
-      if (icon) {
-        icon.className = "w-2 h-2 rounded-full bg-secondary animate-ping";
-        icon.textContent = "";
-      }
-      bar.className = "bg-secondary h-full rounded-full";
-      bar.style.width = `${progressPercent}%`;
-    } else {
-      // Pending gate
-      card.className += "border-outline-variant/30 bg-surface-container-lowest/60";
-      if (icon) {
-        icon.className = "material-symbols-outlined text-[14px] text-outline";
-        icon.textContent = "radio_button_unchecked";
-      }
-      bar.className = "bg-outline h-full rounded-full";
-      bar.style.width = "0%";
-    }
-  }
-}
-
-function appendTerminalLine(text, type = "normal", category = "other") {
-  const line = document.createElement("div");
-  line.className = `terminal-line ${type}`;
-  line.dataset.category = category;
-  line.innerHTML = text;
-
-  // Filter check
-  if (currentTerminalFilter !== "all" && currentTerminalFilter !== category) {
-    line.style.display = "none";
-  }
-
-  antigravityTerminal.appendChild(line);
-  antigravityTerminal.scrollTop = antigravityTerminal.scrollHeight;
-}
-
-function formatEventTimestamp(isoStr) {
-  if (!isoStr) return new Date().toLocaleTimeString("vi-VN");
-  try {
-    const d = new Date(isoStr);
-    return d.toLocaleTimeString("vi-VN", { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  } catch (_) {
-    return "";
-  }
-}
-
-function processIncomingEvent(ev) {
-  liveAntigravityEvents.push(ev);
-  const time = formatEventTimestamp(ev.timestamp);
-
-  // Cập nhật Cổng quy trình nếu có và áp dụng nguyên tắc Monotonic (Không thụt lùi)
-  const gateObj = ev.gate || ev.gateProgress;
-  if (gateObj && gateObj.gateNumber) {
-    const gNum = gateObj.gateNumber;
-    const gName = gateObj.gateName || `Cổng ${gNum}`;
-    const gProg = gateObj.progressPercent || 50;
-    const isDone = gateObj.isCompleted || false;
-
-    if (gNum >= currentHighestGate || (isDone && gNum >= 5)) {
-      currentHighestGate = Math.max(currentHighestGate, gNum);
-      updateGateStepper(currentHighestGate, gName, gProg, isDone, gateObj.completedGates);
-      if (lastAnnouncedGate !== gNum) {
-        lastAnnouncedGate = gNum;
-        appendTerminalLine(
-          `<span class="text-secondary">[${time}]</span> <span class="text-amber-300 font-bold">[GATE ${gNum}]</span> ${escapeHtml(gName)} (${gProg}%)`,
-          "gate",
-          "gate"
-        );
-      }
-    }
-  }
-
-  // 1. Thinking / Suy nghĩ nội tâm của Agent
-  if (ev.thought) {
-    const preview = ev.thought.length > 280 ? ev.thought.slice(0, 280) + "..." : ev.thought;
-    appendTerminalLine(
-      `<span class="text-outline">[${time}]</span> <span class="text-cyan-400 font-semibold">[THOUGHT]</span> <span class="italic text-slate-300">${escapeHtml(preview)}</span>`,
-      "thought",
-      "thought"
-    );
-  }
-
-  // 2. Tool Calls / Thực thi công cụ
-  const toolList = ev.toolDetails || ev.toolCalls;
-  if (toolList && toolList.length > 0) {
-    for (const tool of toolList) {
-      const toolName = typeof tool === "string" ? tool : (tool.name || "tool");
-      const summary = typeof tool === "object" ? (tool.summary || tool.command || toolName) : tool;
-      appendTerminalLine(
-        `<span class="text-outline">[${time}]</span> <span class="text-emerald-400 font-bold">[TOOL]</span> <span class="text-primary font-mono">${escapeHtml(toolName)}</span>: <span class="text-on-surface-variant font-mono text-[11px]">${escapeHtml(summary)}</span>`,
-        "tool",
-        "tool"
-      );
-    }
-  }
-
-  // 3. User Input / Prompt từ người dùng hoặc Dispatch Web
-  if (ev.type === "USER_INPUT") {
-    appendTerminalLine(
-      `<span class="text-outline">[${time}]</span> <span class="text-purple-400 font-bold">[USER]</span> <span class="text-purple-200 font-semibold">${escapeHtml(ev.contentPreview || ev.preview || ev.content || "")}</span>`,
-      "user",
-      "gate"
-    );
-  } else if (ev.type === "GENERIC" && ev.contentPreview) {
-    // Kết quả ngắn từ lệnh chạy
-    appendTerminalLine(
-      `<span class="text-outline">[${time}]</span> <span class="text-slate-400 font-mono text-[11px]">[OUTPUT] ${escapeHtml(ev.contentPreview.slice(0, 140))}...</span>`,
-      "normal",
-      "tool"
-    );
-  }
-
-  // Cập nhật chỉ số bước chân
-  if (terminalStepIndicator && ev.stepIndex) {
-    terminalStepIndicator.textContent = `Bước #${ev.stepIndex}: ${ev.type || 'Hoạt động'}`;
-  }
-  if (terminalMtimeIndicator) {
-    terminalMtimeIndicator.textContent = `Cập nhật: ${time}`;
-  }
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function initAntigravityBridge() {
-  if (antigravityEventSource) {
-    antigravityEventSource.close();
-  }
-
-  try {
-    antigravityEventSource = new EventSource("/api/antigravity/stream");
-
-    antigravityEventSource.onopen = () => {
-      if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Đã Kết Nối";
-      if (missionStatusDot) missionStatusDot.className = "w-2.5 h-2.5 rounded-full bg-primary animate-pulse";
-    };
-
-    antigravityEventSource.addEventListener("init", (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        const session = data.session || data.activeSession;
-        const cId = session?.conversationId || (typeof session === "string" ? session : null);
-        if (cId) {
-          if (missionConvoId) missionConvoId.textContent = cId.slice(0, 12) + "...";
-          if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Đã Kết Nối";
-          if (missionStatusText) missionStatusText.textContent = "ĐỒNG BỘ HAI CHIỀU ANTIGRAVITY 2.0";
-          if (missionStatusDot) missionStatusDot.className = "w-2.5 h-2.5 rounded-full bg-primary animate-pulse";
-        }
-        if (data.studioState) {
-          const s = data.studioState;
-          currentHighestGate = s.currentGate || 1;
-          updateGateStepper(s.currentGate, s.gateName, s.progressPercent, s.isCompleted, s.completedGates);
-        }
-      } catch (err) {
-        console.warn("Lỗi xử lý init SSE:", err);
-      }
-    });
-
-    antigravityEventSource.addEventListener("gate_state", (e) => {
-      try {
-        const state = JSON.parse(e.data);
-        if (state && state.currentGate) {
-          currentHighestGate = Math.max(currentHighestGate, state.currentGate);
-          updateGateStepper(
-            state.currentGate,
-            state.gateName,
-            state.progressPercent,
-            state.isCompleted,
-            state.completedGates
-          );
-        }
-      } catch (_) {}
-    });
-
-    antigravityEventSource.addEventListener("history", (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        if (data.events && Array.isArray(data.events)) {
-          antigravityTerminal.innerHTML = "";
-          for (const ev of data.events) {
-            processIncomingEvent(ev);
-          }
-        }
-      } catch (err) {
-        console.warn("Lỗi xử lý history SSE:", err);
-      }
-    });
-
-    antigravityEventSource.addEventListener("step", (e) => {
-      try {
-        const ev = JSON.parse(e.data);
-        processIncomingEvent(ev);
-      } catch (err) {
-        console.warn("Lỗi xử lý step SSE:", err);
-      }
-    });
-
-    antigravityEventSource.addEventListener("status", (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        if (!data.connected) {
-          if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Chờ";
-          if (missionStatusText) missionStatusText.textContent = "ĐANG CHỜ TIẾN TRÌNH ANTIGRAVITY...";
-          if (missionStatusDot) missionStatusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping";
-        }
-      } catch (_) {}
-    });
-
-    antigravityEventSource.onerror = () => {
-      if (antigravityText) antigravityText.textContent = "Antigravity 2.0: Kết Nối Lại...";
-      if (missionStatusDot) missionStatusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping";
-    };
-  } catch (err) {
-    console.error("Không thể khởi tạo EventSource Antigravity:", err);
-  }
-}
-
-// ── FAST GATE APPROVAL (HUMAN-IN-THE-LOOP) ──
-window.quickApproveGate = async function(gateName) {
-  try {
-    appendTerminalLine(
-      `<span class="text-amber-300 font-bold">[ACTION]</span> Đang gửi tín hiệu phê duyệt: <span class="text-white">${escapeHtml(gateName)}</span> vào IDE...`,
-      "normal",
-      "gate"
-    );
-
-    const res = await fetch("/api/antigravity/approve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ gate: gateName }),
-    });
-    const result = await res.json();
-
-    if (result.success) {
-      appendTerminalLine(
-        `<span class="text-emerald-400 font-bold">[SUCCESS]</span> Đã chuyển lệnh phê duyệt thành công vào Antigravity IDE! Agent đang tiếp tục tiến trình...`,
-        "done",
-        "gate"
-      );
-      // Advance gate stepper visually
-      if (currentGate < 7) {
-        updateGateStepper(currentGate + 1, "Đang xử lý sau phê duyệt", 30);
-      }
-    } else {
-      appendTerminalLine(
-        `<span class="text-rose-400 font-bold">[ERROR]</span> Không thể gửi phê duyệt: ${escapeHtml(result.error || "Lỗi không xác định")}`,
-        "error",
-        "gate"
-      );
-    }
-  } catch (err) {
-    appendTerminalLine(
-      `<span class="text-rose-400 font-bold">[ERROR]</span> Lỗi kết nối: ${escapeHtml(err.message)}`,
-      "error",
-      "gate"
-    );
-  }
-};
-
-// ── TERMINAL FILTERS & CLEAR ──
-window.clearLiveTerminal = function() {
-  antigravityTerminal.innerHTML = `<div class="text-secondary/70">[SYSTEM] Đã xóa màn hình log terminal.</div>`;
-};
-
-document.querySelectorAll(".terminal-filter-btn").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".terminal-filter-btn").forEach(b => {
-      b.classList.remove("active", "bg-secondary/20", "text-secondary");
-      b.classList.add("text-outline");
-    });
-    btn.classList.add("active", "bg-secondary/20", "text-secondary");
-    btn.classList.remove("text-outline");
-
-    currentTerminalFilter = btn.dataset.filter;
-    const lines = antigravityTerminal.querySelectorAll(".terminal-line");
-    lines.forEach(line => {
-      if (currentTerminalFilter === "all" || line.dataset.category === currentTerminalFilter) {
-        line.style.display = "block";
-      } else {
-        line.style.display = "none";
-      }
-    });
-  };
-});
-
-// ── DISPATCH FORM SUBMISSION (WEB -> IDE) ──
-if (dispatchForm) {
-  dispatchForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const workshop = document.getElementById("dispatch-workshop").value;
-    const topic = document.getElementById("dispatch-topic").value.trim();
-    const bg = document.getElementById("dispatch-bg").value;
-    const speed = document.getElementById("dispatch-speed").value;
-    const publish = document.getElementById("dispatch-publish").checked;
-
-    if (!topic) return;
-
-    const btnSubmit = document.getElementById("btn-dispatch-antigravity");
-    btnSubmit.disabled = true;
-    btnSubmit.innerHTML = `<span class="spinner inline-block w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span> <span>Đang Gửi Vào IDE...</span>`;
-
-    // Chuẩn hóa prompt chỉ thị quy chuẩn cho Antigravity Agent
-    let prompt = "";
-    if (workshop === "threads") {
-      prompt = `Hãy sản xuất video Threads cho bài viết: ${topic}. Áp dụng đầy đủ 10 Quy tắc Xưởng 5 (AGENTS.md): Dark Mode AMOLED (#101010) chiều rộng 820px, Avatar thật từ CDN, Voice x${speed} (Edge-TTS) lọc sạch icon và phiên âm ngữ âm tiếng Anh, Meme Sticker đồng bộ tại điểm punchline (không phát SFX ở đầu câu), Gameplay nền: ${bg}${publish ? ', và tự động đóng gói xuất bản YouTube Unlisted (Cổng 7)' : ''}.`;
-    } else if (workshop === "cinematic") {
-      prompt = `Hãy sản xuất tập phim điện ảnh 3D cho chủ đề: ${topic}. Tuân thủ nghiêm ngặt 14 Quy tắc Điện ảnh (AGENTS.md): Voice x${speed}, nhịp ASL 3.5s - 6s, 100% video AI GEN V chuyển động thực sự (cấm zoompan ảnh tĩnh), Cyber Chatbox overlay (1600x125px viền Cyan Neon), Fresh-Render không tái sử dụng asset cũ${publish ? ', và tự động đăng YouTube Unlisted (Cổng 7)' : ''}.`;
-    } else if (workshop === "whiteboard") {
-      prompt = `Hãy sản xuất video truyện dài bảng trắng cho chủ đề: ${topic}. Sử dụng Xưởng 3: OpenCV 90 FPS, Storyboard Notion Art độc quyền từng chương, lồng nhạc nền ducking thông minh${publish ? ', và đăng YouTube Unlisted' : ''}.`;
-    } else if (workshop === "explainer") {
-      prompt = `Hãy sản xuất video giải thích công nghệ bằng Remotion cho chủ đề: ${topic}. Cấu trúc 6-beat tâm lý học, chuyển động code React và sơ đồ trực quan.`;
-    } else {
-      prompt = `Hãy sản xuất video tin tức ngắn HyperFrames 9:16 cho chủ đề: ${topic}. Định dạng thời sự quốc tế, kinetic subtitles tự động.`;
-    }
-
-    try {
-      appendTerminalLine(
-        `<span class="text-secondary font-bold">[DISPATCH_WEB]</span> Gửi lệnh sản xuất: <span class="text-primary font-semibold">${escapeHtml(topic)}</span> (${workshop})`,
-        "user",
-        "gate"
-      );
-
-      const res = await fetch("/api/antigravity/dispatch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-      const data = await res.json();
-
-      dispatchFeedback.classList.remove("hidden");
-      if (data.success) {
-        dispatchFeedback.className = "mt-3 p-2.5 rounded-lg text-xs font-mono bg-primary/15 border border-primary/40 text-primary";
-        dispatchFeedback.innerHTML = `✅ <strong>Đã gửi lệnh vào Antigravity IDE thành công!</strong><br/>Agent đang tiếp nhận chỉ thị và bắt đầu tiến trình sản xuất.`;
-        currentHighestGate = 1;
-        lastAnnouncedGate = 1;
-        updateGateStepper(1, "Ý Tưởng & Kịch Bản", 40);
-        dispatchForm.reset();
-      } else {
-        dispatchFeedback.className = "mt-3 p-2.5 rounded-lg text-xs font-mono bg-rose-500/15 border border-rose-500/40 text-rose-300";
-        dispatchFeedback.innerHTML = `❌ <strong>Lỗi:</strong> ${escapeHtml(data.error || "Không thể gửi lệnh")}`;
-      }
-    } catch (err) {
-      dispatchFeedback.classList.remove("hidden");
-      dispatchFeedback.className = "mt-3 p-2.5 rounded-lg text-xs font-mono bg-rose-500/15 border border-rose-500/40 text-rose-300";
-      dispatchFeedback.innerHTML = `❌ <strong>Lỗi kết nối:</strong> ${escapeHtml(err.message)}`;
-    } finally {
-      btnSubmit.disabled = false;
-      btnSubmit.innerHTML = `<span class="material-symbols-outlined text-[18px]">rocket_launch</span> <span>Gửi Lệnh Sản Xuất Vào Antigravity IDE</span>`;
-      setTimeout(() => {
-        dispatchFeedback.classList.add("hidden");
-      }, 7000);
-    }
-  };
-}
-
-// ── SIDEBAR COLLAPSE / EXPAND CONTROLLER ──
-function initSidebarController() {
-  const sidebar = document.getElementById("sidebarNav");
-  const toggleBtn = document.getElementById("btn-toggle-sidebar");
-  const toggleIcon = document.getElementById("sidebar-toggle-icon");
-  const mainCanvas = document.getElementById("mainContent");
-
-  if (!sidebar || !toggleBtn) return;
-
-  const savedState = localStorage.getItem("omni_sidebar_collapsed");
-  if (savedState === "1") {
-    sidebar.classList.add("collapsed");
-    if (mainCanvas) mainCanvas.classList.add("sidebar-collapsed");
-    if (toggleIcon) toggleIcon.textContent = "chevron_right";
-    toggleBtn.title = "Mở rộng Sidebar";
-  }
-
-  toggleBtn.onclick = () => {
-    const isNowCollapsed = sidebar.classList.toggle("collapsed");
-    if (mainCanvas) mainCanvas.classList.toggle("sidebar-collapsed", isNowCollapsed);
-    if (toggleIcon) toggleIcon.textContent = isNowCollapsed ? "chevron_right" : "chevron_left";
-    toggleBtn.title = isNowCollapsed ? "Mở rộng Sidebar" : "Thu gọn Sidebar";
-    localStorage.setItem("omni_sidebar_collapsed", isNowCollapsed ? "1" : "0");
-  };
-}
-
-// ── VIEW MODE CONTROLLER (GRID VS TABLE) ──
-function initViewModeController() {
-  const btnGrid = document.getElementById("btn-view-grid");
-  const btnTable = document.getElementById("btn-view-table");
-  const quickPills = document.querySelectorAll(".quick-pill");
-
-  if (btnGrid && btnTable) {
-    btnGrid.onclick = () => setViewMode("grid");
-    btnTable.onclick = () => setViewMode("table");
-  }
-
-  // Restore active icon styling
-  if (btnGrid && btnTable) {
-    if (currentViewMode === "grid") {
-      btnGrid.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
-      btnTable.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
-    } else {
-      btnTable.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
-      btnGrid.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
-    }
-  }
-
-  quickPills.forEach(pill => {
-    pill.onclick = () => {
-      quickPills.forEach(p => {
-        p.classList.remove("active", "bg-primary/20", "text-primary", "font-bold");
-        p.classList.add("text-outline");
-      });
-      pill.classList.add("active", "bg-primary/20", "text-primary", "font-bold");
-      pill.classList.remove("text-outline");
-      filterByWorkshop(pill.dataset.ws);
-    };
-  });
-}
-
-function setViewMode(mode) {
-  currentViewMode = mode;
-  localStorage.setItem("omni_view_mode", mode);
-  const btnGrid = document.getElementById("btn-view-grid");
-  const btnTable = document.getElementById("btn-view-table");
-
-  if (btnGrid && btnTable) {
-    if (mode === "grid") {
-      btnGrid.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
-      btnTable.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
-    } else {
-      btnTable.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
-      btnGrid.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
-    }
-  }
-
-  renderGrid();
-}
-
-// ── YOUTUBE DIRECT UPLOAD MODAL LOGIC ──
-let currentYouTubeJob = null;
-
-function renderTitleOptions(options) {
-  const ytTitleOptions = document.getElementById("yt-title-options");
-  const ytTitleOptionsList = document.getElementById("yt-title-options-list");
-  const ytTitle = document.getElementById("yt-title");
-  const ytTitleCounter = document.getElementById("yt-title-counter");
-  if (!ytTitleOptions || !ytTitleOptionsList || !Array.isArray(options) || options.length === 0) return;
-
-  ytTitleOptionsList.innerHTML = options.map((opt, i) => `
-    <button type="button" class="text-left text-xs px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface hover:text-primary transition-all flex items-start gap-2 group w-full" data-title="${escapeHtml(opt)}">
-      <span class="text-[10px] font-bold text-primary/70 group-hover:text-primary mt-0.5">#${i + 1}</span>
-      <span class="flex-1 line-clamp-2">${escapeHtml(opt)}</span>
-    </button>
-  `).join("");
-
-  ytTitleOptionsList.querySelectorAll("button").forEach(btn => {
-    btn.onclick = () => {
-      const selected = btn.getAttribute("data-title");
-      if (selected && ytTitle) {
-        ytTitle.value = selected.slice(0, 100);
-        if (ytTitleCounter) ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
-      }
-    };
-  });
-
-  ytTitleOptions.classList.remove("hidden");
-}
-
-async function openYouTubeUploadModal(jobId) {
-  const video = allVideos.find(v => v.id === jobId);
-  if (!video) return;
-  currentYouTubeJob = video;
-
-  const ytModal = document.getElementById("youtube-upload-modal");
-  const ytThumb = document.getElementById("yt-preview-thumb");
-  const ytPlaceholder = document.getElementById("yt-preview-placeholder");
-  const ytDuration = document.getElementById("yt-preview-duration");
-  const ytBadge = document.getElementById("yt-preview-badge");
-  const ytFilesize = document.getElementById("yt-preview-filesize");
-  const ytTitle = document.getElementById("yt-title");
-  const ytPreviewTitle = document.getElementById("yt-preview-title");
-  const ytPreviewJobId = document.getElementById("yt-preview-jobid");
-  const ytDescription = document.getElementById("yt-description");
-  const ytTags = document.getElementById("yt-tags");
-  const ytStatusBox = document.getElementById("yt-status-box");
-  const ytTitleCounter = document.getElementById("yt-title-counter");
-
-  ytStatusBox.classList.add("hidden");
-  const ytProgressBar = document.getElementById("yt-progress-bar");
-  const ytStatusPct = document.getElementById("yt-status-pct");
-  const ytStatusTitleText = document.getElementById("yt-status-title-text");
-  const ytStatusMsg = document.getElementById("yt-status-msg");
-  if (ytProgressBar) ytProgressBar.style.width = "0%";
-  if (ytStatusPct) ytStatusPct.textContent = "0%";
-  if (ytStatusTitleText) ytStatusTitleText.textContent = "Đang tải video lên YouTube...";
-  if (ytStatusMsg) ytStatusMsg.textContent = "Khởi tạo kết nối Resumable Upload...";
-
-  if (video.thumbUrl) {
-    ytThumb.src = video.thumbUrl;
-    ytThumb.classList.remove("hidden");
-    ytPlaceholder.classList.add("hidden");
-  } else {
-    ytThumb.classList.add("hidden");
-    ytPlaceholder.classList.remove("hidden");
-  }
-
-  ytPreviewTitle.textContent = video.title;
-  ytPreviewJobId.textContent = video.id;
-  ytFilesize.textContent = `MP4 • ${formatBytes(video.sizeBytes)}`;
-  ytBadge.textContent = `${video.workshop.toUpperCase()} • ${video.canvas.width > video.canvas.height ? '16:9 Cinema' : '9:16 Shorts'}`;
-
-  const ytTitleOptions = document.getElementById("yt-title-options");
-  const ytTitleOptionsList = document.getElementById("yt-title-options-list");
-  const btnYtAiSuggest = document.getElementById("btn-yt-ai-suggest");
-
-  if (ytTitleOptions) ytTitleOptions.classList.add("hidden");
-  if (ytTitleOptionsList) ytTitleOptionsList.innerHTML = "";
-
-  ytTitle.oninput = () => {
-    ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
-  };
-
-  // 1. Kiểm tra xem Antigravity đã lưu sẵn Publishing Kit cho video này chưa
-  if (video.publishingKit) {
-    const pk = video.publishingKit;
-    if (pk.title) {
-      ytTitle.value = pk.title.slice(0, 100);
-      ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
-    }
-    if (pk.description || pk.youtube_description) {
-      ytDescription.value = pk.description || pk.youtube_description;
-    }
-    if (pk.tags) {
-      ytTags.value = Array.isArray(pk.tags) ? pk.tags.join(", ") : pk.tags;
-    }
-    if (pk.title_options && Array.isArray(pk.title_options) && ytTitleOptions && ytTitleOptionsList) {
-      renderTitleOptions(pk.title_options);
-    }
-  } else {
-    // Pre-fill Title with SEO tags mặc định
-    let defaultTitle = video.title;
-    if (!defaultTitle.toLowerCase().includes("#shorts") && video.canvas.height > video.canvas.width) {
-      defaultTitle = `${defaultTitle} #Shorts #OmniVideo`;
-    }
-    ytTitle.value = defaultTitle.slice(0, 100);
-    ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
-
-    // Pre-fill Description & Chapters mặc định
-    let desc = `${video.title}\n\n`;
-    desc += `Sản xuất tự hành bởi OmniVideo Studio (Phân xưởng ${video.workshop.toUpperCase()})\n\n`;
-    if (video.beats && video.beats.length > 0) {
-      desc += "TIMESTAMPS & PHÂN ĐOẠN:\n00:00 - Mở đầu & Hook\n";
-      let curSec = 2;
-      video.beats.slice(1, 8).forEach((b, i) => {
-        const mins = Math.floor(curSec / 60);
-        const secs = curSec % 60;
-        const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        const beatName = b.visual?.headline || b.rawText?.slice(0, 30) || `Nhịp ${i + 2}`;
-        desc += `${timeStr} - ${beatName}\n`;
-        curSec += 4;
-      });
-      desc += "\n";
-    }
-    desc += "#OmniVideo #Antigravity #AI #VideoAI #Shorts #Remotion";
-    ytDescription.value = desc;
-
-    // Pre-fill Tags mặc định
-    const defaultTags = ["OmniVideo", "Antigravity", "AI Video", video.workshop, "Storyverse", "Shorts"];
-    ytTags.value = defaultTags.join(", ");
-  }
-
-  // Nút AI Gợi ý Tiêu Đề & SEO
-  if (btnYtAiSuggest) {
-    btnYtAiSuggest.onclick = async () => {
-      btnYtAiSuggest.disabled = true;
-      btnYtAiSuggest.innerHTML = `<span class="animate-spin material-symbols-outlined text-[13px]">progress_activity</span> <span>Đang suy nghĩ...</span>`;
-
-      try {
-        const res = await fetch("/api/youtube/suggest-seo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jobId: video.id }),
-        });
-        const data = await res.json();
-        if (data.success && data.publishingKit) {
-          const pk = data.publishingKit;
-          video.publishingKit = pk;
-          ytTitle.value = pk.title.slice(0, 100);
-          ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
-          ytDescription.value = pk.description;
-          ytTags.value = Array.isArray(pk.tags) ? pk.tags.join(", ") : pk.tags;
-          if (pk.title_options) {
-            renderTitleOptions(pk.title_options);
-          }
-        }
-      } catch (err) {
-        console.warn("Lỗi khi AI gợi ý SEO:", err);
-      } finally {
-        btnYtAiSuggest.disabled = false;
-        btnYtAiSuggest.innerHTML = `<span class="material-symbols-outlined text-[13px]">auto_awesome</span> <span>AI Gợi Ý Tiêu Đề & SEO</span>`;
-      }
-    };
-  }
-
-  // Load available channels
-  try {
-    const res = await fetch("/api/youtube/channels");
-    const data = await res.json();
-    if (data.success && data.channels && data.channels.length > 0) {
-      const select = document.getElementById("yt-channel");
-      select.innerHTML = data.channels.map(c => 
-        `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)} ${c.hasToken ? '✓' : '(Cần token)'}</option>`
-      ).join("");
-    }
-  } catch (err) {
-    console.warn("Không thể tải danh sách kênh YouTube:", err);
-  }
-
-  // Setup Privacy Option cards click
-  const privacyCards = document.querySelectorAll(".yt-privacy-card");
-  privacyCards.forEach(card => {
-    card.onclick = () => {
-      privacyCards.forEach(c => {
-        c.classList.remove("active", "border-2", "border-red-500", "bg-surface-container-low");
-        c.classList.add("bg-surface-container-lowest", "border-outline-variant/40");
-      });
-      card.classList.add("active", "border-2", "border-red-500", "bg-surface-container-low");
-      card.classList.remove("bg-surface-container-lowest", "border-outline-variant/40");
-      const radio = card.querySelector("input[type=radio]");
-      if (radio) radio.checked = true;
-    };
-  });
-
-  ytModal.classList.add("active");
-}
-
-function closeYouTubeUploadModal() {
-  const ytModal = document.getElementById("youtube-upload-modal");
-  if (ytModal) ytModal.classList.remove("active");
-}
-
-// Handle YouTube Upload Form Submission
-const youtubeUploadForm = document.getElementById("youtube-upload-form");
-if (youtubeUploadForm) {
-  youtubeUploadForm.onsubmit = async (e) => {
-    e.preventDefault();
-    if (!currentYouTubeJob) return;
-
-    const btnSubmit = document.getElementById("btn-yt-submit");
-    const btnText = document.getElementById("btn-yt-submit-text");
-    const statusBox = document.getElementById("yt-status-box");
-    const progressBar = document.getElementById("yt-progress-bar");
-    const statusPct = document.getElementById("yt-status-pct");
-    const statusTitleText = document.getElementById("yt-status-title-text");
-    const statusMsg = document.getElementById("yt-status-msg");
-
-    const channel = document.getElementById("yt-channel").value;
-    const category = document.getElementById("yt-category").value;
-    const title = document.getElementById("yt-title").value.trim();
-    const description = document.getElementById("yt-description").value.trim();
-    const tags = document.getElementById("yt-tags").value.trim();
-    const privacy = document.querySelector('input[name="yt_privacy"]:checked')?.value || "unlisted";
-
-    btnSubmit.disabled = true;
-    btnText.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs inline-block mr-1">progress_activity</span><span>Đang truyền file lên YouTube...</span>`;
-    
-    // Hiện khung tiến trình ở đỉnh Modal
-    statusBox.classList.remove("hidden");
-    statusBox.className = "rounded-xl p-3.5 border bg-surface-container/90 backdrop-blur border-red-500/30 transition-all";
-    if (progressBar) progressBar.style.width = "5%";
-    if (statusPct) statusPct.textContent = "5%";
-    if (statusTitleText) statusTitleText.textContent = `Đang kết nối kênh: ${channel} (${privacy.toUpperCase()})`;
-    if (statusMsg) statusMsg.textContent = "Đang khởi tạo phiên Resumable Upload...";
-
-    // Polling timer cập nhật % upload thực tế từ backend
-    const jobId = currentYouTubeJob.id;
-    let pollInterval = setInterval(async () => {
-      try {
-        const sRes = await fetch(`/api/youtube/upload-status?jobId=${encodeURIComponent(jobId)}`);
-        const sData = await sRes.json();
-        if (sData.success) {
-          if (typeof sData.progress === "number" && progressBar && statusPct) {
-            progressBar.style.width = `${Math.min(100, Math.max(5, sData.progress))}%`;
-            statusPct.textContent = `${Math.min(100, Math.max(5, sData.progress))}%`;
-          }
-          if (sData.message && statusMsg) {
-            statusMsg.textContent = sData.message;
-          }
-          if (sData.progress) {
-            btnText.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs inline-block mr-1">progress_activity</span><span>Đang upload: ${sData.progress}%</span>`;
-          }
-          if (sData.status === "completed" || sData.status === "error") {
-            clearInterval(pollInterval);
-          }
-        }
-      } catch (pollErr) {
-        // bỏ qua lỗi polling mạng nhẹ
-      }
-    }, 800);
-
-    try {
-      const res = await fetch("/api/youtube/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jobId: currentYouTubeJob.id,
-          channel,
-          category,
-          title,
-          description,
-          tags,
-          privacy,
-        }),
-      });
-
-      clearInterval(pollInterval);
-      const result = await res.json();
-
-      if (result.success) {
-        if (progressBar) progressBar.style.width = "100%";
-        if (statusPct) statusPct.textContent = "100%";
-        statusBox.className = "rounded-xl p-4 border bg-emerald-950/40 border-emerald-500/50 text-emerald-200 space-y-2.5 transition-all";
-        statusBox.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-emerald-400">
-            <span class="material-symbols-outlined text-lg">check_circle</span>
-            <span class="text-sm">UPLOAD YOUTUBE HOÀN TẤT 100%!</span>
-          </div>
-          <div class="text-xs font-mono">
-            Link video: <a href="${result.url}" target="_blank" class="underline font-bold text-white hover:text-emerald-300">${result.url}</a>
-          </div>
-          <div class="text-[11px] font-mono text-emerald-400/80">
-            Chế độ: <strong>${result.privacy?.toUpperCase() || privacy.toUpperCase()}</strong> • Video ID: <code>${result.video_id || ''}</code>
-          </div>
-          <div class="pt-1 flex items-center gap-2">
-            <a href="${result.url}" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs inline-flex items-center gap-1.5 hover:bg-emerald-400 transition-colors">
-              <span class="material-symbols-outlined text-xs">open_in_new</span> Xem trên YouTube
-            </a>
-            <button type="button" class="px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30 text-xs text-white hover:bg-surface-container-high transition-colors" onclick="navigator.clipboard.writeText('${result.url}').then(()=>alert('Đã sao chép link YouTube!'))">
-              Sao chép Link
-            </button>
-          </div>
-        `;
-      } else {
-        statusBox.className = "rounded-xl p-3.5 border bg-rose-950/40 border-rose-500/50 text-rose-300 transition-all";
-        statusBox.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-rose-400 mb-1">
-            <span class="material-symbols-outlined text-base">error</span>
-            <span>LỖI UPLOAD YOUTUBE</span>
-          </div>
-          <p class="text-xs font-mono">${escapeHtml(result.error || "Không thể tải lên YouTube")}</p>
-        `;
-      }
-    } catch (err) {
-      clearInterval(pollInterval);
-      statusBox.className = "rounded-xl p-3.5 border bg-rose-950/40 border-rose-500/50 text-rose-300 transition-all";
-      statusBox.innerHTML = `
-        <div class="flex items-center gap-2 font-bold text-rose-400 mb-1">
-          <span class="material-symbols-outlined text-base">wifi_off</span>
-          <span>LỖI KẾT NỐI MẠNG</span>
-        </div>
-        <p class="text-xs font-mono">${escapeHtml(err.message)}</p>
-      `;
-    } finally {
-      clearInterval(pollInterval);
-      btnSubmit.disabled = false;
-      btnText.innerHTML = `🚀 Bắt Đầu Upload YouTube`;
-    }
-  };
-}
-
-// Khởi chạy Antigravity Stream & Sidebar/ViewMode ngay khi tải trang
-initSidebarController();
-initViewModeController();
-initAntigravityBridge();

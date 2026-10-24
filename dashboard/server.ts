@@ -242,8 +242,10 @@ async function scanVideoLibrary() {
           const relVideoUrl = `/media/${ws}/${item.isDirectory() ? encodeURIComponent(item.name) + "/" + encodeURIComponent(basename(vPath)) : encodeURIComponent(basename(vPath))}`;
           let relThumbUrl: string | null = null;
           let publishingKit: any = null;
+          let youtubeInfo: any = null;
+
           if (item.isDirectory()) {
-            const possibleThumb = ["thumb.jpg", "thumb.png", "thumbnail.jpg"].find(t => existsSync(join(wsDir, item.name, t)));
+            const possibleThumb = ["thumb.jpg", "thumb.png", "thumbnail.jpg", "thumbnail_3d.jpg"].find(t => existsSync(join(wsDir, item.name, t)));
             if (possibleThumb) {
               relThumbUrl = `/media/${ws}/${encodeURIComponent(item.name)}/${possibleThumb}`;
             }
@@ -260,6 +262,16 @@ async function scanVideoLibrary() {
                 } catch (_) {}
               }
             }
+
+            const statusPath = join(wsDir, item.name, "upload_status.json");
+            if (existsSync(statusPath)) {
+              try {
+                const sData = JSON.parse(await readFile(statusPath, "utf-8"));
+                if (sData.status === "completed" && sData.url) {
+                  youtubeInfo = sData;
+                }
+              } catch (_) {}
+            }
           }
           videos.push({
             id: vId,
@@ -273,6 +285,12 @@ async function scanVideoLibrary() {
             beats: [],
             metadata: { engine: ws === "threads" ? "Chroma Key & Headless Chrome" : "FlowKit & Imagen/Veo" },
             publishingKit,
+            youtubeInfo,
+            isPublished: !!youtubeInfo,
+            youtubeUrl: youtubeInfo ? youtubeInfo.url : null,
+            youtubeId: youtubeInfo ? youtubeInfo.video_id : null,
+            youtubePrivacy: youtubeInfo ? youtubeInfo.privacy : null,
+            youtubePublishAt: youtubeInfo ? youtubeInfo.publish_at : null,
             hasVideo: true,
             videoUrl: relVideoUrl,
             thumbUrl: relThumbUrl,
@@ -469,7 +487,7 @@ const server = createServer(async (req, res) => {
   if (pathname === "/api/youtube/upload" && req.method === "POST") {
     try {
       const body = await parseBody(req);
-      const { jobId, channel = "HanShin", title, description = "", tags = "", privacy = "unlisted", category = "24" } = body;
+      const { jobId, channel = "HanShin", title, description = "", tags = "", privacy = "unlisted", category = "24", publishAt } = body;
       if (!jobId || !title) {
         sendJson(res, 400, { success: false, error: "Thiếu jobId hoặc title" });
         return;
@@ -555,6 +573,9 @@ const server = createServer(async (req, res) => {
         "--status-file", statusFilePath,
         "--json",
       ];
+      if (publishAt) {
+        pyArgs.push("--publish-at", publishAt);
+      }
       if (tags) {
         pyArgs.push("--tags", tags);
       }
@@ -576,6 +597,14 @@ const server = createServer(async (req, res) => {
         if (code === 0) {
           try {
             const data = JSON.parse(stdout.trim());
+            // Cập nhật publishing_kit.json
+            const pkPath = join(dirname(videoPath), "publishing_kit.json");
+            let pkData: any = {};
+            if (existsSync(pkPath)) {
+              try { pkData = JSON.parse(await readFile(pkPath, "utf-8")); } catch (_) {}
+            }
+            pkData.youtube = data;
+            await writeFile(pkPath, JSON.stringify(pkData, null, 2), "utf-8").catch(() => {});
             sendJson(res, 200, data);
           } catch {
             sendJson(res, 200, { success: true, raw: stdout.trim() });
@@ -629,6 +658,168 @@ const server = createServer(async (req, res) => {
       if (!found) {
         sendJson(res, 200, { success: true, status: "idle", progress: 0, message: "Chưa có tiến trình upload" });
       }
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/video/extract-frames" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const { jobId } = body;
+      const videos = await scanVideoLibrary();
+      const video = videos.find(v => v.id === jobId);
+      if (!video) {
+        sendJson(res, 404, { success: false, error: "Không tìm thấy video" });
+        return;
+      }
+
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", jobId),
+        join(OUTPUT_DIR, "cinematic", jobId),
+        join(OUTPUT_DIR, "explainer"),
+        join(OUTPUT_DIR, "whiteboard", jobId),
+        join(OUTPUT_DIR, "news"),
+      ];
+      let jDir = "";
+      let mp4Path = "";
+      for (const d of candidateDirs) {
+        if (!existsSync(d)) continue;
+        const mp4 = [join(d, `${jobId}.mp4`), join(d, `${jobId}_master.mp4`), join(d, "master.mp4")].find(p => existsSync(p));
+        if (mp4) {
+          mp4Path = mp4;
+          jDir = d;
+          break;
+        }
+      }
+
+      if (!mp4Path) {
+        sendJson(res, 404, { success: false, error: "Không tìm thấy file MP4 để trích frame" });
+        return;
+      }
+
+      const frames: Array<{ id: number; time: string; url: string; filename: string }> = [];
+      const times = ["00:00:03", "00:00:12", "00:00:25"];
+      for (let i = 0; i < times.length; i++) {
+        const outName = `frame_candidate_${i + 1}.jpg`;
+        const outPath = join(jDir, outName);
+        await new Promise((resolve) => {
+          const p = spawn("ffmpeg", ["-ss", times[i], "-i", mp4Path, "-vframes", "1", "-q:v", "2", outPath, "-y"]);
+          p.on("close", resolve);
+        });
+        if (existsSync(outPath)) {
+          frames.push({
+            id: i + 1,
+            time: times[i].slice(3),
+            filename: outName,
+            url: `/media/${video.workshop}/${encodeURIComponent(basename(jDir))}/${outName}?t=${Date.now()}`,
+          });
+        }
+      }
+
+      sendJson(res, 200, { success: true, frames });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/video/set-thumbnail" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const { jobId, frameName, base64Data } = body;
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", jobId),
+        join(OUTPUT_DIR, "cinematic", jobId),
+        join(OUTPUT_DIR, "explainer"),
+        join(OUTPUT_DIR, "whiteboard", jobId),
+        join(OUTPUT_DIR, "news"),
+      ];
+      let jDir = candidateDirs.find(d => existsSync(d));
+      if (!jDir) {
+        sendJson(res, 404, { success: false, error: "Không tìm thấy thư mục job" });
+        return;
+      }
+
+      const thumbTarget = join(jDir, "thumb.jpg");
+      if (frameName) {
+        const srcPath = join(jDir, frameName);
+        if (existsSync(srcPath)) {
+          const content = await readFile(srcPath);
+          await writeFile(thumbTarget, content);
+        }
+      } else if (base64Data) {
+        const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
+        await writeFile(thumbTarget, Buffer.from(cleanBase64, "base64"));
+      }
+
+      sendJson(res, 200, { success: true, message: "Đã cập nhật thumbnail thành công!" });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/commander/report" && req.method === "GET") {
+    try {
+      const pyArgs = [join(ROOT_DIR, "core", "shift_reporter.py")];
+      const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+      let stdout = "";
+      proc.stdout.on("data", d => (stdout += d.toString()));
+      proc.on("close", () => {
+        sendJson(res, 200, { success: true, markdown: stdout });
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/commander/scout-github" && req.method === "GET") {
+    try {
+      const pyArgs = [join(ROOT_DIR, "scripts", "scout_github_trending.py"), "--limit", "6", "--json"];
+      const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+      let stdout = "";
+      proc.stdout.on("data", d => (stdout += d.toString()));
+      proc.on("close", () => {
+        try {
+          const data = JSON.parse(stdout.trim());
+          sendJson(res, 200, data);
+        } catch {
+          sendJson(res, 200, { success: true, raw: stdout });
+        }
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/commander/quality-audit" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const { jobId } = body;
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", jobId),
+        join(OUTPUT_DIR, "cinematic", jobId),
+        join(OUTPUT_DIR, "explainer"),
+        join(OUTPUT_DIR, "whiteboard", jobId),
+        join(OUTPUT_DIR, "news"),
+      ];
+      let jDir = candidateDirs.find(d => existsSync(d)) || join(OUTPUT_DIR, "threads", jobId);
+      const pyArgs = [join(ROOT_DIR, "core", "quality_gatekeeper.py"), jDir];
+      const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+      let stdout = "";
+      proc.stdout.on("data", d => (stdout += d.toString()));
+      proc.on("close", () => {
+        try {
+          const data = JSON.parse(stdout.trim());
+          sendJson(res, 200, data);
+        } catch {
+          sendJson(res, 200, { success: true, raw: stdout });
+        }
+      });
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }
