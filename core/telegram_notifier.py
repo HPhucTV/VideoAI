@@ -24,8 +24,8 @@ if env_file.exists():
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip())
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8956619114:AAEeAJ-cGCYoFYYNXctxy8eMq1dHSMyNyNo")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "6020715270")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 def send_telegram_message(text: str, parse_mode: str = "HTML") -> dict:
     """Send a text message to Telegram."""

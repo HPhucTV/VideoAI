@@ -92,9 +92,9 @@ function Open-WhiteboardEditor {
 function Open-VideoDashboard {
     Write-Host ""
     Write-Host "Đang khởi chạy Video Library Dashboard (cổng 3333)..." -ForegroundColor Green
-    Write-Host "Mở trình duyệt tại: http://localhost:8100" -ForegroundColor Cyan
-    Start-Process "http://localhost:8100"
-    # npm.cmd run dashboard
+    Write-Host "Mở trình duyệt tại: http://localhost:3333" -ForegroundColor Cyan
+    Start-Process "http://localhost:3333"
+    npm.cmd run dashboard
 }
 
 function Run-RemotionStudio {
@@ -246,3 +246,4 @@ function Main-Loop {
 }
 
 Main-Loop
+

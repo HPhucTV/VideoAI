@@ -11,8 +11,9 @@
 | :--- | :--- | :--- | :--- |
 | **Python** | Python 3.10 – 3.12 | Chạy Xưởng 3 (Bảng trắng vẽ tay), OpenCV, PyAV | **Đã có sẵn** (`Python 3.12.10`) |
 | **Chocolatey** | Choco 2.x | Quản lý và cài đặt tự động các gói phần mềm | **Đã có sẵn** (`Choco 2.7.4`) |
-| **Node.js** | **Node.js >= 20.12.0 LTS** | Chạy Core Hub, Xưởng 1 (HyperFrames) & Xưởng 2 (Remotion) | Cần cài đặt |
-| **FFmpeg & FFprobe** | FFmpeg 6.0+ | Đo thời lượng audio micro-giây, mix âm thanh, render video | Cần cài đặt |
+| **Node.js** | **Node.js >= 20.12.0 LTS** | Chạy Core Hub, Xưởng 1 (HyperFrames), Xưởng 2 (Remotion) & Dashboard | **Đã có sẵn** (`Node.js v24.21.0`) |
+| **FFmpeg & FFprobe** | FFmpeg 6.0+ | Đo thời lượng audio micro-giây, mix âm thanh, render video | **Đã có sẵn** (`FFmpeg 9.0.2`) |
+| **Blender** | **Blender 5.2 LTS** | Dựng hoạt hình 3D, camera tracking, render EEVEE Next (Xưởng 4) | **Đã có sẵn** (`Blender 5.2.2`) |
 
 ---
 

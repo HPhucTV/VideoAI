@@ -269,6 +269,52 @@ export const ARCHETYPES: Record<BeatArchetype, ArchetypeDefinition> = {
         retentionTip: "Ví dụ: 'Bạn đánh giá thế nào về bước đi này? Thảo luận bên dưới nhé!'"
       }
     ]
+  },
+
+  // 6. CINEMATIC 3D / DONGHUA (Phim hoạt hình 3D & Tiên hiệp chuẩn điện ảnh)
+  cinematic: {
+    id: "cinematic",
+    name: "Cinematic 3D / Donghua Điện Ảnh",
+    description: "Cấu trúc 5 Hồi điện ảnh tiêu chuẩn Hollywood/Donghua (45-60 shots/5 phút, ASL 4.0-7.0s, 100% Gen V AI video, Zero-Loop Mandate).",
+    targetPlatform: "both",
+    recommendedDurationSec: { min: 60, ideal: 300, max: 600 },
+    beatRoles: [
+      {
+        role: "act_1_establishment",
+        name: "Hồi 1: Khởi Đầu & Mâu Thuẫn Ngầm",
+        purpose: "Establishing shot bối cảnh 4K, giới thiệu nhân vật chính và mâu thuẫn ngầm đe dọa.",
+        idealPercent: "0% - 15%",
+        retentionTip: "3 giây đầu gây sốc bằng góc máy đại cảnh hoành tráng hoặc câu tuyên bố chấn động."
+      },
+      {
+        role: "act_2_rising_tension",
+        name: "Hồi 2: Thử Thách & Đối Đầu Trực Diện",
+        purpose: "Xung đột bùng nổ, đối thoại luân phiên Shot/Reverse-Shot (nhịp thoại vàng <= 20 từ).",
+        idealPercent: "15% - 40%",
+        retentionTip: "Chuyển góc máy liên tục qua vai (OTS) và cận cảnh phản ứng người nghe."
+      },
+      {
+        role: "act_3_crisis_rehook",
+        name: "Hồi 3: Biến Cố Nguy Cấp & Re-hook Đỉnh Điểm",
+        purpose: "Tình huống nghìn cân treo sợi tóc, nhân vật rơi vào bẫy tuyệt vọng.",
+        idealPercent: "40% - 70%",
+        retentionTip: "Kích hoạt tiếng rền trầm Sub-bass drone 48Hz, đặc tả chi tiết ánh mắt hoặc chuôi kiếm."
+      },
+      {
+        role: "act_4_climax_battle",
+        name: "Hồi 4: Đại Chiến & Tuyệt Kỹ Quyết Định",
+        purpose: "Cao trào bùng nổ, thi triển thần thông võ học, chuyển động camera dồn dập (ASL 3.5s - 5.0s).",
+        idealPercent: "70% - 90%",
+        retentionTip: "100% video chuyển động Veo 2 sống động, kết hợp âm thanh va chạm Foley uy lực."
+      },
+      {
+        role: "act_5_resolution_loop",
+        name: "Hồi 5: Hóa Giải & Vòng Lặp Vận Mệnh",
+        purpose: "Hóa giải mâu thuẫn, đúc kết vận mệnh và câu thoại kết nối vòng lặp (The Infinite Loop).",
+        idealPercent: "90% - 100%",
+        retentionTip: "Câu kết móc nối tự nhiên về câu thoại mở đầu để đạt tỉ lệ Retention > 100%."
+      }
+    ]
   }
 };
 

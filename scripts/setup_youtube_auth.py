@@ -42,10 +42,7 @@ SCOPES = [
 DEFAULT_CHANNEL = "Giai Ma Tech"
 
 
-def get_channel_dir(channel_name: str) -> Path:
-    cdir = CINEMATIC_DIR / "youtube" / "channels" / channel_name
-    cdir.mkdir(parents=True, exist_ok=True)
-    return cdir
+from youtube.auth import get_channel_dir
 
 
 def check_or_setup_auth(channel_name: str = DEFAULT_CHANNEL):
@@ -111,7 +108,7 @@ def check_or_setup_auth(channel_name: str = DEFAULT_CHANNEL):
             port=8088,
             authorization_prompt_message=prompt_msg,
             success_message="Xac thuc thanh cong! Ban co the dong tab trinh duyet nay lai va quay ve IDE.",
-            open_browser=False,
+            open_browser=True,
             prompt="consent",
             access_type="offline",
         )

@@ -20,37 +20,33 @@
                             │  (Schema Zod: Metadata, Beats, Audio, Visual)│
                             └──────────────────────┬───────────────────────┘
                                                    │
-         ┌─────────────────────────────────────────┼─────────────────────────────────────────┐
-         │                                         │                                         │
-         ▼                                         ▼                                         ▼
-┌─────────────────────────┐               ┌─────────────────────────┐               ┌─────────────────────────┐
-│ 🏭 XƯỞNG 1: FAST-NEWS   │               │ 🏭 XƯỞNG 2: EXPLAINER   │               │ 🏭 XƯỞNG 3: WHITEBOARD  │
-│  & MOTION GRAPHICS      │               │   & VIDEO-AS-CODE       │               │  & HAND-DRAWN STORY     │
-├─────────────────────────┤               ├─────────────────────────┤               ├─────────────────────────┤
-│ • Adapter:              │               │ • Adapter:              │               │ • Adapter:              │
-│   job.json → script.json│               │   job.json → Remotion   │               │   job.json → SRT &      │
-│ • Engine: HyperFrames   │               │ • Engine: Remotion 4.0  │               │   scene.annotation.json │
-│   (HTML/CSS + GSAP)     │               │   (React 19 + Tailwind) │               │ • Engine: Python 3.12   │
-│ • Định dạng: 9:16 Dọc   │               │ • Định dạng: 9:16 & 16:9│               │   (OpenCV + PyAV)       │
-│ • Tiêu chuẩn: 30 FPS    │               │ • Tiêu chuẩn: 30 FPS    │               │ • Định dạng: 16:9 & 9:16│
-│                         │               │ • Preview: Remotion Web │               │ • Tiêu chuẩn: 30 FPS    │
-│                         │               │                         │               │ • Preview: Region Editor│
-└────────────┬────────────┘               └────────────┬────────────┘               └────────────┬────────────┘
-             │                                         │                                         │
-             └─────────────────────────────────────────┼─────────────────────────────────────────┘
-                                                       │
-                                                       ▼
-                            ┌──────────────────────────────────────────────┐
-                            │        HẠ TẦNG DÙNG CHUNG (SHARED CORE)      │
-                            ├──────────────────────────────────────────────┤
-                            │ 🎙️ core/tts: Edge TTS 0đ, Vbee, ElevenLabs   │
-                            │ 🇻🇳 core/phonetics: Chuẩn hóa ngữ âm theo bối  │
-                            │    cảnh (Single Implementation, expose CLI)  │
-                            │ ⏱️ core/audio: Đo duration chuẩn bằng        │
-                            │    ffprobe (MP3 header parser làm fallback)  │
-                            │ 💾 core/cache/tts/: Lưu trữ audio băm SHA-256│
-                            │ 📁 shared-assets/: SFX, BGM, Fonts dùng chung│
-                            └──────────────────────────────────────────────┘
+         ┌───────────────────┬─────────────────────┼─────────────────────┬───────────────────┐
+         │                   │                     │                     │                   │
+         ▼                   ▼                     ▼                     ▼                   ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ 🏭 XƯỞNG 1:     │ │ 🏭 XƯỞNG 2:     │ │ 🏭 XƯỞNG 3:         │ │ 🏭 XƯỞNG 4:     │ │ 🌐 VIDEO LIBRARY│
+│ FAST-NEWS       │ │ EXPLAINER       │ │ WHITEBOARD AUDIO    │ │ 3D BLENDER      │ │ DASHBOARD       │
+│ & MOTION GRAPHIC│ │ & VIDEO-AS-CODE │ │ DRAMA & MULTI-SCENE │ │ (EEVEE / FLOWKIT│ │ (WEB UI :3333)  │
+├─────────────────┤ ├─────────────────┤ ├─────────────────────┤ ├─────────────────┤ ├─────────────────┤
+│ • HyperFrames   │ │ • Remotion 4.0  │ │ • Python OpenCV/PyAV│ │ • Blender 5.2   │ │ • Node.js/TS    │
+│   HTML/CSS+GSAP │ │   React 19 + TW │ │ • Đa phân cảnh      │ │   `bpy` Headless│ │ • Quản lý kho   │
+│ • 9:16 Dọc      │ │ • 9:16 & 16:9   │ │ • Hand Eraser wipe  │ │ • Rigged Anime  │ │   video 4 xưởng │
+│ • 30 FPS        │ │ • 30 FPS        │ │ • 90 FPS siêu nét   │ │ • 60 FPS        │ │ • Xem trước     │
+│                 │ │                 │ │ • YouTube 60m drama │ │ • EEVEE Next 3D │ │   frame live    │
+└────────┬────────┘ └────────┬────────┘ └──────────┬──────────┘ └────────┬────────┘ └────────┬────────┘
+         │                   │                     │                     │                   │
+         └───────────────────┴─────────────────────┼─────────────────────┴───────────────────┘
+                                                   │
+                                                   ▼
+                        ┌──────────────────────────────────────────────┐
+                        │        HẠ TẦNG DÙNG CHUNG (SHARED CORE)      │
+                        ├──────────────────────────────────────────────┤
+                        │ 🎙️ core/tts: Edge TTS 0đ, Vbee, ElevenLabs   │
+                        │ 🇻🇳 core/phonetics: Chuẩn hóa ngữ âm tiếng Việt│
+                        │ ⏱️ core/audio: Đo duration chuẩn micro-giây  │
+                        │ 💾 core/cache/tts/: Lưu trữ audio băm SHA-256│
+                        │ 📁 shared-assets/: SFX, BGM, Fonts dùng chung│
+                        └──────────────────────────────────────────────┘
 ```
 
 ---
@@ -63,34 +59,43 @@
 export interface VideoJob {
   jobId: string;              // UUID hoặc slug-timestamp
   title: string;              // Tiêu đề video
-  workshop: "news" | "explainer" | "whiteboard";
-  targetPlatform: "tiktok" | "youtube_shorts" | "youtube_long";
+  workshop: "news" | "explainer" | "whiteboard" | "blender";
+  archetype?: "storytelling" | "explainer" | "versus" | "mythbuster" | "news";
+  targetPlatform: "tiktok" | "youtube_shorts" | "youtube_long" | "youtube";
   canvas: {
     width: number;            // 1080 (dọc) hoặc 1920 (ngang)
     height: number;           // 1920 (dọc) hoặc 1080 (ngang)
-    fps: 30;                  // Chuẩn 30fps mặc định toàn hệ thống
+    fps: number;              // 30, 60 hoặc 90 fps tùy phân xưởng
   };
   voice: {
-    provider: "edge-tts" | "vbee" | "lucylab" | "elevenlabs";
-    voiceId: string;          // Mặc định: vi-VN-NamMinhNeural hoặc vi-VN-HoaiMyNeural
-    speed: number;            // 1.0 đến 1.15
+    provider?: "edge-tts" | "vbee" | "lucylab" | "elevenlabs";
+    voiceId?: string;         // Mặc định: vi-VN-NamMinhNeural hoặc vi-VN-HoaiMyNeural
+    speed?: number;           // 0.8 đến 1.25
   };
   beats: VideoBeat[];         // Danh sách các phân cảnh theo Beat Ratio Budget
+  metadata?: {
+    channel?: string;
+    author?: string;
+    tags?: string[];
+    characters?: string[];
+    characters_voice?: Record<string, any>;
+  };
   output: {
-    dir: string;              // output/<workshop>/<jobId>/
-    videoPath: string;        // output/<workshop>/<jobId>/video.mp4
-    captionPath: string;      // output/<workshop>/<jobId>/caption.txt
+    dir?: string;             // output/<workshop>/<jobId>/
+    videoPath?: string;       // output/<workshop>/<jobId>/video.mp4
+    captionPath?: string;     // output/<workshop>/<jobId>/caption.txt
   };
 }
 
 export interface VideoBeat {
   id: string;                 // beat_01, beat_02...
-  role: "hook" | "problem" | "solution" | "workflow" | "benefits" | "outro";
+  role: string;               // hook, problem, solution, workflow...
   rawText: string;            // Text kịch bản gốc của tác giả
-  normalizedVoiceText: string;// Text sau khi qua core/phonetics (chuẩn đọc cho TTS)
-  voiceFile: string;          // Đường dẫn file cache: core/cache/tts/<hash>.mp3
-  durationSec: number;        // Đo chuẩn bằng ffprobe
-  durationFrames: number;     // durationSec * fps (30fps)
+  normalizedVoiceText?: string;// Text sau khi qua core/phonetics
+  speaker?: string;           // Tên nhân vật thoại hoặc "narrator"
+  voiceFile?: string;         // Đường dẫn file cache: core/cache/tts/<hash>.mp3
+  durationSec?: number;       // Đo chuẩn bằng ffprobe
+  durationFrames?: number;    // durationSec * fps
   visual: Record<string, any>;// Payload metadata riêng của xưởng tương ứng
 }
 ```
@@ -98,7 +103,8 @@ export interface VideoBeat {
 ### Cơ chế Adapter cho từng xưởng:
 1. **Xưởng 1 (News Adapter):** Chuyển `beats[]` thành `scenes[]` và ánh xạ vào 1 trong 6 template HyperFrames (`breaking-news`, `stat-callout`, `split-screen`, v.v.).
 2. **Xưởng 2 (Explainer Adapter):** Nạp `beats[]` vào `RemotionProps`, render thông qua Composition 6 nhịp tâm lý của Remotion.
-3. **Xưởng 3 (Whiteboard Adapter):** Nạp `beats[]` sinh ra `input.srt` chuẩn thời lượng thật và cấu trúc khung xương cho `scene.annotation.json`.
+3. **Xưởng 3 (Whiteboard Adapter):** Phân cụm `beats[]` thành các `scenes/scene-XX/` (`cluster_beats_into_scenes`), sinh audio cục bộ và toàn cục, `scene.annotation.json`, hoạt cảnh vẽ tay 90 FPS kèm hiệu ứng lau bảng bàn tay Hand Eraser.
+4. **Xưởng 4 (Blender 3D Adapter):** Nạp `beats[]` ánh xạ vào camera timeline (dolly/orbit/pan), pose xương nhân vật anime rigged qua `pose_engine.py`, render EEVEE Next 60 FPS. *(Đang được chuẩn bị tái cấu trúc sang kiến trúc Generative AI Video từ FlowKit)*.
 
 ---
 

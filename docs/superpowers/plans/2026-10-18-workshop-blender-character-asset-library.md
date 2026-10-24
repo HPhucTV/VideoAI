@@ -176,15 +176,15 @@ git commit -m "feat(blender): render high-fidelity rigged anime character with d
 **Files:**
 - Modify: `workshops/workshop-blender/scripts/blender_renderer.py`
 
-- [ ] **Step 1: Tinh chỉnh bối cảnh và ánh sáng điện ảnh**
+- [x] **Step 1: Tinh chỉnh bối cảnh và ánh sáng điện ảnh**
 
 - Nâng cấp bệ đài đá bát giác với hoa văn và viền ngọc.
 - Thần Kiếm trung tâm phát sáng kiếm khí lam ngọc tỏa sương mù thể tích (*Volumetric Light Shafts / Fog*).
 - Đèn chiếu chân dung chuyên dụng (*Portrait Key Light*) làm tôn lên vẻ đẹp của khuôn mặt anime nhân vật.
 
-- [ ] **Step 2: Chạy render thử 1 frame và kiểm tra độ thẩm mỹ**
+- [x] **Step 2: Chạy render thử 1 frame và kiểm tra độ thẩm mỹ**
 
-- [ ] **Step 3: Git commit**
+- [x] **Step 3: Git commit**
 
 ```bash
 git add workshops/workshop-blender/scripts/blender_renderer.py

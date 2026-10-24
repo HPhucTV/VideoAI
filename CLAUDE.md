@@ -35,6 +35,8 @@ See [AGENTS.md](file:///c:/Users/tranh/Documents/Duy/VideoAI/AGENTS.md) and [doc
 5. **Nested Thread View & Zero Karaoke Clutter:** Always display parent context snippet with gray vertical connector line. Remove distracting bottom karaoke boxes.
 6. **Audio-Visual Punchline Comedy Sync:** Card entry at `t = 0.0s` only plays subtle `pop.wav` (vol 0.60). Comedic Meme SFX (`vine_boom.wav`, `bruh.wav`, `quack.wav`, etc.) hits at the **punchline moment** synchronized with a die-cut **Meme Sticker (PNG in `assets/memes/`) popping up via spring bounce** in the lower third area.
 7. **Dynamic BGM Ducking:** Base volume `0.35 - 0.40` ducked automatically during speech via sidechain compression, swelling during awkward silences and punchlines.
+8. **Chroma-Key Meme Cutout & Camera Punch-in Zoom:** Reaction memes (The Rock, Huh Cat, Pedro Pascal, Pop Cat, Side-Eye, Walter White) use green-screen cutouts via `colorkey=0x00FF00` directly overlaid on video, completely eliminating boxed borders. Cards execute a 1.10x Camera Punch Zoom at punchline hits.
+9. **Kinetic Subtitles & Multi-Voice Casting:** Chunked 3-4 word kinetic subtitles highlight in Neon Cyan (`#00DAF5`). Commenter voices dynamically alternate male/female with pitch modulation (e.g. -5Hz for parents). Diverse backgrounds: GTA 5 Mega Ramp, Subway Surfers, Minecraft.
 
 ## Quick CLI Execution
 - Run unified studio pipeline (Gates 3 -> 7):

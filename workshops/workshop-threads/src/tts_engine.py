@@ -502,6 +502,13 @@ async def _synthesize_async(
     rate: str = "+25%",
     pitch: str = "+0Hz",
 ) -> None:
+    # Nếu văn bản chỉ toàn dấu câu, dấu chấm hoặc rỗng, sinh 0.3s silence an toàn
+    clean_alpha = "".join(c for c in text if c.isalnum())
+    if not clean_alpha:
+        cmd = ["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "0.3", "-c:a", "libmp3lame", str(out_file)]
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=_WIN_FLAGS)
+        return
+
     voices_to_try = [voice, "vi-VN-NamMinhNeural", "vi-VN-HoaiMyNeural"]
     rates_to_try = [rate, "+25%", "+0%"]
     pitches_to_try = [pitch, "+0Hz"]

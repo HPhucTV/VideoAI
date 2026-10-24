@@ -47,22 +47,25 @@ window.__timelines["news-video"] = tl;
     }
   });
 
-  // ── HOOK ──────────────────────────────────────────────────────────────
+  // ── HOOK (3-Second Disruption Hook Punch) ───────────────────────────
   function animateHook(scene, tl, start) {
     const headline = scene.querySelector(".hook-headline");
     if (headline) {
-      // Scale pop in
-      tl.fromTo(headline, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6 }, start + 0.15);
+      // 3-Second Disruption: Fast zoom punch from 1.35 down to 1.0 with impact shake
+      tl.fromTo(headline, { scale: 1.35, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.38 }, start + 0.1);
+      tl.fromTo(scene, { x: -8 }, { x: 8, duration: 0.04, repeat: 3, yoyo: true }, start + 0.1);
+      tl.set(scene, { x: 0 }, start + 0.28);
+
       // Shimmer sweep after entrance
       const mask = headline.querySelector(".shimmer-mask");
       if (mask) {
-        tl.fromTo(mask, { x: "-120%" }, { x: "120%", duration: 1.0 }, start + 0.7);
+        tl.fromTo(mask, { x: "-120%" }, { x: "120%", duration: 0.8 }, start + 0.5);
       }
     }
 
     const subhead = scene.querySelector(".hook-subhead");
     if (subhead) {
-      tl.fromTo(subhead, { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, start + 0.55);
+      tl.fromTo(subhead, { y: 50, opacity: 0, scale: 0.92 }, { y: 0, opacity: 1, scale: 1, duration: 0.45 }, start + 0.42);
     }
   }
 

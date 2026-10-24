@@ -5,10 +5,11 @@
 
 ---
 
-## 📊 TỔNG QUAN 5 GIAI ĐOẠN
+## 📊 TỔNG QUAN 8 GIAI ĐOẠN
 
 ```
-[Phase 1: Môi trường & Nền tảng] ──► [Phase 2: Lõi Dùng Chung & job.json] ──► [Phase 3: Tích hợp 3 Xưởng] ──► [Phase 4: CLI Launcher & Skills] ──► [Phase 5: Kiểm Thử Thực Tế]
+[Phase 1: Nền tảng] ──► [Phase 2: Lõi job.json] ──► [Phase 3: Tích hợp 3 Xưởng] ──► [Phase 4: Launcher & Skills] ──► [Phase 5: Kiểm Thử]
+        ──► [Phase 6: Xưởng 3 Đa Cảnh & YouTube 60m] ──► [Phase 7: Xưởng 4 Blender 3D] ──► [Phase 8: Tái Cấu Trúc Xưởng 4 FlowKit]
 ```
 
 ---
@@ -100,3 +101,70 @@
   - Thành phẩm: `output/whiteboard/test-whiteboard-stream.mp4` (2.27 MB, 60fps).
   - Khung SRT & Annotation: `output/whiteboard/job-sample-docker-24/input.srt` & `scene-01.annotation.json`.
 - [x] **Bước 5.4:** Kiểm tra độ khớp âm thanh, vùng an toàn Safe Zones trên thiết bị di động thật (Margin Top 140px, Bottom 360px, Right 120px; thời lượng âm thanh khớp chính xác từng mili-giây).
+
+---
+
+## 📌 GIAI ĐOẠN 6: NÂNG CẤP XƯỞNG 3 ĐA PHÂN CẢNH, XÓA BẢNG VÀ TRUYỆN AUDIO 60 PHÚT (COMPLETED)
+*Mục tiêu: Đưa Xưởng 3 trở thành cỗ máy sản xuất truyện audio & video dài chuyên nghiệp cho YouTube.*
+
+- [x] **Bước 6.1: Thuật toán phân cụm đa cảnh (`cluster_beats_into_scenes`)**:
+  - Tự động nhóm các beat theo chương (`badge`) hoặc số lượng tối đa (`max_beats_per_scene`).
+  - Sinh thư mục con cục bộ `scenes/scene-XX/` chứa `scene-XX.mp3`, `scene-XX.srt`, `scene-XX.annotation.json` và `IMAGE_PROMPT.md`.
+- [x] **Bước 6.2: Hoạt cảnh bàn tay cầm khăn lau xóa bảng (`--with-eraser`)**:
+  - Triển khai thuật toán lau bảng đường ziczac hình sin mềm mại (`sr._feathered_disk`) đưa canvas về nền giấy kem `#F6F1E3`.
+  - Kích hoạt giữa các phân cảnh nối tiếp nhau và tự động tắt ở cảnh cuối cùng.
+- [x] **Bước 6.3: Nâng cấp pipeline xuất video đa phân cảnh (`export_video.py`)**:
+  - Hỗ trợ chuẩn khung hình siêu mượt **90 FPS**.
+  - Hòa trộn BGM Ducking 6.0:1 tự động hạ âm nền khi có giọng đọc.
+  - Tự động ghép nối các phân cảnh thành video tổng bằng `merge_scenes.py` không suy hao chất lượng.
+- [x] **Bước 6.4: Tùy chọn tắt phụ đề (`--no-subtitles`) & Tự động tạo YouTube Metadata**:
+  - Tùy chọn `--no-subtitles` giúp render nhanh với `-c:v copy` và giữ khung vẽ nét doodle thanh sạch.
+  - Tự động tạo gói YouTube SEO, tiêu đề, mô tả và bảng Timestamps/Chapters (`export_metadata.py`).
+- [x] **Bước 6.5: Sản xuất thành công video Audio Drama dài 60 phút**:
+  - Thành phẩm: `output/whiteboard/job-hop-dong-100-ty-tong-tai.mp4` (Thời lượng: 01:00:05, 355.5 MB, 90 FPS, 9 chương hồi, 9.319 từ).
+
+---
+
+## 📌 GIAI ĐOẠN 7: KHỞI TẠO XƯỞNG 4 BLENDER 3D VÀ VIDEO LIBRARY DASHBOARD (COMPLETED)
+*Mục tiêu: Xây dựng nền tảng đồ họa không gian 3D và Web UI quản lý kho video.*
+
+- [x] **Bước 7.1: Bổ sung enum `"blender"` vào Zod schema `core/schema/job.ts`**.
+- [x] **Bước 7.2: Xây dựng `job_adapter.py` cho Xưởng 4**:
+  - Đọc `job.json`, tính toán timeline frames, camera motion (dolly, orbit, pan).
+- [x] **Bước 7.3: Xây dựng thư viện nhân vật anime 3D rigged**:
+  - Cấu trúc `assets/characters/nam-chinh` và `nu-chinh` định dạng GLB/GLTF.
+- [x] **Bước 7.4: Xây dựng `pose_engine.py`**:
+  - Tự động ánh xạ xương humanoid, thiết lập tư thế và hoạt ảnh chớp mắt ngẫu nhiên tự nhiên.
+- [x] **Bước 7.5: Pipeline xuất video 3D (`scripts/export_3d_video.py`)**:
+  - Dựng bối cảnh procedural 3D (đài tế, trụ đá phong hóa, thần kiếm, rim lighting).
+  - Render bằng EEVEE Next 60 FPS kết hợp hòa trộn âm thanh chuẩn EBU R128 (-14 LUFS).
+  - Thành phẩm mẫu: `output/blender/job-xianxia-3d-sample.mp4`.
+- [x] **Bước 7.6: Xây dựng Web UI Video Library Dashboard (`dashboard/server.ts`)**:
+  - Giao diện web chạy trên cổng `3333` giúp quản lý, xem trước và tải video từ cả 4 xưởng.
+
+---
+
+## 📌 GIAI ĐOẠN 8: TÁI CẤU TRÚC XƯỞNG 4 VỚI NỀN TẢNG FLOWKIT CINEMATIC (COMPLETED)
+*Mục tiêu: Đập đi xây dựng lại Xưởng 4, tích hợp công nghệ AI Generative Video (Google Flow / Veo 2 / Imagen 3) thông qua nền tảng FlowKit.*
+
+- [x] **Bước 8.1: Khảo sát và giải mã toàn diện kiến trúc repo FlowKit (`workshops/workshop-cinematic`)**:
+  - Phân tích cơ chế Chrome Extension (MV3) bridge kết nối WebSocket (`:9222`) với local FastAPI Agent (`:8100`).
+  - Nắm vững cách ký `batchexecute` RPCs và mint token reCAPTCHA single-use trực tiếp trong ngữ cảnh tab đăng nhập `flow.google.com`.
+  - Nghiên cứu cơ chế nhất quán nhân vật (Character consistency references), ghép cảnh chéo (scene chaining), và ráp phim Hollywood master film.
+- [x] **Bước 8.2: Thiết lập môi trường Python & Dependencies**:
+  - Tạo virtualenv Python 3.12 (`workshops/workshop-cinematic/.venv/`).
+  - Cài đặt đầy đủ `fastapi`, `uvicorn`, `aiosqlite`, `websockets`, `google-api-python-client`, `pytest`, `pytest-asyncio`.
+  - Cài đặt và build thành công React Ops Console Dashboard (`workshops/workshop-cinematic/dashboard`).
+- [x] **Bước 8.3: Mở rộng Hợp Đồng Kịch Bản `core/schema/job.ts`**:
+  - Bổ sung giá trị `"cinematic"` vào enum `workshop`.
+  - Bổ sung các chuyển động camera điện ảnh (`orbit_360`, `dolly_in`, `dolly_out`, `tilt_up`, `tilt_down`, `fpv`) vào `VisualCueSchema`.
+  - Đảm bảo 100% tương thích ngược với `"blender"` (Legacy local render).
+- [x] **Bước 8.4: Xây dựng Job Adapter (`workshops/workshop-cinematic/job_adapter.py`)**:
+  - Ánh xạ tự động từ `job.json` sang FlowKit Project, Characters, Scenes, Cues trong SQLite `flow_agent.db`.
+  - Viết bộ unit test `tests/test_cinematic_adapter.py` đạt 100% pass.
+- [x] **Bước 8.5: Xây dựng CLI Pipeline Runner (`scripts/run_pipeline.py`)**:
+  - Cung cấp lệnh CLI tổng hợp: kiểm tra sức khỏe Agent/Extension (`--check`), nạp kịch bản (`--import-only`), kiểm tra trạng thái (`--status`), kích hoạt sinh ảnh hàng loạt (`--generate-images`), kích hoạt sinh video Veo 2 (`--generate-videos`), và ghép Master Film (`--build-film`).
+- [x] **Bước 8.6: Tích hợp vào Studio Launcher (`studio.ps1`)**:
+  - Menu [8] nâng cấp thành menu tương tác chuyên biệt cho Cinematic Studio với đầy đủ tùy chọn khởi chạy Agent, Dashboard, Runner và hướng dẫn Extension.
+
+

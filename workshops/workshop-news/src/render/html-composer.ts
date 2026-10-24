@@ -65,7 +65,7 @@ export function composeHtml(args: ComposeArgs): string {
   }).join("\n");
 
   // Persistent shell — uses tiktok handle in footer
-  const shellHtml = renderShell(script.metadata, tiktok);
+  const shellHtml = renderShell(script.metadata, tiktok, tiktokAvatar);
 
   const animJs = readFileSync(join(TPL_DIR, "animations.js"), "utf8");
 
@@ -80,19 +80,20 @@ export function composeHtml(args: ComposeArgs): string {
 }
 
 // ── PERSISTENT SHELL ───────────────────────────────────────────────────────
-function renderShell(metadata: Script["metadata"], tiktok: TiktokConfig): string {
+function renderShell(metadata: Script["metadata"], tiktok: TiktokConfig, tiktokAvatar: string = "tiktok-avatar.png"): string {
   const channel = escapeHtml(metadata.channel);
   const domain = escapeHtml(metadata.source.domain);
   const handle = escapeHtml(tiktok.handle);
+  const tag = escapeHtml(tiktok.followers || "CÔNG NGHỆ · LẬP TRÌNH · AI");
   return `
 <!-- Shell: persistent brand elements (no data-start → always visible) -->
 <div class="shell-bg"></div>
 
 <div class="brand-shell-header">
-  <div class="brand-icon">&gt;_</div>
+  <div class="brand-icon" style="overflow:hidden;padding:0;background:none;border-radius:50%;"><img src="${escapeHtml(tiktokAvatar)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.innerText='&gt;_'" /></div>
   <div class="brand-text">
     <div class="brand-name">${channel}</div>
-    <div class="brand-tag">BLOG IT</div>
+    <div class="brand-tag">${tag}</div>
   </div>
 </div>
 

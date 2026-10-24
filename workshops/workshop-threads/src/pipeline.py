@@ -30,7 +30,7 @@ _SFX_POP = _ASSETS_DIR / "sfx" / "pop.wav"
 _BGM_DIR = _ASSETS_DIR / "bgm"
 _CACHE_DIR = _WORKSHOP_DIR / "cache"
 
-from tts_engine import synthesize_speech, detect_emotion
+from tts_engine import synthesize_speech, detect_emotion, get_voice_profile_for_speaker
 from card_engine import render_card
 from compositor import make_threads_video
 from scraper import cache_media
@@ -45,6 +45,7 @@ def build_threads_video(
     output_dir: Optional[str | Path] = None,
     theme: str = "dark",
     background_path: Optional[str | Path] = None,
+    background_style: Optional[str] = "auto",
     bgm_path: Optional[str | Path] = None,
     bgm_style: Optional[str] = "comedy_sneaky",
     bgm_volume: float = 0.38,
@@ -53,14 +54,16 @@ def build_threads_video(
     default_female_voice: str = "vi-VN-HoaiMyNeural",
     enable_spring_pop: bool = True,
     enable_karaoke: bool = False,
+    enable_punch_zoom: bool = True,
+    use_greenscreen: bool = True,
     publish_youtube: bool = False,
     privacy: str = "unlisted",
 ) -> Dict[str, Any]:
     """
-    Quy trình sản xuất tự động toàn diện Xưởng 5:
-    1. Phân tích cảm xúc & Sinh TTS giọng đọc đối thoại tiếng Việt (NamMinh / HoaiMy + Slang + Emotion Pitch Modulation).
+    Quy trình sản xuất tự động toàn diện Xưởng 5 (Đạt chuẩn 95%+ High-Retention):
+    1. Phân vai giọng đọc & Diễn cảm xúc TTS (Multi-voice casting Nam/Nữ + Slang + Comedic Micro-Pauses).
     2. Render các thẻ Threads / HanShin chuẩn PNG trong suốt (Nested Threads View + AMOLED #101010).
-    3. Ghép video nền gameplay + Smart Emotional SFX (Vine Boom, Huh, Pop, Whoosh) + hiệu ứng nảy Spring Pop + Karaoke Highlight.
+    3. Ghép video nền đa dạng (GTA 5, Subway Surfers, Minecraft) + Meme Phông Xanh Xóa Nền (Chroma Key Cutout) + Camera Punch Zoom + Chữ Nảy Kinetic Subtitles.
     4. Xuất video MP4 chuẩn định dạng TikTok/Reels/Shorts.
     5. Tùy chọn đẩy lên YouTube kênh HanShin qua Cổng 7.
     """
@@ -71,20 +74,30 @@ def build_threads_video(
     session_cache = _CACHE_DIR / session_id
     session_cache.mkdir(parents=True, exist_ok=True)
 
-    logger.info("🎬 [XƯỞNG 5] Bắt đầu sản xuất video Threads: %s (Theme: %s)", session_id, theme)
+    logger.info("🎬 [XƯỞNG 5] Bắt đầu sản xuất video Threads: %s (Theme: %s, BG Style: %s)", session_id, theme, background_style)
 
-    # 1. Xác định video nền (Ưu tiên Minecraft / Gameplay theo chuẩn Xưởng 5)
+    # 1. Xác định video nền (GTA 5 Mega Ramp, Subway Surfers 4K, Minecraft Parkour)
     bg_video = None
     if background_path and Path(background_path).exists():
         bg_video = Path(background_path).resolve()
     else:
-        mc_candidates = list(_BG_DIR.glob("*minecraft*.mp4")) or list(_BG_DIR.glob("*parkour*.mp4"))
-        if mc_candidates:
-            bg_video = mc_candidates[0]
+        bg_style = (background_style or "auto").lower()
+        if "gta" in bg_style:
+            candidates = list(_BG_DIR.glob("*gta*.mp4"))
+        elif "subway" in bg_style:
+            candidates = list(_BG_DIR.glob("*subway*.mp4"))
+        elif "minecraft" in bg_style or "parkour" in bg_style:
+            candidates = list(_BG_DIR.glob("*minecraft*.mp4")) or list(_BG_DIR.glob("*parkour*.mp4"))
         else:
-            bg_candidates = list(_BG_DIR.glob("*.mp4"))
-            if bg_candidates:
-                bg_video = bg_candidates[0]
+            # "auto": Ưu tiên GTA 5 hoặc Subway Surfers hoặc Minecraft
+            candidates = list(_BG_DIR.glob("*gta*.mp4")) or list(_BG_DIR.glob("*subway*.mp4")) or list(_BG_DIR.glob("*minecraft*.mp4"))
+
+        if candidates:
+            bg_video = candidates[0]
+        else:
+            all_bgs = list(_BG_DIR.glob("*.mp4"))
+            if all_bgs:
+                bg_video = all_bgs[0]
             else:
                 raise FileNotFoundError(f"Không tìm thấy video nền nào trong {_BG_DIR}")
 
@@ -139,6 +152,7 @@ def build_threads_video(
         "duration": post_dur,
         "text": post_tts,
         "sfx": post_sfx,
+        "meme": post.get("meme") or post.get("meme_video"),
         "punchline_offset": post.get("punchline_offset"),
         "shake": post_shake,
     })
@@ -153,14 +167,22 @@ def build_threads_video(
 
     comments = thread_data.get("comments", [])
     for idx, c in enumerate(comments):
-        c_voice = c.get("voice", default_female_voice if idx % 2 == 0 else default_male_voice)
         c_content = c.get("content", "")
+        # Tự động phân vai giọng đọc (Voice Casting) linh hoạt
+        voice_prof = get_voice_profile_for_speaker(
+            role="commenter",
+            index=idx,
+            text=c_content,
+            default_male=default_male_voice,
+            default_female=default_female_voice,
+        )
+        c_voice = c.get("voice", voice_prof["voice"])
         c_tts = c.get("tts_content", c_content)
         c_audio = session_cache / f"comment_{idx}_voice.mp3"
 
         c_emo = detect_emotion(c_content)
-        c_rate = c.get("rate", c_emo.get("rate", "+25%"))
-        c_pitch = c.get("pitch", c_emo.get("pitch", "+0Hz"))
+        c_rate = c.get("rate", voice_prof.get("rate", c_emo.get("rate", "+25%")))
+        c_pitch = c.get("pitch", voice_prof.get("pitch", c_emo.get("pitch", "+0Hz")))
         c_sfx = c.get("sfx", c_emo.get("sfx", "pop.wav"))
         c_shake = c.get("shake", c_emo.get("shake", False))
 
@@ -194,6 +216,7 @@ def build_threads_video(
             "duration": c_dur,
             "text": c_tts,
             "sfx": c_sfx,
+            "meme": c.get("meme") or c.get("meme_video"),
             "punchline_offset": c.get("punchline_offset"),
             "shake": c_shake,
         })
@@ -223,7 +246,7 @@ def build_threads_video(
                 bgm_selected = bgm_files[0]
 
     logger.info("Nhạc nền sử dụng: %s (Volume: %.2f, Ducking: %s)", bgm_selected.name if bgm_selected else "None", bgm_volume, enable_ducking)
-    logger.info("Ghép nối video hoàn chỉnh qua FFmpeg (Spring Pop, Dynamic Ducking & Authentic Meme SFX)...")
+    logger.info("Ghép nối video hoàn chỉnh qua FFmpeg (Spring Pop, Dynamic Ducking, Cutout Memes & Punch Zoom)...")
     make_threads_video(
         background_path=bg_video,
         segments=segments,
@@ -235,6 +258,8 @@ def build_threads_video(
         pause_between=0.35,
         enable_spring_pop=enable_spring_pop,
         enable_karaoke=enable_karaoke,
+        enable_punch_zoom=enable_punch_zoom,
+        use_greenscreen=use_greenscreen,
         bgm_volume=bgm_volume,
         enable_ducking=enable_ducking,
     )
@@ -246,11 +271,12 @@ def build_threads_video(
     if publish_youtube:
         try:
             from scripts.youtube_publisher import upload_unlisted_video
-            raw_title = post.get("content", "Câu chuyện Threads viral").replace("\n", " ").strip()
+            yt_cfg = thread_data.get("youtube", {})
+            raw_title = yt_cfg.get("title") or post.get("youtube_title") or post.get("content", "Câu chuyện Threads viral").replace("\n", " ").strip()
             clean_title = re.sub(r"\s+", " ", raw_title)
-            video_title = f"{clean_title[:60]} #Shorts #Threads"
-            desc = f"{post.get('content', '')}\n\nTheo dõi kênh @HanShin-g8i để nghe thêm nhiều câu chuyện hay!\n#HanShin #Threads #Shorts"
-            tags = ["HanShin", "Threads", "Shorts", "Reddit", "Drama", "Story"]
+            video_title = clean_title if yt_cfg.get("title") else f"{clean_title[:60]} #Shorts #Threads"
+            desc = yt_cfg.get("description") or f"{post.get('content', '')}\n\nTheo dõi kênh @HanShin-g8i để nghe thêm nhiều câu chuyện hay!\n#HanShin #Threads #Shorts"
+            tags = yt_cfg.get("tags") or ["HanShin", "Threads", "Shorts", "Reddit", "Drama", "Story"]
 
             youtube_result = upload_unlisted_video(
                 channel_name="HanShin",

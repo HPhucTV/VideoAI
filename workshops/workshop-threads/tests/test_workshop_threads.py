@@ -214,3 +214,79 @@ def test_expanded_slang_and_emoticon_cleaning():
     assert "mày" in norm
     assert "vãi chưởng" in norm
 
+
+def test_viral_meme_video_library():
+    from compositor import _MEMES_VIDEO_DIR, find_meme_video, _ROUND_MASK_460, _ROUND_BORDER_460
+    assert _MEMES_VIDEO_DIR.exists()
+    assert _ROUND_MASK_460.exists()
+    assert _ROUND_BORDER_460.exists()
+
+    expected_videos = [
+        "the_rock.mp4", "side_eye_dog.mp4", "pop_cat.mp4", "huh_cat.mp4",
+        "emotional_damage.mp4", "banana_cat.mp4", "metal_pipe.mp4", "disappointed_fan.mp4"
+    ]
+    for v in expected_videos:
+        vf = _MEMES_VIDEO_DIR / v
+        assert vf.exists(), f"Thiếu clip Meme Video: {v}"
+        assert vf.stat().st_size > 5000, f"File video quá nhỏ: {v}"
+
+    # Kiểm tra mapping SFX -> Real Meme Video
+    assert find_meme_video(sfx_name="vine_boom.wav").name == "the_rock.mp4"
+    assert find_meme_video(sfx_name="bruh.wav").name == "side_eye_dog.mp4"
+    assert find_meme_video(sfx_name="quack.wav").name == "pop_cat.mp4"
+    assert find_meme_video(sfx_name="huh.wav").name == "huh_cat.mp4"
+    assert find_meme_video(sfx_name="emotional_damage.wav").name == "emotional_damage.mp4"
+    assert find_meme_video(sfx_name="what.wav").name == "disappointed_fan.mp4"
+    assert find_meme_video(meme_name="the_rock").name == "the_rock.mp4"
+
+
+def test_greenscreen_meme_library():
+    from compositor import _MEMES_GREENSCREEN_DIR, find_greenscreen_meme
+    assert _MEMES_GREENSCREEN_DIR.exists()
+    
+    expected_greenscreen = [
+        "the_rock.mp4", "huh_cat.mp4", "pedro_pascal.mp4",
+        "pop_cat.mp4", "side_eye.mp4", "walter_white.mp4"
+    ]
+    for v in expected_greenscreen:
+        vf = _MEMES_GREENSCREEN_DIR / v
+        assert vf.exists(), f"Thiếu meme phông xanh: {v}"
+        assert vf.stat().st_size > 10000, f"File meme phông xanh quá nhỏ: {v}"
+
+    assert find_greenscreen_meme(sfx_name="vine_boom").name == "the_rock.mp4"
+    assert find_greenscreen_meme(sfx_name="huh").name == "huh_cat.mp4"
+    assert find_greenscreen_meme(sfx_name="emotional_damage").name == "pedro_pascal.mp4"
+    assert find_greenscreen_meme(sfx_name="bruh").name == "side_eye.mp4"
+    assert find_greenscreen_meme(sfx_name="sad_trombone").name == "walter_white.mp4"
+
+
+def test_multi_character_voice_casting():
+    from tts_engine import get_voice_profile_for_speaker
+    p0 = get_voice_profile_for_speaker(index=0)
+    p1 = get_voice_profile_for_speaker(index=1)
+    assert p0["voice"] != p1["voice"]
+
+    # Test phụ huynh / người lớn tuổi nhận pitch trầm hơn
+    p_parent = get_voice_profile_for_speaker(text="chú là người quen của nhi nè con")
+    assert "-5Hz" in p_parent["pitch"] or "-2Hz" in p_parent["pitch"]
+
+
+def test_smart_comedic_pauses():
+    from tts_engine import smart_insert_comedic_pauses
+    txt = "buồn cười thật... phụ huynh chào bằng ngón đó"
+    res = smart_insert_comedic_pauses(txt)
+    assert "[pause:0.35]" in res
+
+
+def test_diverse_background_library():
+    from pipeline import _BG_DIR
+    gta = _BG_DIR / "gta5_ramp.mp4"
+    subway = _BG_DIR / "subway_surfers.mp4"
+    minecraft = _BG_DIR / "minecraft_parkour.mp4"
+
+    assert gta.exists() and gta.stat().st_size > 1000000
+    assert subway.exists() and subway.stat().st_size > 1000000
+    assert minecraft.exists() and minecraft.stat().st_size > 1000000
+
+
+

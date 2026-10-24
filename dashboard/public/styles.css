@@ -746,3 +746,279 @@ html.dark .tab-btn.active {
 ::-webkit-scrollbar-thumb:hover {
   background: #f472b6;
 }
+
+
+/* ================= 7-GATE PRODUCTION STEPPER & ANTIGRAVITY STYLES ================= */
+.gate-card {
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gate-card.gate-pending {
+  background: #ffffff;
+  border-color: #fce7f3;
+}
+
+.gate-card.gate-active {
+  background: linear-gradient(135deg, #fff0f5 0%, #ffe4ec 100%) !important;
+  border-color: #ec4899 !important;
+  border-width: 2px !important;
+  box-shadow: 0 4px 18px rgba(236, 72, 153, 0.25) !important;
+  transform: translateY(-2px) scale(1.02);
+}
+
+.gate-card.gate-done {
+  background: rgba(236, 253, 245, 0.7) !important;
+  border-color: rgba(52, 211, 153, 0.5) !important;
+}
+
+/* TERMINAL LOG LINE STYLES */
+.terminal-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(252, 231, 243, 0.4);
+}
+
+.terminal-line .term-time {
+  color: #9ca3af;
+  font-size: 10.5px;
+  flex-shrink: 0;
+}
+
+.terminal-line .term-tag {
+  font-weight: 700;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.terminal-line .term-thought {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.terminal-line .term-tool {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.terminal-line .term-gate {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.terminal-line .term-user {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.terminal-line .term-system {
+  background: #fce7f3;
+  color: #db2777;
+}
+
+.terminal-filter-btn.active {
+  background: #ec4899 !important;
+  color: #ffffff !important;
+}
+
+
+/* ==========================================================================
+   STITCH MCP REDESIGN — SAKURA ROSE PORCELAIN SYSTEM TOKENS & COMPONENTS
+   ========================================================================== */
+
+/* 1. Form Modal Redesign (Zero-Break Form Stack) */
+.form-modal-content {
+  max-width: 600px !important;
+  width: 95% !important;
+  border-radius: 20px !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 24px 48px rgba(236, 72, 153, 0.15) !important;
+  overflow: hidden;
+}
+
+.form-vertical-stack {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+.form-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+.form-field label {
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100% !important;
+  background: #ffffff !important;
+  border: 1px solid #fbcfe8 !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  font-family: var(--font-sans) !important;
+  color: #1f2937 !important;
+  transition: all 0.2s ease !important;
+  outline: none !important;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: #ec4899 !important;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15) !important;
+}
+
+/* 2. Stitch MCP Segmented Pill Tabs (Fix "Tất cả" stuck pink color) */
+.workshop-filter-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffffff;
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid #fce7f3;
+  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.05);
+  flex-wrap: wrap;
+}
+
+.workshop-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.workshop-filter-btn:hover:not(.active) {
+  color: #be185d;
+  background: #fff1f2;
+}
+
+.workshop-filter-btn.active {
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.28);
+  transform: scale(1.02);
+}
+
+.workshop-filter-btn .badge-count {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.workshop-filter-btn.active .badge-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.workshop-filter-btn:not(.active) .badge-count {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+/* 3. Task Queue Items & Badges */
+.task-queue-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #fce7f3;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.task-queue-card:hover {
+  border-color: #f472b6;
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.08);
+}
+
+.task-queue-card.running {
+  border-color: #ec4899;
+  background: #fff5f7;
+}
+
+.task-queue-card.aborted {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.task-queue-card.completed {
+  border-color: #a7f3d0;
+  background: #f0fdf4;
+}
+
+/* 4. Single Smart Dispatch Mode Switcher */
+.dispatch-mode-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff1f2;
+  border: 1px solid #fce7f3;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.dispatch-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dispatch-mode-pill.active {
+  background: #ffffff;
+  color: #be185d;
+  box-shadow: 0 2px 6px rgba(236, 72, 153, 0.12);
+}
+
+/* 5. Emergency Stop Button Glow */
+#btn-global-abort {
+  animation: pulse-danger 2.5s infinite;
+}
+
+@keyframes pulse-danger {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}

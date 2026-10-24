@@ -1,0 +1,100 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+:root {
+  --bg: #faf8ff;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --accent: #ff477e;
+  --accent-dim: #db2777;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --text: #0f172a;
+  --muted: #64748b;
+  --background: #faf8ff;
+  --foreground: #0f172a;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #ff477e;
+  --primary-foreground: #ffffff;
+  --secondary: #00c2e0;
+  --secondary-foreground: #ffffff;
+  --muted-foreground: #64748b;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --input: #e2e8f0;
+  --ring: #ff477e;
+  --chart-1: #ff477e;
+  --chart-2: #00c2e0;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #10b981;
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #ff477e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #faf8ff;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #ff477e;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist Variable', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* Sub-pixel porcelain grid background */
+.porcelain-grid {
+  background-color: #faf8ff;
+  background-image: 
+    linear-gradient(to right, rgba(0, 104, 121, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 71, 126, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Neon & Anime Glow Effects */
+.glow-primary {
+  box-shadow: 0 0 18px rgba(255, 71, 126, 0.25);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 18px rgba(0, 194, 224, 0.35);
+}
+
+.glow-amber {
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.22);
+}
+
+.hairline-border {
+  border: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

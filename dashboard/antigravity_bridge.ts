@@ -472,8 +472,9 @@ export function dispatchAntigravityMessage(convoId: string, message: string): Pr
       return;
     }
 
-    const args = ["send-message", convoId, message];
-    const proc = spawn(AGENTAPI_BAT, args, { shell: true });
+    const safeMsg = '"' + message.replace(/"/g, '""').replace(/[\r\n]+/g, ' ') + '"';
+    const args = ["send-message", convoId, safeMsg];
+    const proc = spawn(AGENTAPI_BAT, args, { shell: true, windowsHide: true });
 
     let stdout = "";
     let stderr = "";

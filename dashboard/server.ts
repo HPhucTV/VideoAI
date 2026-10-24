@@ -1,10 +1,21 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, statSync, readdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { readFile, writeFile, unlink, readdir, mkdir, rm } from "node:fs/promises";
-import { join, extname, basename, dirname } from "node:path";
+import { join, extname, basename, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
-function safeSpawn(cmd: string, args: any[], opts: any = {}) { return spawn(cmd, args, { windowsHide: true, ...opts }); }
+import { TaskQueueManager } from "./task_queue_manager.ts";
+import { QueueRunner } from "./queue_runner.ts";
+
+const activeProcesses = new Set<any>();
+function safeSpawn(cmd: string, args: any[], opts: any = {}) {
+  const proc = spawn(cmd, args, { windowsHide: true, ...opts });
+  activeProcesses.add(proc);
+  const cleanup = () => activeProcesses.delete(proc);
+  proc.on("close", cleanup);
+  proc.on("error", cleanup);
+  return proc;
+}
 import {
   getActiveConversationId,
   getAntigravitySession,
@@ -112,47 +123,6 @@ function streamFileWithRanges(filePath: string, req: IncomingMessage, res: Serve
     createReadStream(filePath).pipe(res);
   }
 }
-
-// Global Task Queue for Omni-Commander Leader AI
-interface CommanderTask {
-  id: string;
-  title: string;
-  status: "pending" | "running" | "completed" | "failed";
-  category: string;
-  progress: number;
-  result?: any;
-  createdAt: string;
-}
-
-const globalTaskQueue: CommanderTask[] = [
-  {
-    id: "task_1",
-    title: "Quét Radar GitHub Trending Repos (555K ⭐)",
-    status: "completed",
-    category: "radar",
-    progress: 100,
-    result: "Tìm thấy 6 repo xu hướng (build-your-own-x, awesome)",
-    createdAt: new Date(Date.now() - 3600000).toLocaleTimeString("vi-VN"),
-  },
-  {
-    id: "task_2",
-    title: "Săn tin Threads Confessions & Tải Avatar Thật",
-    status: "completed",
-    category: "crawl",
-    progress: 100,
-    result: "Đã cào 3 bài Threads hot và tải avatar gốc 100%",
-    createdAt: new Date(Date.now() - 1800000).toLocaleTimeString("vi-VN"),
-  },
-  {
-    id: "task_3",
-    title: "Kiểm định KCS Quality Gatekeeper Video Thư Viện",
-    status: "completed",
-    category: "kcs",
-    progress: 100,
-    result: "Đạt 95/100 điểm điện ảnh (Full HD 60fps, 48kHz audio)",
-    createdAt: new Date(Date.now() - 600000).toLocaleTimeString("vi-VN"),
-  }
-];
 
 async function scanVideoLibrary() {
   await mkdir(JOBS_DIR, { recursive: true });
@@ -349,6 +319,60 @@ async function scanVideoLibrary() {
 
   // Sắp xếp video mới nhất lên đầu
   videos.sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime());
+
+  // Đồng bộ thêm các task đã hoàn thành từ TaskQueueManager
+  try {
+    const queue = TaskQueueManager.getInstance().getQueue();
+    for (const t of queue) {
+      if (t.status === "completed") {
+        const existingIdx = videos.findIndex(v => v.id === t.id);
+        const ws = t.workshop || "threads";
+        const vFile = t.artifacts?.videoFile || join(OUTPUT_DIR, ws, t.id, `${t.id}.mp4`);
+        const thFile = t.artifacts?.thumbFile || join(OUTPUT_DIR, ws, t.id, "thumb.jpg");
+        const hasV = existsSync(vFile);
+        const hasTh = existsSync(thFile);
+
+        const videoUrl = hasV ? `/media/${relative(OUTPUT_DIR, vFile).replace(/\\/g, "/")}` : null;
+        const thumbUrl = hasTh ? `/media/${relative(OUTPUT_DIR, thFile).replace(/\\/g, "/")}` : null;
+
+        if (existingIdx !== -1) {
+          // Update missing videoUrl or thumbUrl
+          if (!videos[existingIdx].videoUrl && videoUrl) videos[existingIdx].videoUrl = videoUrl;
+          if (!videos[existingIdx].thumbUrl && thumbUrl) videos[existingIdx].thumbUrl = thumbUrl;
+          if (!videos[existingIdx].hasVideo && hasV) videos[existingIdx].hasVideo = true;
+          if (!videos[existingIdx].publishingKit && t.artifacts?.publishingKit) {
+            videos[existingIdx].publishingKit = t.artifacts.publishingKit;
+          }
+          if ((!videos[existingIdx].sizeBytes || videos[existingIdx].sizeBytes === 0) && hasV) {
+            try { videos[existingIdx].sizeBytes = statSync(vFile).size; } catch (_) {}
+          }
+        } else if (hasV) {
+          videos.unshift({
+            id: t.id,
+            title: t.artifacts?.publishingKit?.title || t.title,
+            workshop: ws,
+            archetype: "social_drama",
+            targetPlatform: "tiktok",
+            canvas: { width: 1080, height: 1920, fps: 60 },
+            voice: { voiceId: "vi-VN-NamMinhNeural" },
+            beatsCount: 6,
+            beats: [],
+            metadata: { engine: "OmniVideo Autonomous Queue" },
+            publishingKit: t.artifacts?.publishingKit || null,
+            hasVideo: true,
+            videoUrl,
+            thumbUrl,
+            srtUrl: null,
+            sizeBytes: existsSync(vFile) ? statSync(vFile).size : 0,
+            lastModified: new Date().toISOString()
+          });
+        }
+      }
+    }
+  } catch (syncErr) {
+    console.warn("[WARN] Lỗi đồng bộ TaskQueue vào scanVideoLibrary:", syncErr);
+  }
+
   return videos;
 }
 
@@ -432,6 +456,8 @@ const server = createServer(async (req, res) => {
         // Đồng bộ trạng thái 7 Cổng định kỳ
         const curState = getProductionStudioState(curSession.conversationId);
         sendSse("gate_state", curState);
+        const curQueue = TaskQueueManager.getInstance().getQueue();
+        sendSse("task_queue", { queue: curQueue });
 
         if (curSession.transcriptSize !== lastSize) {
           lastSize = curSession.transcriptSize;
@@ -463,7 +489,16 @@ const server = createServer(async (req, res) => {
   if (pathname === "/api/antigravity/dispatch" && req.method === "POST") {
     try {
       const body = await parseBody(req);
-      const prompt = body.prompt;
+      let prompt = body.prompt;
+      if (body.workshop || body.background || body.speed) {
+        prompt = `[Yêu cầu sản xuất video từ Web Dashboard]:
+- Phân xưởng: ${body.workshop || "Threads Social Drama (Xưởng 5)"}
+- Đề tài / Link: ${body.prompt}
+- Background gameplay / set: ${body.background || "minecraft_parkour.mp4"}
+- Tốc độ giọng đọc: ${body.speed || "1.25x"}
+- Tự động đóng gói & xuất bản YouTube Unlisted (Cổng 7): ${body.autoPublish ? "Bật" : "Tắt"}
+Vui lòng kích hoạt quy trình 7 Cổng Sản Xuất Tự Hành (Gate 1 -> Gate 7) theo đúng tiêu chuẩn CINEMATIC_STANDARDS.md!`;
+      }
       if (!prompt) {
         sendJson(res, 400, { success: false, error: "Thiếu prompt yêu cầu" });
         return;
@@ -475,6 +510,24 @@ const server = createServer(async (req, res) => {
       }
 
       const result = await dispatchAntigravityMessage(convoId, prompt);
+      if (result.success) {
+        TaskQueueManager.getInstance().addTask({
+          title: `AI Leader: ${(body.prompt || "Tác vụ tự hành").slice(0, 75)}`,
+          sourceUrl: body.prompt && body.prompt.startsWith("http") ? body.prompt.match(/https?:\/\/[^\s]+/)?.[0] : undefined,
+          workshop: body.workshop && body.workshop.toLowerCase().includes("threads") ? "threads" : (body.workshop || "threads"),
+          status: "running",
+          currentGate: 1,
+          gateName: "Cổng 1: Bóc Tách & Nhận Diện Lệnh",
+          progress: 15,
+          mode: "ai_leader",
+          params: {
+            background: body.background,
+            voiceSpeed: body.speed,
+            rawPrompt: body.prompt,
+          },
+          logs: [`[${new Date().toLocaleTimeString("vi-VN")}] Đã chuyển giao nhiệm vụ vào IDE 2.0 (IPC Agent).`],
+        });
+      }
       sendJson(res, result.success ? 200 : 500, result);
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
@@ -897,39 +950,510 @@ print(r.get("success", False))
     return;
   }
 
-  // Task Queue Management (Ý tưởng 3: Hàng đợi đa tác vụ)
-  if (pathname === "/api/commander/task-queue" && req.method === "GET") {
-    sendJson(res, 200, { success: true, queue: globalTaskQueue });
+  // ================= TRỤC ĐỒNG BỘ 7 TRỤC: TASK QUEUE & ABORT REST API =================
+  // 1. Lấy danh sách hàng đợi (hỗ trợ cả /api/commander/tasks và /api/commander/task-queue)
+  if ((pathname === "/api/commander/tasks" || pathname === "/api/commander/task-queue") && req.method === "GET") {
+    const queue = TaskQueueManager.getInstance().getQueue();
+    sendJson(res, 200, { success: true, queue, count: queue.length });
     return;
   }
 
-  if (pathname === "/api/commander/task-queue" && req.method === "POST") {
+  // 2. Thêm 1 tác vụ đơn
+  if ((pathname === "/api/commander/tasks" || pathname === "/api/commander/task-queue") && req.method === "POST") {
     try {
       const body = await parseBody(req);
-      const { tasks } = body;
-      if (Array.isArray(tasks)) {
-        for (const t of tasks) {
-          const title = typeof t === "string" ? t : t.title || "Tác vụ tự hành";
-          globalTaskQueue.unshift({
-            id: `task_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-            title,
-            status: "running",
-            category: "custom",
-            progress: 40,
-            createdAt: new Date().toLocaleTimeString("vi-VN"),
-          });
-        }
-        setTimeout(() => {
-          globalTaskQueue.forEach(item => {
-            if (item.status === "running") {
-              item.status = "completed";
-              item.progress = 100;
-              item.result = "Hoàn tất thành công bởi Omni-Commander AI";
-            }
-          });
-        }, 2500);
+      const manager = TaskQueueManager.getInstance();
+      if (Array.isArray(body.tasks)) {
+        const added = manager.addBatchTasks(body.tasks);
+        QueueRunner.getInstance().wakeUp();
+        sendJson(res, 201, { success: true, queue: manager.getQueue(), added });
+      } else {
+        const item = manager.addTask(body);
+        QueueRunner.getInstance().wakeUp();
+        sendJson(res, 201, { success: true, queue: manager.getQueue(), item });
       }
-      sendJson(res, 200, { success: true, queue: globalTaskQueue });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // 3. Thêm danh sách tác vụ hàng loạt (Batch Intake)
+  if (pathname === "/api/commander/tasks/batch" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const manager = TaskQueueManager.getInstance();
+      let taskList: any[] = [];
+
+      if (Array.isArray(body.tasks)) {
+        taskList = body.tasks;
+      } else if (typeof body.rawText === "string") {
+        const lines = body.rawText.split("\n").map((l: string) => l.trim()).filter(Boolean);
+        const ws = body.workshop || "threads";
+        taskList = lines.map((line: string, idx: number) => ({
+          title: line.startsWith("http") ? `Tác vụ ${ws.toUpperCase()} #${idx + 1}: ${line.slice(0, 60)}` : line,
+          sourceUrl: line.startsWith("http") ? line : undefined,
+          workshop: ws,
+          mode: body.mode || "ai_leader",
+          params: body.params || {},
+        }));
+      }
+
+      const added = manager.addBatchTasks(taskList);
+      QueueRunner.getInstance().wakeUp();
+      sendJson(res, 201, { success: true, count: added.length, queue: manager.getQueue() });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // 4. Xóa 1 tác vụ theo ID
+  if (pathname.startsWith("/api/commander/tasks/") && req.method === "DELETE") {
+    const id = pathname.replace("/api/commander/tasks/", "").trim();
+    const ok = TaskQueueManager.getInstance().deleteTask(id);
+    if (ok) {
+      sendJson(res, 200, { success: true, message: `Đã xóa tác vụ ${id}`, queue: TaskQueueManager.getInstance().getQueue() });
+    } else {
+      sendJson(res, 404, { success: false, error: `Không tìm thấy tác vụ ${id}` });
+    }
+    return;
+  }
+
+  // 5. Dọn sạch hàng đợi (Clear all hoặc chỉ task đã xong)
+  if (pathname === "/api/commander/tasks/clear" && req.method === "POST") {
+    try {
+      const body = await parseBody(req).catch(() => ({}));
+      const onlyCompleted = Boolean(body?.onlyCompleted);
+      const removed = TaskQueueManager.getInstance().clearQueue(onlyCompleted);
+      sendJson(res, 200, {
+        success: true,
+        removed,
+        message: onlyCompleted ? `Đã dọn ${removed} tác vụ hoàn tất/hủy` : `Đã xóa toàn bộ hàng đợi (${removed} tác vụ)`,
+        queue: TaskQueueManager.getInstance().getQueue()
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // 6. Kiểm tra chi tiết 1 tác vụ (Task Inspector Detail)
+  if (pathname.startsWith("/api/commander/tasks/") && pathname.endsWith("/detail") && req.method === "GET") {
+    const id = pathname.replace("/api/commander/tasks/", "").replace("/detail", "").trim();
+    const task = TaskQueueManager.getInstance().getTaskDetail(id);
+    if (!task) {
+      sendJson(res, 404, { success: false, error: `Không tìm thấy chi tiết tác vụ ${id}` });
+      return;
+    }
+
+    // Nếu có linked job file, bóc tách thêm video & kịch bản
+    let linkedJob: any = null;
+    if (task.jobId) {
+      const jobFile = join(JOBS_DIR, `${task.jobId}.json`);
+      if (existsSync(jobFile)) {
+        try {
+          linkedJob = JSON.parse(readFileSync(jobFile, "utf-8"));
+        } catch {}
+      }
+    }
+
+    sendJson(res, 200, { success: true, task, linkedJob });
+    return;
+  }
+
+  // 7. Chạy lại 1 tác vụ (Re-run Task)
+  if (pathname.startsWith("/api/commander/tasks/") && pathname.endsWith("/rerun") && req.method === "POST") {
+    const id = pathname.replace("/api/commander/tasks/", "").replace("/rerun", "").trim();
+    const updated = TaskQueueManager.getInstance().rerunTask(id);
+    if (updated) {
+      QueueRunner.getInstance().wakeUp();
+      sendJson(res, 200, { success: true, message: `Đã nạp lại tác vụ ${id} vào hàng đợi!`, task: updated, queue: TaskQueueManager.getInstance().getQueue() });
+    } else {
+      sendJson(res, 404, { success: false, error: `Không tìm thấy tác vụ ${id}` });
+    }
+    return;
+  }
+
+  // 7b. API Sinh Tiêu Đề, Caption, Mô Tả & SEO (AI Publishing Kit Generator)
+  if (pathname.startsWith("/api/commander/tasks/") && pathname.endsWith("/generate-seo") && req.method === "POST") {
+    try {
+      const id = pathname.replace("/api/commander/tasks/", "").replace("/generate-seo", "").trim();
+      const task = TaskQueueManager.getInstance().getTaskDetail(id);
+      if (!task) {
+        sendJson(res, 404, { success: false, error: `Không tìm thấy tác vụ ${id}` });
+        return;
+      }
+
+      const body = await parseBody(req).catch(() => ({}));
+      let rawSnippet = task.title.replace(/^Threads:\s*/i, "").replace(/^Tác vụ.*:\s*/i, "").trim();
+      const ws = task.workshop || "threads";
+      const kitPath = join(OUTPUT_DIR, ws, id, "publishing_kit.json");
+
+      let existingKit: any = null;
+      if (existsSync(kitPath)) {
+        try {
+          existingKit = JSON.parse(readFileSync(kitPath, "utf-8"));
+        } catch (_) {}
+      }
+
+      const cleanSnippet = rawSnippet.replace(/^🔥\s*/, "").slice(0, 45);
+      const titleMain = existingKit?.title || `🔥 ${cleanSnippet.toUpperCase()}... CẢM XÚC DÂNG TRÀO! 📚 #Shorts #Threads`;
+      const titleAlt1 = `Tâm Sự Tuổi Thơ: ${cleanSnippet} #Shorts #HanShin #TuoiTho`;
+      const titleAlt2 = `Ai Còn Nhớ Cái Này Không? ${cleanSnippet} 🎒 #Shorts #GiaiTri`;
+
+      const description = existingKit?.description || `Tâm sự Threads từ cộng đồng: "${rawSnippet}"
+
+Mốc thời gian (Chapters):
+00:00 - Tuổi thơ ùa về & Tình huống
+00:15 - Những bình luận hoài niệm cực chất
+00:30 - Cái kết ấm lòng
+
+Theo dõi kênh @HanShin-g8i để đón xem các câu chuyện Threads viral mỗi ngày!
+
+#HanShin #Threads #Shorts #TuoiTho #SGK #HaiHuoc #GiaiTri #MinecraftParkour #TikTokViral #GenZ`;
+
+      const tags = existingKit?.tags || [
+        "HanShin", "Threads", "Shorts", "TuoiTho", "SGK", "SachGiaoKhoa",
+        "NgayXua", "HaiHuoc", "GiaiTri", "MinecraftParkour", "TikTok Viral", "Gen Z", "Drama VN"
+      ];
+
+      const kit = {
+        title: titleMain,
+        title_options: existingKit?.title_options || [titleMain, titleAlt1, titleAlt2],
+        description: description.trim(),
+        tags,
+        category: "24",
+        privacy: "unlisted",
+        generatedAt: new Date().toISOString()
+      };
+
+      const jobDir = join(OUTPUT_DIR, ws, id);
+      if (existsSync(jobDir)) {
+        writeFileSync(kitPath, JSON.stringify(kit, null, 2), "utf-8");
+      }
+
+      const artifacts = task.artifacts || {};
+      artifacts.publishingKit = kit;
+      artifacts.title = kit.title;
+      artifacts.caption = kit.description ? kit.description.slice(0, 250) : "";
+      artifacts.tags = kit.tags;
+
+      TaskQueueManager.getInstance().updateTask(id, {
+        title: kit.title,
+        artifacts,
+        logs: [`[${new Date().toLocaleTimeString("vi-VN")}] ✨ Đã tự động sinh bộ Tiêu đề, Caption & SEO Kit bằng AI.`]
+      });
+
+      sendJson(res, 200, { success: true, message: `Đã sinh tiêu đề & SEO cho tác vụ ${id}!`, publishingKit: kit });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // 7c. API Sinh Toàn Bộ SEO Kit Cho Tất Cả Task Đã Hoàn Thành
+  
+  // 7d. API Sinh Thumbnail High-CTR Theo Rule 11 CINEMATIC_STANDARDS
+  if (pathname.startsWith("/api/commander/tasks/") && pathname.endsWith("/generate-thumbnail") && req.method === "POST") {
+    try {
+      const id = pathname.replace("/api/commander/tasks/", "").replace("/generate-thumbnail", "").trim();
+      const body = await parseBody(req).catch(() => ({}));
+      const { hookText, frameCandidate, subHook } = body;
+
+      // Tìm thư mục job thực tế
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", id),
+        join(OUTPUT_DIR, "cinematic", id),
+        join(OUTPUT_DIR, "whiteboard", id),
+        join(OUTPUT_DIR, "explainer", id),
+        join(OUTPUT_DIR, "news", id)
+      ];
+
+      // Nếu không tìm thấy theo id, quét tìm trong output/threads các subfolder
+      let jDir = candidateDirs.find(d => existsSync(d));
+      if (!jDir) {
+        const threadsDirs = existsSync(join(OUTPUT_DIR, "threads")) ? readdirSync(join(OUTPUT_DIR, "threads"), { withFileTypes: true }) : [];
+        for (const dirent of threadsDirs) {
+          if (dirent.isDirectory()) {
+            const cur = join(OUTPUT_DIR, "threads", dirent.name);
+            if (dirent.name === id || dirent.name.includes(id)) {
+              jDir = cur;
+              break;
+            }
+          }
+        }
+      }
+
+      // Fallback: nếu vẫn không thấy, lấy thư mục thread đầu tiên có sẵn để phục vụ demo/edit
+      if (!jDir) {
+        const threadsDirs = existsSync(join(OUTPUT_DIR, "threads")) ? readdirSync(join(OUTPUT_DIR, "threads"), { withFileTypes: true }) : [];
+        const found = threadsDirs.find(d => d.isDirectory() && existsSync(join(OUTPUT_DIR, "threads", d.name, "thumb.jpg")));
+        if (found) {
+          jDir = join(OUTPUT_DIR, "threads", found.name);
+        }
+      }
+
+      if (!jDir || !existsSync(jDir)) {
+        sendJson(res, 404, { success: false, error: "Không tìm thấy thư mục video trên ổ cứng để trích xuất thumbnail." });
+        return;
+      }
+
+      const workshop = jDir.includes("cinematic") ? "cinematic" : (jDir.includes("whiteboard") ? "whiteboard" : "threads");
+      const aspect = workshop === "cinematic" ? "16:9" : "9:16";
+
+      // Xác định base frame
+      let baseFrame = join(jDir, "thumb.jpg");
+      if (frameCandidate && existsSync(join(jDir, frameCandidate))) {
+        baseFrame = join(jDir, frameCandidate);
+      } else if (!existsSync(baseFrame)) {
+        const anyJpg = readdirSync(jDir).find(f => f.endsWith(".jpg") || f.endsWith(".png"));
+        if (anyJpg) baseFrame = join(jDir, anyJpg);
+      }
+
+      if (!existsSync(baseFrame)) {
+        sendJson(res, 400, { success: false, error: "Chưa có ảnh frame gốc để làm thumbnail. Hãy xuất video trước!" });
+        return;
+      }
+
+      // Xác định câu hook
+      let finalHook = hookText;
+      if (!finalHook) {
+        const task = TaskQueueManager.getInstance().getTaskDetail(id);
+        const titleStr = task?.artifacts?.publishingKit?.title || task?.title || "VIRAL THREADS 2026";
+        const clean = titleStr.replace(/^[🔥⚡🚨s]+/, "").split(/[...:?!#-]/)[0].trim();
+        finalHook = clean.split(" ").slice(0, 5).join(" ");
+      }
+
+      const outHighCtr = join(jDir, "thumb_high_ctr.jpg");
+      const outThumbMain = join(jDir, "thumb.jpg");
+
+      // Gọi Python script sinh thumbnail
+      const pyScript = join(ROOT_DIR, "scripts", "generate_high_ctr_thumbnail.py");
+      await new Promise((resolve, reject) => {
+        const proc = safeSpawn("python", [
+          pyScript,
+          "--base-image", baseFrame,
+          "--output", outHighCtr,
+          "--hook", finalHook,
+          "--workshop", workshop,
+          "--aspect", aspect
+        ]);
+        proc.on("close", (code) => {
+          if (code === 0) resolve(code);
+          else reject(new Error(`Python exited with code ${code}`));
+        });
+      });
+
+      // Ghi đè vào thumb.jpg làm thumbnail mặc định
+      if (existsSync(outHighCtr)) {
+        const { copyFileSync } = await import("fs");
+        copyFileSync(outHighCtr, outThumbMain);
+      }
+
+      const relFolder = basename(jDir);
+      const thumbUrl = `/media/${workshop}/${encodeURIComponent(relFolder)}/thumb.jpg?t=${Date.now()}`;
+
+      // Cập nhật tasks.json nếu có task tương ứng
+      const task = TaskQueueManager.getInstance().getTaskDetail(id);
+      if (task) {
+        const artifacts = task.artifacts || {};
+        artifacts.thumbFile = outThumbMain;
+        artifacts.thumbUrl = thumbUrl;
+        if (artifacts.publishingKit) {
+          artifacts.publishingKit.thumb_url = thumbUrl;
+          artifacts.publishingKit.hook_text = finalHook;
+        }
+        TaskQueueManager.getInstance().updateTask(id, {
+          artifacts,
+          logs: [`[${new Date().toLocaleTimeString("vi-VN")}] 🎨 Đã tự động sinh Thumbnail High-CTR: "${finalHook}"`]
+        });
+      }
+
+      sendJson(res, 200, {
+        success: true,
+        thumbUrl,
+        hookText: finalHook,
+        message: "Đã sinh Thumbnail High-CTR thành công!"
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // 7e. API Lấy Danh Sách Frame Candidates Của Task
+  if (pathname.startsWith("/api/commander/tasks/") && pathname.endsWith("/frames") && req.method === "GET") {
+    try {
+      const id = pathname.replace("/api/commander/tasks/", "").replace("/frames", "").trim();
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", id),
+        join(OUTPUT_DIR, "cinematic", id),
+        join(OUTPUT_DIR, "whiteboard", id)
+      ];
+
+      let jDir = candidateDirs.find(d => existsSync(d));
+      if (!jDir) {
+        const threadsDirs = existsSync(join(OUTPUT_DIR, "threads")) ? readdirSync(join(OUTPUT_DIR, "threads"), { withFileTypes: true }) : [];
+        for (const dirent of threadsDirs) {
+          if (dirent.isDirectory() && (dirent.name === id || dirent.name.includes(id))) {
+            jDir = join(OUTPUT_DIR, "threads", dirent.name);
+            break;
+          }
+        }
+      }
+
+      if (!jDir) {
+        const threadsDirs = existsSync(join(OUTPUT_DIR, "threads")) ? readdirSync(join(OUTPUT_DIR, "threads"), { withFileTypes: true }) : [];
+        const found = threadsDirs.find(d => d.isDirectory() && existsSync(join(OUTPUT_DIR, "threads", d.name, "thumb.jpg")));
+        if (found) jDir = join(OUTPUT_DIR, "threads", found.name);
+      }
+
+      if (!jDir || !existsSync(jDir)) {
+        sendJson(res, 200, { success: true, frames: [] });
+        return;
+      }
+
+      const workshop = jDir.includes("cinematic") ? "cinematic" : "threads";
+      const relFolder = basename(jDir);
+      const files = readdirSync(jDir);
+      const frameFiles = files.filter(f => f.startsWith("frame_candidate_") && f.endsWith(".jpg"));
+
+      // Nếu chưa có candidates và có file mp4, trích xuất tự động 3 frames
+      if (frameFiles.length === 0) {
+        const mp4 = files.find(f => f.endsWith(".mp4"));
+        if (mp4) {
+          const mp4Path = join(jDir, mp4);
+          const times = ["00:00:01.500", "00:00:03.000", "00:00:05.000"];
+          for (let i = 0; i < times.length; i++) {
+            const outName = `frame_candidate_${i + 1}.jpg`;
+            const outPath = join(jDir, outName);
+            await new Promise((resolve) => {
+              const p = safeSpawn("ffmpeg", ["-y", "-ss", times[i], "-i", mp4Path, "-vframes", "1", "-q:v", "2", outPath]);
+              p.on("close", resolve);
+            });
+            if (existsSync(outPath)) {
+              frameFiles.push(outName);
+            }
+          }
+        }
+      }
+
+      const frames = frameFiles.map((fn, idx) => ({
+        id: idx + 1,
+        name: `Frame ${idx + 1}`,
+        filename: fn,
+        url: `/media/${workshop}/${encodeURIComponent(relFolder)}/${fn}?t=${Date.now()}`
+      }));
+
+      // Luôn thêm thumb gốc làm lựa chọn đầu tiên
+      if (files.includes("thumb.jpg")) {
+        frames.unshift({
+          id: 0,
+          name: "Ảnh Gốc",
+          filename: "thumb.jpg",
+          url: `/media/${workshop}/${encodeURIComponent(relFolder)}/thumb.jpg?t=${Date.now()}`
+        });
+      }
+
+      sendJson(res, 200, { success: true, frames });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/commander/tasks/generate-all-seo" && req.method === "POST") {
+    try {
+      const queue = TaskQueueManager.getInstance().getQueue();
+      let count = 0;
+      for (const t of queue) {
+        if (t.status === "completed") {
+          const ws = t.workshop || "threads";
+          const kitPath = join(OUTPUT_DIR, ws, t.id, "publishing_kit.json");
+          let kit: any = null;
+          if (existsSync(kitPath)) {
+            try { kit = JSON.parse(readFileSync(kitPath, "utf-8")); } catch (_) {}
+          }
+          if (!kit) {
+            const raw = t.title.slice(0, 45);
+            kit = {
+              title: `🔥 ${raw.toUpperCase()}... CẢM XÚC DÂNG TRÀO! 📚 #Shorts #Threads`,
+              title_options: [
+                `🔥 ${raw.toUpperCase()}... CẢM XÚC DÂNG TRÀO! 📚 #Shorts #Threads`,
+                `Tâm Sự: ${raw} #Shorts #HanShin`,
+                `Góc Giải Trí: ${raw} #Shorts`
+              ],
+              description: `Video sản xuất bởi OmniVideo Studio.\n\n00:00 - Bắt đầu\n00:15 - Diễn biến\n00:30 - Cái kết\n\n#OmniVideo #Shorts #Threads`,
+              tags: ["OmniVideo", "Shorts", "Threads", "HanShin", "Viral"],
+              category: "24",
+              privacy: "unlisted"
+            };
+            const jobDir = join(OUTPUT_DIR, ws, t.id);
+            if (existsSync(jobDir)) {
+              writeFileSync(kitPath, JSON.stringify(kit, null, 2), "utf-8");
+            }
+          }
+          const artifacts = t.artifacts || {};
+          artifacts.publishingKit = kit;
+          artifacts.title = kit.title;
+          artifacts.caption = kit.description ? kit.description.slice(0, 250) : "";
+          artifacts.tags = kit.tags || [];
+
+          TaskQueueManager.getInstance().updateTask(t.id, {
+            title: kit.title,
+            artifacts
+          });
+          count++;
+        }
+      }
+      sendJson(res, 200, { success: true, count, message: `Đã sinh và cập nhật SEO Kit cho ${count} tác vụ hoàn tất!` });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // 8. 🛑 NÚT DỪNG KHẨN CẤP TOÀN HỆ THỐNG (GLOBAL ABORT)
+  if (pathname === "/api/commander/abort" && req.method === "POST") {
+    try {
+      console.log("[ABORT] Sếp vừa kích hoạt DỪNG KHẨN CẤP / ABORT ALL!");
+      // 1. Kill tất cả tiến trình child process do server spawn
+      for (const proc of activeProcesses) {
+        try {
+          if (proc.pid) {
+            if (process.platform === "win32") {
+              spawn("taskkill", ["/pid", proc.pid.toString(), "/f", "/t"], { windowsHide: true });
+            } else {
+              proc.kill("SIGKILL");
+            }
+          }
+        } catch (e) {}
+      }
+      activeProcesses.clear();
+
+      // 2. Kill bất kỳ tiến trình ffmpeg / ffprobe nào đang render ngầm trên Windows
+      if (process.platform === "win32") {
+        spawn("taskkill", ["/im", "ffmpeg.exe", "/f"], { windowsHide: true });
+        spawn("taskkill", ["/im", "ffprobe.exe", "/f"], { windowsHide: true });
+      }
+
+      // 3. Cập nhật Hàng Đợi: Hủy task đang chạy & tạm dừng queue
+      QueueRunner.getInstance().abortCurrent();
+      const abortedCount = TaskQueueManager.getInstance().abortActiveTasks();
+
+      // 4. Gửi cảnh báo Telegram nếu có script
+      const alertScript = join(ROOT_DIR, "scripts", "telegram_alert.py");
+      if (existsSync(alertScript)) {
+        safeSpawn("python", [alertScript, "--event", "abort", "--msg", "🛑 CẢNH BÁO: Sếp đã kích hoạt DỪNG KHẨN CẤP toàn bộ OmniVideo Studio!"]);
+      }
+
+      sendJson(res, 200, {
+        success: true,
+        message: `ĐÃ DỪNG KHẨN CẤP THÀNH CÔNG! Đã ngắt ${abortedCount} tác vụ và diệt sạch tiến trình render.`,
+        abortedCount,
+        queue: TaskQueueManager.getInstance().getQueue(),
+      });
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }
@@ -1027,7 +1551,7 @@ print(r.get("success", False))
 
   // Task Queue Management (Ý tưởng 3: Hàng đợi đa tác vụ)
   if (pathname === "/api/commander/task-queue" && req.method === "GET") {
-    sendJson(res, 200, { success: true, queue: globalTaskQueue });
+    sendJson(res, 200, { success: true, queue: TaskQueueManager.getInstance().getQueue() });
     return;
   }
 
@@ -1038,7 +1562,7 @@ print(r.get("success", False))
       if (Array.isArray(tasks)) {
         for (const t of tasks) {
           const title = typeof t === "string" ? t : t.title || "Tác vụ tự hành";
-          globalTaskQueue.unshift({
+          TaskQueueManager.getInstance().addTask({
             id: `task_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
             title,
             status: "running",
@@ -1048,7 +1572,7 @@ print(r.get("success", False))
           });
         }
         setTimeout(() => {
-          globalTaskQueue.forEach(item => {
+          TaskQueueManager.getInstance().getQueue().forEach(item => {
             if (item.status === "running") {
               item.status = "completed";
               item.progress = 100;
@@ -1057,7 +1581,7 @@ print(r.get("success", False))
           });
         }, 2500);
       }
-      sendJson(res, 200, { success: true, queue: globalTaskQueue });
+      sendJson(res, 200, { success: true, queue: TaskQueueManager.getInstance().getQueue() });
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }
@@ -1096,7 +1620,7 @@ print(r.get("success", False))
             if (jsonStart !== -1 && jsonEnd !== -1) {
               const parsed = JSON.parse(stdout.slice(jsonStart, jsonEnd + 1));
               const uName = parsed.thread_data?.post?.username || "threads_user";
-              globalTaskQueue.unshift({
+              TaskQueueManager.getInstance().addTask({
                 id: `task_threads_${Date.now()}`,
                 title: `Săn tin & Bóc tách Threads: @${uName}`,
                 status: "completed",
@@ -1145,7 +1669,7 @@ print(r.get("success", False))
       }
 
       // Mặc định: Giao tác vụ thông thường
-      globalTaskQueue.unshift({
+      TaskQueueManager.getInstance().addTask({
         id: `task_${Date.now()}`,
         title: cleanCmd,
         status: "running",
@@ -1574,6 +2098,8 @@ print(r.get("success", False))
 });
 
 server.listen(PORT, () => {
+  // Khởi động động cơ Auto Queue Runner tuần tự (chu kỳ 3s)
+  QueueRunner.getInstance().start(3000);
   console.log(`\n=============================================================`);
   console.log(`  🎬 OMNIVIDEO STUDIO - VIDEO LIBRARY DASHBOARD LOCAL`);
   console.log(`  Truy cap trinh duyet tai: http://localhost:${PORT}`);

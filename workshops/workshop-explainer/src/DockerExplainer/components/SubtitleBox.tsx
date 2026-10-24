@@ -63,6 +63,7 @@ export const SubtitleBox: React.FC<SubtitleBoxProps> = ({
   );
 
   const words = activeChunkText.split(" ");
+  const framesPerWord = framesPerChunk / Math.max(1, words.length);
 
   return (
     <div
@@ -76,18 +77,36 @@ export const SubtitleBox: React.FC<SubtitleBoxProps> = ({
         <span className="text-3xl select-none">🎙️</span>
         <p className="text-4xl font-black tracking-wide text-slate-100 whitespace-nowrap leading-none">
           {words.map((word, idx) => {
+            const wordStartFrame = idx * framesPerWord;
+            const isWordActive =
+              chunkRelativeFrame >= wordStartFrame &&
+              chunkRelativeFrame < wordStartFrame + framesPerWord;
+            const isWordPast = chunkRelativeFrame >= wordStartFrame + framesPerWord;
+
             const isKeyword =
               highlightKeyword &&
               word.toLowerCase().includes(highlightKeyword.toLowerCase());
 
+            const wordScale = isWordActive ? 1.15 : 1.0;
+
+            let colorClasses = "text-slate-400/50"; // future
+            if (isWordActive) {
+              colorClasses = isKeyword
+                ? "text-amber-300 drop-shadow-[0_0_25px_rgba(252,211,77,1)] font-black"
+                : "text-sky-300 drop-shadow-[0_0_20px_rgba(56,189,248,0.9)] font-black";
+            } else if (isWordPast) {
+              colorClasses = isKeyword ? "text-amber-300" : "text-slate-100";
+            }
+
             return (
               <span
                 key={idx}
-                className={`inline-block mx-2 ${
-                  isKeyword
-                    ? "text-amber-300 drop-shadow-[0_0_15px_rgba(252,211,77,0.8)]"
-                    : "text-sky-100"
-                }`}
+                style={{
+                  transform: `scale(${wordScale})`,
+                  display: "inline-block",
+                  transition: "transform 0.1s ease-out",
+                }}
+                className={`mx-2 ${colorClasses}`}
               >
                 {word}
               </span>

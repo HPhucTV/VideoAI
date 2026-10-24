@@ -5,6 +5,8 @@ import { DockerExplainer } from "./DockerExplainer/DockerExplainer";
 import { dockerExplainerSchema } from "./DockerExplainer/types";
 import { OmniExplainer } from "./OmniExplainer/OmniExplainer";
 import { omniExplainerSchema } from "./OmniExplainer/types";
+import { IntroBumper } from "./Branding/IntroBumper";
+import { OutroBumper } from "./Branding/OutroBumper";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -103,6 +105,65 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{
           title: "Docker là gì?",
           subtitle: "Giải thích trong 50 giây",
+        }}
+      />
+
+      {/* 4. GiaiMaTech Brand Bumpers: 60 FPS High-End Motion Graphics */}
+      <Composition
+        id="IntroBumper-Landscape"
+        component={IntroBumper}
+        durationInFrames={120}
+        fps={60}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          channelName: "GIẢI MÃ TECH",
+          tagline: "CÔNG NGHỆ · AI · LẬP TRÌNH",
+          orientation: "landscape",
+        }}
+      />
+
+      <Composition
+        id="IntroBumper-Portrait"
+        component={IntroBumper}
+        durationInFrames={120}
+        fps={60}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          channelName: "GIẢI MÃ TECH",
+          tagline: "CÔNG NGHỆ · AI · LẬP TRÌNH",
+          orientation: "portrait",
+        }}
+      />
+
+      <Composition
+        id="OutroBumper-Landscape"
+        component={OutroBumper}
+        durationInFrames={270}
+        fps={60}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          channelName: "GIẢI MÃ TECH",
+          handle: "@GiaiMaTech",
+          callToAction: "ĐĂNG KÝ ĐỂ KHÔNG BỎ LỠ VIDEO MỚI",
+          orientation: "landscape",
+        }}
+      />
+
+      <Composition
+        id="OutroBumper-Portrait"
+        component={OutroBumper}
+        durationInFrames={270}
+        fps={60}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          channelName: "GIẢI MÃ TECH",
+          handle: "@GiaiMaTech",
+          callToAction: "FOLLOW ĐỂ KHÔNG BỎ LỠ VIDEO MỚI",
+          orientation: "portrait",
         }}
       />
     </>
