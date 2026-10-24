@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>OmniVideo Studio - Antigravity 2.0 Mission Control</title>
+  <title>OmniVideo Studio - Antigravity 2.0 & Omni-Commander (Sakura Rose)</title>
 
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-  <!-- Tailwind CSS CDN with Porcelain Light Configuration -->
+  <!-- Tailwind CSS CDN with White & Rose Sakura Palette -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -19,21 +19,21 @@
       theme: {
         extend: {
           colors: {
-            "surface": "#f7f9fb",
+            "surface": "#fff5f7",
             "surface-container-lowest": "#ffffff",
-            "surface-container-low": "#f2f4f6",
-            "surface-container": "#eceef0",
-            "surface-container-high": "#e6e8ea",
-            "surface-container-highest": "#e0e3e5",
-            "on-surface": "#191c1e",
-            "on-surface-variant": "#45464d",
-            "outline": "#76777d",
-            "outline-variant": "#c6c6cd",
-            "primary": "#0f172a",
-            "primary-container": "#1e293b",
+            "surface-container-low": "#fff8f9",
+            "surface-container": "#fdf2f8",
+            "surface-container-high": "#fce7f3",
+            "surface-container-highest": "#fbcfe8",
+            "on-surface": "#1f1724",
+            "on-surface-variant": "#4b5563",
+            "outline": "#9ca3af",
+            "outline-variant": "#fce7f3",
+            "primary": "#ec4899",
+            "primary-container": "#db2777",
             "on-primary": "#ffffff",
-            "secondary": "#006c49",
-            "secondary-container": "#d1fae5",
+            "secondary": "#f43f5e",
+            "secondary-container": "#ffe4e6",
             "on-secondary": "#ffffff",
             "tertiary": "#0090a9",
             "tertiary-container": "#e0f7fa",
@@ -60,84 +60,80 @@
       vertical-align: middle;
       display: inline-block;
     }
-    .neon-glow-primary {
-      box-shadow: 0 2px 10px rgba(0, 108, 73, 0.25);
-    }
-    .neon-glow-cyan {
-      box-shadow: 0 2px 10px rgba(0, 144, 169, 0.25);
-    }
-    .neon-glow-red {
-      box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
-    }
   </style>
 </head>
 
-<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans antialiased selection:bg-secondary-container selection:text-secondary overflow-x-hidden">
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-sans antialiased selection:bg-pink-100 selection:text-pink-600 overflow-x-hidden">
 
-  <!-- ================= 1. TOP APP BAR ================= -->
-  <header class="bg-surface-container-lowest/95 backdrop-blur-md border-b border-surface-container-highest docked full-width top-0 z-40 shadow-sm flex justify-between items-center w-full px-6 py-2 h-16 fixed">
+  <!-- ================= 1. TOP APP BAR (WHITE & ROSE SAKURA) ================= -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-pink-100 docked full-width top-0 z-40 shadow-[0_2px_12px_rgba(244,63,94,0.04)] flex justify-between items-center w-full px-6 py-2.5 h-16 fixed">
     <!-- Brand & Workspace Info -->
     <div class="flex items-center space-x-4">
       <div class="flex items-center space-x-2.5 cursor-pointer" onclick="location.reload()">
-        <span class="relative flex h-3 w-3">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
-        </span>
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-pink-500/20">
+          <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">movie</span>
+        </div>
         <div class="flex flex-col">
-          <span class="text-base font-headline font-bold text-primary tracking-tight">OmniVideo Studio</span>
-          <span class="text-xs font-mono text-on-surface-variant flex items-center gap-1">
+          <span class="text-base font-headline font-bold text-pink-600 tracking-tight flex items-center gap-1.5">
+            OmniVideo Studio
+            <span class="text-[10px] font-mono font-bold bg-pink-100 text-pink-700 px-1.5 py-0.2 rounded-full border border-pink-200">🌸 Sakura 2.0</span>
+          </span>
+          <span class="text-xs font-mono text-gray-500 flex items-center gap-1">
             <span>Kênh: Storyverse VN</span>
-            <span class="text-outline-variant">•</span>
-            <span class="text-secondary font-semibold">100% Local GPU</span>
+            <span class="text-pink-200">•</span>
+            <span class="text-rose-500 font-semibold">RTX 4090 GPU</span>
           </span>
         </div>
       </div>
 
-      <!-- Antigravity 2.0 Live Status Badge -->
-      <div id="antigravity-pill" class="hidden xl:flex items-center gap-2 bg-surface-container-low border border-secondary/30 rounded-full px-3 py-1 text-xs font-mono shadow-sm">
-        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" id="antigravity-dot"></span>
-        <span class="text-secondary font-bold" id="antigravity-text">Antigravity 2.0: Sẵn Sàng</span>
-        <span class="text-outline-variant">•</span>
-        <span class="bg-secondary/15 text-secondary border border-secondary/30 text-[10px] font-bold px-1.5 py-0.2 rounded" id="antigravity-gate-badge">Radar Active</span>
+      <!-- Telegram Push Connected Badge -->
+      <div id="telegram-status-pill" class="hidden xl:flex items-center gap-1.5 bg-pink-50 border border-pink-200 rounded-full px-3 py-1 text-xs font-mono text-pink-700 shadow-sm" title="Đã kết nối bot Telegram: @Boiz120">
+        <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+        <span class="font-bold">Telegram Sếp: @Boiz120</span>
+        <span class="text-pink-300">•</span>
+        <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1 rounded">Sẵn Sàng</span>
       </div>
     </div>
 
     <!-- Center Search Bar -->
     <div class="hidden lg:flex items-center space-x-4 flex-1 max-w-xl mx-6">
       <div class="relative w-full">
-        <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">search</span>
-        <input id="search-input" class="w-full bg-surface-container-low border border-surface-container-highest rounded-lg pl-9 pr-4 py-2 text-xs font-mono text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Tìm kiếm kịch bản, beat, task ID..." type="text"/>
+        <span class="material-symbols-outlined absolute left-3 top-2.5 text-pink-400 text-[18px]">search</span>
+        <input id="search-input" class="w-full bg-pink-50/50 border border-pink-100 rounded-xl pl-9 pr-4 py-2 text-xs font-mono text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition-all shadow-inner" placeholder="Tìm kiếm kịch bản, beat, task ID..." type="text"/>
       </div>
     </div>
 
-    <!-- Trailing Actions & Telemetry -->
-    <div class="flex items-center space-x-3">
-      <!-- Live Video / Storage Count -->
-      <div class="hidden md:flex items-center space-x-3 text-xs font-mono bg-surface-container-low px-3 py-1.5 rounded-lg border border-surface-container-highest">
-        <div>Video: <span class="text-secondary font-bold" id="stat-total-videos">0</span></div>
-        <span class="text-outline-variant">•</span>
-        <div>Dung lượng: <span class="text-primary font-bold" id="stat-total-size">0 MB</span></div>
-      </div>
+    <!-- Trailing Actions & Voice Briefing Button -->
+    <div class="flex items-center space-x-2.5">
+      
+      <!-- Voice Briefing 30s Button (Ý tưởng 2) -->
+      <button id="btn-top-voice-briefing" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold transition-all active:scale-95 shadow-sm" onclick="playVoiceBriefing()" title="Nghe báo cáo nhanh 30 giây bằng giọng nói AI Hoài My">
+        <span class="material-symbols-outlined text-[16px] text-pink-500">volume_up</span>
+        <span id="top-voice-text">🎙️ Nghe Báo Cáo 30s</span>
+        <div id="top-soundwave" class="soundwave hidden ml-1">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </button>
 
       <!-- Night Shift / Light Theme Toggle -->
-      <button id="btn-theme-toggle" class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg border border-surface-container-highest transition-colors" onclick="toggleTheme()" title="Chuyển chế độ Sáng / Tối">
+      <button id="btn-theme-toggle" class="p-2 text-gray-500 hover:text-pink-600 hover:bg-pink-50 rounded-xl border border-pink-100 transition-colors" onclick="toggleTheme()" title="Chuyển chế độ Sáng / Tối">
         <span class="material-symbols-outlined text-[18px]" id="theme-toggle-icon">dark_mode</span>
       </button>
 
       <!-- Quick YouTube Modal Launcher -->
-      <button class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-error text-white text-xs font-headline font-bold shadow-sm hover:opacity-90 active:scale-[0.98] transition-transform" onclick="triggerOpenFirstVideoYouTube()">
+      <button class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-headline font-bold shadow-sm shadow-red-500/25 hover:opacity-90 active:scale-[0.98] transition-transform" onclick="triggerOpenFirstVideoYouTube()">
         <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">smart_display</span>
         <span>YouTube Direct</span>
       </button>
 
       <!-- Quick Create Video Button -->
-      <button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-white text-xs font-headline font-bold hover:bg-primary-container active:scale-[0.98] transition-transform" id="btn-open-create">
+      <button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-headline font-bold shadow-md shadow-pink-500/20 hover:from-pink-600 hover:to-rose-600 active:scale-[0.98] transition-all" id="btn-open-create">
         <span class="material-symbols-outlined text-[16px]">add</span>
-        <span>+ Tạo Video Mới</span>
+        <span>+ Tạo Video</span>
       </button>
 
       <!-- Refresh Button -->
-      <button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg border border-surface-container-highest transition-colors" onclick="loadVideos()" title="Tải lại thư viện">
+      <button class="p-2 text-gray-500 hover:text-pink-600 hover:bg-pink-50 rounded-xl border border-pink-100 transition-colors" onclick="loadVideos()" title="Tải lại thư viện">
         <span class="material-symbols-outlined text-[18px]">refresh</span>
       </button>
     </div>
@@ -147,16 +143,16 @@
   <div class="flex pt-16 min-h-screen">
 
     <!-- ================= SIDEBAR ================= -->
-    <aside id="sidebarNav" class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-4 px-3 bg-surface-container-lowest border-r border-surface-container-highest docked left-0 top-16 z-30 shadow-sm fixed overflow-y-auto transition-all duration-300">
+    <aside id="sidebarNav" class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-4 px-3 bg-white border-r border-pink-100 docked left-0 top-16 z-30 shadow-[4px_0_16px_rgba(244,63,94,0.02)] fixed overflow-y-auto transition-all duration-300">
       <div>
-        <div class="px-2 mb-3 pb-3 border-b border-surface-container-highest flex items-center justify-between">
+        <div class="px-2 mb-3 pb-3 border-b border-pink-100 flex items-center justify-between">
           <div id="sidebar-brand-text" class="truncate">
-            <div class="text-sm font-headline font-bold text-primary">5 Phân Xưởng Sản Xuất</div>
-            <p class="text-[10px] font-mono text-outline">Neural NLE Engine • AG 2.0</p>
+            <div class="text-sm font-headline font-bold text-gray-800">5 Phân Xưởng Sản Xuất</div>
+            <p class="text-[10px] font-mono text-pink-500 font-medium">Neural NLE Engine • AG 2.0</p>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_6px_#006c49]" title="Online"></span>
-            <button id="btn-toggle-sidebar" class="p-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors border border-surface-container-highest flex items-center justify-center shrink-0 ml-1" title="Thu gọn / Mở rộng Sidebar">
+            <span class="w-2 h-2 rounded-full bg-pink-500 shadow-[0_0_6px_#ec4899]" title="Online"></span>
+            <button id="btn-toggle-sidebar" class="p-1 rounded-lg bg-pink-50 text-gray-500 hover:text-pink-600 hover:bg-pink-100 transition-colors border border-pink-100 flex items-center justify-center shrink-0 ml-1" title="Thu gọn / Mở rộng Sidebar">
               <span id="sidebar-toggle-icon" class="material-symbols-outlined text-sm">chevron_left</span>
             </button>
           </div>
@@ -165,78 +161,78 @@
         <!-- Filter Tabs / Workshop Selectors -->
         <nav class="space-y-1 filter-tabs">
           <!-- All -->
-          <button class="tab-btn active w-full text-left bg-surface-container-high text-secondary border-l-2 border-secondary font-semibold px-3 py-2 rounded-r-lg flex items-center justify-between text-xs transition-all" data-workshop="all" title="Tất Cả Video (5 Xưởng)">
+          <button class="tab-btn active w-full text-left bg-pink-50 text-pink-600 border-l-2 border-pink-500 font-semibold px-3 py-2 rounded-r-xl flex items-center justify-between text-xs transition-all shadow-sm" data-workshop="all" title="Tất Cả Video (5 Xưởng)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary text-[18px]">space_dashboard</span>
+              <span class="material-symbols-outlined text-pink-500 text-[18px]">space_dashboard</span>
               <span class="tab-text">Tất Cả Video</span>
             </div>
-            <span class="tab-badge text-[10px] font-mono text-secondary font-bold bg-secondary-container px-1.5 py-0.5 rounded">ALL</span>
+            <span class="tab-badge text-[10px] font-mono text-pink-600 font-bold bg-pink-100 px-1.5 py-0.5 rounded-full">ALL</span>
           </button>
 
           <!-- Workshop 5: Threads -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="threads" title="Xưởng 5: Threads Social Drama (9:16 Shorts)">
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="threads" title="Xưởng 5: Threads Social Drama (9:16 Shorts)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-pink-500 text-[18px] group-hover:scale-105 transition-transform">flash_on</span>
+              <span class="material-symbols-outlined text-pink-500 text-[18px] group-hover:scale-110 transition-transform">flash_on</span>
               <span class="tab-text truncate">Xưởng 5: Threads Social</span>
             </div>
-            <span class="tab-badge text-[10px] font-mono font-bold bg-pink-100 text-pink-700 border border-pink-200 px-1 rounded uppercase">9:16</span>
+            <span class="tab-badge text-[10px] font-mono font-bold bg-pink-100 text-pink-700 border border-pink-200 px-1.5 rounded-full uppercase">9:16</span>
           </button>
 
           <!-- Workshop 4: Cinematic -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="cinematic" title="Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 4K)">
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="cinematic" title="Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 4K)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-amber-500 text-[18px] group-hover:scale-105 transition-transform">movie_filter</span>
+              <span class="material-symbols-outlined text-amber-500 text-[18px] group-hover:scale-110 transition-transform">movie_filter</span>
               <span class="tab-text truncate">Xưởng 4: Phim 3D / Donghua</span>
             </div>
-            <span class="tab-badge text-[10px] font-mono bg-amber-100 text-amber-700 border border-amber-200 px-1 rounded font-bold">4K</span>
+            <span class="tab-badge text-[10px] font-mono bg-amber-100 text-amber-700 border border-amber-200 px-1.5 rounded-full font-bold">4K</span>
           </button>
 
           <!-- Workshop 3: Whiteboard -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="whiteboard" title="Xưởng 3: Bảng Trắng Vẽ Tay (Audio Drama 90 FPS)">
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="whiteboard" title="Xưởng 3: Bảng Trắng Vẽ Tay (Audio Drama 90 FPS)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-cyan-600 text-[18px] group-hover:scale-105 transition-transform">history_edu</span>
+              <span class="material-symbols-outlined text-purple-500 text-[18px] group-hover:scale-110 transition-transform">history_edu</span>
               <span class="tab-text truncate">Xưởng 3: Bảng Trắng</span>
             </div>
-            <span class="tab-badge text-[10px] font-mono text-outline bg-surface-container px-1 rounded">60m</span>
+            <span class="tab-badge text-[10px] font-mono text-purple-700 bg-purple-100 px-1.5 rounded-full">60m</span>
           </button>
 
           <!-- Workshop 2: Explainer -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="explainer" title="Xưởng 2: Remotion Code Explainer (TypeScript NLE)">
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="explainer" title="Xưởng 2: Remotion Code Explainer (TypeScript NLE)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-purple-600 text-[18px] group-hover:scale-105 transition-transform">code_blocks</span>
+              <span class="material-symbols-outlined text-cyan-500 text-[18px] group-hover:scale-110 transition-transform">code_blocks</span>
               <span class="tab-text truncate">Xưởng 2: Remotion Tech</span>
             </div>
-            <span class="tab-badge text-[10px] font-mono text-purple-700 bg-purple-100 px-1 rounded">TS</span>
+            <span class="tab-badge text-[10px] font-mono text-cyan-700 bg-cyan-100 px-1.5 rounded-full">TS</span>
           </button>
 
           <!-- Workshop 1: News -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="news" title="Xưởng 1: Tin Tức Nhanh (HyperFrames Shorts)">
+          <button class="tab-btn w-full text-left text-gray-600 hover:text-pink-600 hover:bg-pink-50 px-3 py-2 rounded-xl flex items-center justify-between text-xs transition-colors group" data-workshop="news" title="Xưởng 1: Tin Tức Nhanh (HyperFrames Shorts)">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-emerald-600 text-[18px] group-hover:scale-105 transition-transform">bolt</span>
+              <span class="material-symbols-outlined text-emerald-500 text-[18px] group-hover:scale-110 transition-transform">bolt</span>
               <span class="tab-text truncate">Xưởng 1: Tin Tức Nhanh</span>
             </div>
-            <span class="tab-badge text-[10px] font-mono text-emerald-700 font-bold bg-emerald-100 px-1 rounded">9:16</span>
+            <span class="tab-badge text-[10px] font-mono text-emerald-700 font-bold bg-emerald-100 px-1.5 rounded-full">9:16</span>
           </button>
         </nav>
       </div>
 
       <!-- Bottom Local Telemetry Dock -->
-      <div id="sidebar-telemetry-full" class="bg-surface-container-low rounded-xl p-3 border border-surface-container-highest space-y-2 mt-4">
+      <div id="sidebar-telemetry-full" class="bg-pink-50/70 rounded-2xl p-3.5 border border-pink-100 space-y-2 mt-4 shadow-sm">
         <div class="flex items-center justify-between text-xs font-mono">
-          <span class="text-on-surface-variant flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-xs text-secondary">memory</span>
+          <span class="text-gray-600 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-xs text-pink-500">memory</span>
             GPU Latency
           </span>
-          <span class="text-secondary font-bold">11ms</span>
+          <span class="text-pink-600 font-bold">11ms</span>
         </div>
-        <div class="text-[11px] font-mono text-outline truncate">
-          Node: LocalHost:3333 (IPC Open)
+        <div class="text-[11px] font-mono text-gray-500 truncate">
+          GitHub Quota: <strong>4,999 / 5,000</strong> req/h
         </div>
-        <div class="flex items-center gap-1.5 text-[11px] font-mono text-secondary font-medium">
-          <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+        <div class="flex items-center gap-1.5 text-[11px] font-mono text-pink-600 font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
           <span>Antigravity Radar Active</span>
         </div>
-        <button class="w-full text-left text-[11px] font-mono text-on-surface-variant hover:text-on-surface flex items-center justify-between pt-1 border-t border-surface-container-highest" onclick="openShiftReportModal()">
+        <button class="w-full text-left text-[11px] font-mono text-gray-600 hover:text-pink-600 flex items-center justify-between pt-1 border-t border-pink-200/60 transition-colors" onclick="openShiftReportModal()">
           <span class="flex items-center gap-1">
             <span class="material-symbols-outlined text-xs">assignment</span>
             Báo Cáo Ca Trực 24h
@@ -246,29 +242,29 @@
       </div>
 
       <!-- Bottom Compact Icon (Collapsed Mode) -->
-      <div id="sidebar-telemetry-collapsed" class="hidden flex-col items-center gap-2 p-2 mt-4 bg-surface-container-low rounded-lg border border-surface-container-highest">
-        <span class="material-symbols-outlined text-secondary text-base" title="Node: LocalHost:3333">memory</span>
-        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" title="Antigravity Online"></span>
+      <div id="sidebar-telemetry-collapsed" class="hidden flex-col items-center gap-2 p-2 mt-4 bg-pink-50 rounded-xl border border-pink-100">
+        <span class="material-symbols-outlined text-pink-500 text-base" title="Node: LocalHost:3333">memory</span>
+        <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse" title="Antigravity Online"></span>
       </div>
     </aside>
 
     <!-- ================= MAIN WORKSPACE CONTENT CANVAS ================= -->
     <main id="mainContent" class="flex-1 lg:ml-64 p-6 lg:p-8 space-y-6 max-w-[1720px] mx-auto w-full transition-all duration-300">
 
-      <!-- ================= 2. LEADER COMMAND SEARCH / DISPATCH CARD ================= -->
-      <section class="w-full bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-sm p-4 relative overflow-hidden">
-        <div class="absolute -top-12 -right-12 w-48 h-48 bg-secondary-container rounded-full filter blur-3xl opacity-30 pointer-events-none"></div>
+      <!-- ================= 2. LEADER COMMAND SEARCH & LIVE LOG CONSOLE CARD ================= -->
+      <section class="w-full bg-white rounded-2xl border border-pink-100 shadow-[0_4px_24px_rgba(244,63,94,0.06)] p-5 relative overflow-hidden">
+        <div class="absolute -top-16 -right-16 w-56 h-56 bg-pink-100/60 rounded-full filter blur-3xl pointer-events-none"></div>
 
-        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 relative z-10">
-          <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-surface-container text-secondary flex-shrink-0">
-            <span class="material-symbols-outlined text-[24px]">psychology</span>
+        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3.5 relative z-10">
+          <div class="flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-400 text-white shadow-md shadow-pink-500/25 flex-shrink-0">
+            <span class="material-symbols-outlined text-[26px]">psychology</span>
           </div>
 
-          <div class="flex-1 flex flex-col gap-2">
+          <div class="flex-1 flex flex-col gap-2.5">
             <div class="relative flex items-center">
-              <input id="leader-command-input" class="w-full bg-surface border border-surface-container-highest focus:border-secondary rounded-lg py-2.5 pl-3 pr-40 text-sm font-sans text-on-surface placeholder:text-outline focus:outline-none transition-all shadow-inner" placeholder="Chỉ đạo Omni-Commander AI: Nhập task hoặc dán link để tự động săn tin và sản xuất video..." type="text"/>
+              <input id="leader-command-input" class="w-full bg-pink-50/40 border border-pink-100 focus:border-pink-500 rounded-xl py-3 pl-3.5 pr-44 text-sm font-sans text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-200 transition-all shadow-inner" placeholder="Chỉ đạo Omni-Commander AI: Nhập task hoặc dán link để tự động săn tin và sản xuất video..." type="text"/>
               
-              <button id="btn-dispatch-leader" class="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg bg-primary text-white font-headline text-xs font-bold flex items-center gap-1.5 hover:bg-primary-container active:scale-[0.98] transition-all">
+              <button id="btn-dispatch-leader" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 text-white font-headline text-xs font-bold flex items-center gap-1.5 shadow-md shadow-pink-500/20 hover:from-pink-600 hover:to-rose-600 active:scale-[0.98] transition-all">
                 <span class="material-symbols-outlined text-[16px]">bolt</span>
                 <span>Giao Việc Cho Leader</span>
               </button>
@@ -276,183 +272,253 @@
 
             <!-- Quick Tag Shortcuts -->
             <div class="flex flex-wrap items-center gap-2">
-              <span class="text-[11px] font-mono text-outline font-bold">GỢI Ý NHANH:</span>
+              <span class="text-[11px] font-mono text-gray-400 font-bold">GỢI Ý NHANH:</span>
               
-              <button class="px-2.5 py-0.5 rounded-full border border-surface-container-highest bg-surface-container-low text-on-surface-variant text-xs hover:border-secondary hover:text-secondary transition-colors flex items-center gap-1" onclick="handleLeaderShortcut('scout_github')">
-                <span class="text-secondary font-bold">⚡</span> GitHub Repo Trending
+              <button class="px-3 py-1 rounded-full border border-pink-100 bg-pink-50/60 text-gray-700 text-xs hover:border-pink-300 hover:text-pink-600 transition-all flex items-center gap-1" onclick="handleLeaderShortcut('scout_github')">
+                <span class="text-pink-500 font-bold">⚡</span> GitHub Repo Trending (555K ⭐)
               </button>
 
-              <button class="px-2.5 py-0.5 rounded-full border border-surface-container-highest bg-surface-container-low text-on-surface-variant text-xs hover:border-secondary hover:text-secondary transition-colors flex items-center gap-1" onclick="handleLeaderShortcut('shift_report')">
-                <span class="text-secondary font-bold">📋</span> Báo Cáo Ca Trực 24h
+              <button class="px-3 py-1 rounded-full border border-pink-100 bg-pink-50/60 text-gray-700 text-xs hover:border-pink-300 hover:text-pink-600 transition-all flex items-center gap-1" onclick="handleLeaderShortcut('shift_report')">
+                <span class="text-pink-500 font-bold">📋</span> Báo Cáo Ca Trực 24h
               </button>
 
-              <button class="px-2.5 py-0.5 rounded-full border border-surface-container-highest bg-surface-container-low text-on-surface-variant text-xs hover:border-secondary hover:text-secondary transition-colors flex items-center gap-1" onclick="handleLeaderShortcut('quality_audit')">
-                <span class="text-secondary font-bold">🛡️</span> Kiểm Tra Chất Lượng (Gatekeeper)
+              <button class="px-3 py-1 rounded-full border border-pink-100 bg-pink-50/60 text-gray-700 text-xs hover:border-pink-300 hover:text-pink-600 transition-all flex items-center gap-1" onclick="handleLeaderShortcut('quality_audit')">
+                <span class="text-pink-500 font-bold">🛡️</span> Kiểm Tra Chất Lượng (Gatekeeper)
               </button>
 
-              <button class="px-2.5 py-0.5 rounded-full border border-surface-container-highest bg-surface-container-low text-on-surface-variant text-xs hover:border-secondary hover:text-secondary transition-colors flex items-center gap-1" onclick="handleLeaderShortcut('threads_crawl')">
-                <span class="text-secondary font-bold">🔥</span> Threads Confessions Săn Tin
+              <button class="px-3 py-1 rounded-full border border-pink-100 bg-pink-50/60 text-gray-700 text-xs hover:border-pink-300 hover:text-pink-600 transition-all flex items-center gap-1" onclick="handleLeaderShortcut('threads_crawl')">
+                <span class="text-pink-500 font-bold">🔥</span> Threads Confessions Săn Tin
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Dynamic Feedback Box when Leader Executes -->
-        <div id="leader-feedback-box" class="hidden mt-3 pt-3 border-t border-surface-container-highest text-xs font-mono"></div>
+        <!-- ================= KHUNG LOG BÁO CÁO CỦA LEADER AI (LIVE CONSOLE) ================= -->
+        <div id="leader-console-wrap" class="leader-console-wrap">
+          <!-- Console Header -->
+          <div class="leader-console-header">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-500 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-500"></span>
+              </span>
+              <span class="font-headline font-bold text-xs text-pink-700">LEADER AI LIVE CONSOLE</span>
+              <span class="text-pink-300">•</span>
+              <span class="text-[10px] font-mono text-gray-500" id="console-status-text">Đang trực chiến 24/7 (Sẵn sàng nhận lệnh)</span>
+            </div>
+
+            <!-- Console Toolbar Actions -->
+            <div class="flex items-center gap-1.5">
+              <!-- Play Voice Briefing (Ý tưởng 2) -->
+              <button class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-[11px] font-bold flex items-center gap-1 transition-colors" onclick="playVoiceBriefing()" title="Nghe báo cáo bằng giọng đọc AI">
+                <span class="material-symbols-outlined text-[13px]">volume_up</span>
+                <span class="hidden sm:inline">Nghe Giọng Nói 30s</span>
+              </button>
+
+              <!-- Send Telegram Ping (Ý tưởng 4) -->
+              <button class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-[11px] font-bold flex items-center gap-1 transition-colors" onclick="sendTelegramReport()" title="Gửi báo cáo tóm tắt về Telegram của sếp">
+                <span class="material-symbols-outlined text-[13px]">send</span>
+                <span class="hidden sm:inline">Báo Cáo Telegram</span>
+              </button>
+
+              <!-- Task Queue Toggle (Ý tưởng 3) -->
+              <button class="px-2.5 py-1 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-[11px] font-bold flex items-center gap-1 transition-colors" onclick="openTaskQueueModal()" title="Xem hàng đợi nhiệm vụ đa tác vụ">
+                <span class="material-symbols-outlined text-[13px]">checklist</span>
+                <span class="hidden sm:inline">Hàng Đợi</span>
+                <span id="queue-badge-count" class="bg-pink-500 text-white text-[9px] px-1 rounded-full font-bold">3</span>
+              </button>
+
+              <!-- Clear Log -->
+              <button class="p-1 rounded-lg text-gray-400 hover:text-pink-600 hover:bg-pink-100 transition-colors" onclick="clearLeaderLog()" title="Xóa lịch sử log">
+                <span class="material-symbols-outlined text-sm">delete_sweep</span>
+              </button>
+
+              <!-- Minimize / Expand -->
+              <button class="p-1 rounded-lg text-gray-400 hover:text-pink-600 hover:bg-pink-100 transition-colors" onclick="toggleLeaderLog()" title="Thu gọn / Mở rộng khung log">
+                <span id="btn-toggle-log-icon" class="material-symbols-outlined text-sm">expand_less</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Console Stream Body -->
+          <div id="leader-log-stream" class="leader-console-body">
+            <!-- Initial logs rendered by app.js -->
+          </div>
+
+          <!-- Interactive Action Bar (Ý tưởng 1: Quick HITL Decisions) -->
+          <div id="leader-hitl-actions" class="hitl-action-bar">
+            <span class="text-[10px] font-mono text-pink-600 font-bold uppercase tracking-wider">HÀNH ĐỘNG NHANH 1 CHẠM:</span>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs" onclick="handleHitlAction('run_workshop2')">
+              ⚡ Bấm Máy Xưởng 2 Ngay
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs" onclick="handleHitlAction('rewrite_humor')">
+              ✏️ Viết Lại Kịch Bản Hài Hơn
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs" onclick="handleHitlAction('change_topic')">
+              🔄 Đổi Đề Tài Khác
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-gray-700 text-[11px] font-semibold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs" onclick="handleHitlAction('upload_youtube')">
+              🚀 Đăng Luôn Lên YouTube
+            </button>
+            <button class="px-2.5 py-1 rounded-lg bg-white border border-pink-200 text-pink-700 text-[11px] font-bold hover:border-pink-500 hover:text-pink-600 transition-colors shadow-xs" onclick="sendTelegramReport()">
+              📱 Gửi Báo Cáo Telegram
+            </button>
+          </div>
+        </div>
       </section>
 
-      <!-- ================= 3. SHIFT BRIEFING & RADAR TELEMETRY WIDGET (24H STATS) ================= -->
+      <!-- ================= 3. SHIFT BRIEFING & RADAR TELEMETRY WIDGET (4 STAT CARDS) ================= -->
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Card 1: Kho Video 24h -->
-        <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-4 flex flex-col justify-between shadow-sm hover:border-outline transition-colors cursor-pointer" onclick="filterByWorkshop('all')">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="text-[11px] font-mono tracking-wide font-bold uppercase">KHO VIDEO 24H</span>
-            <span class="material-symbols-outlined text-[18px] text-secondary">movie</span>
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all cursor-pointer" onclick="filterByWorkshop('all')">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-pink-700">KHO VIDEO 24H</span>
+            <span class="material-symbols-outlined text-[20px] text-pink-500">movie</span>
           </div>
           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-2xl font-headline font-bold text-on-surface tracking-tight" id="widget-total-videos">1</span>
-            <span class="text-xs text-on-surface-variant">video</span>
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight" id="widget-total-videos">1</span>
+            <span class="text-xs text-gray-500">video</span>
           </div>
-          <div class="mt-2 pt-2 border-t border-surface-container-highest flex items-center gap-1.5 text-xs text-secondary font-semibold">
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center gap-1.5 text-xs text-pink-600 font-semibold">
             <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
             <span>+1 hoàn tất đêm qua</span>
           </div>
         </div>
 
         <!-- Card 2: Đã Đăng YouTube API -->
-        <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-4 flex flex-col justify-between shadow-sm hover:border-outline transition-colors cursor-pointer" onclick="filterPublishedVideos()">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="text-[11px] font-mono tracking-wide font-bold uppercase">ĐÃ ĐĂNG YOUTUBE API</span>
-            <span class="material-symbols-outlined text-error text-[18px]" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all cursor-pointer" onclick="filterPublishedVideos()">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-red-600">ĐÃ ĐĂNG YOUTUBE API</span>
+            <span class="material-symbols-outlined text-red-500 text-[20px]" style="font-variation-settings: 'FILL' 1;">play_circle</span>
           </div>
           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-2xl font-headline font-bold text-on-surface tracking-tight" id="widget-published-videos">1</span>
-            <span class="text-xs text-on-surface-variant">Shorts / Cinema</span>
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight" id="widget-published-videos">1</span>
+            <span class="text-xs text-gray-500">Shorts / Cinema</span>
           </div>
-          <div class="mt-2 pt-2 border-t border-surface-container-highest flex items-center justify-between text-xs text-on-surface-variant">
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center justify-between text-xs text-gray-500">
             <span>Trạng thái:</span>
-            <span class="font-bold text-secondary flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            <span class="font-bold text-emerald-600 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               Đã Xuất Bản
             </span>
           </div>
         </div>
 
         <!-- Card 3: Star Velocity Radar -->
-        <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-4 flex flex-col justify-between shadow-sm hover:border-outline transition-colors cursor-pointer" onclick="openScoutModal()">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="text-[11px] font-mono tracking-wide font-bold uppercase">STAR VELOCITY RADAR</span>
-            <span class="material-symbols-outlined text-tertiary text-[18px]">satellite_alt</span>
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all cursor-pointer" onclick="openScoutModal()">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-cyan-700">STAR VELOCITY RADAR</span>
+            <span class="material-symbols-outlined text-cyan-500 text-[20px]">satellite_alt</span>
           </div>
           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-2xl font-headline font-bold text-on-surface tracking-tight" id="widget-radar-count">6</span>
-            <span class="text-xs text-on-surface-variant">repos / 24h</span>
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight" id="widget-radar-count">6</span>
+            <span class="text-xs text-gray-500">repos / 24h</span>
           </div>
-          <div class="mt-2 pt-2 border-t border-surface-container-highest flex items-center gap-1.5 text-xs text-tertiary font-semibold">
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center gap-1.5 text-xs text-cyan-600 font-semibold">
             <span class="relative flex h-1.5 w-1.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-tertiary"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500"></span>
             </span>
-            <span>GitHub Trending Radar Active</span>
+            <span>GitHub Token: 5,000 req/h</span>
           </div>
         </div>
 
         <!-- Card 4: Hệ Thống & GPU Worker -->
-        <div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-4 flex flex-col justify-between shadow-sm hover:border-outline transition-colors">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="text-[11px] font-mono tracking-wide font-bold uppercase">HỆ THỐNG & GPU WORKER</span>
-            <span class="material-symbols-outlined text-primary text-[18px]">memory</span>
+        <div class="bg-white rounded-2xl border border-pink-100 p-4 flex flex-col justify-between shadow-[0_4px_20px_rgba(244,63,94,0.04)] hover:border-pink-300 transition-all">
+          <div class="flex items-center justify-between text-gray-500">
+            <span class="text-[11px] font-mono tracking-wide font-bold uppercase text-pink-700">HỆ THỐNG & GPU WORKER</span>
+            <span class="material-symbols-outlined text-pink-500 text-[20px]">memory</span>
           </div>
           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-2xl font-headline font-bold text-on-surface tracking-tight">99.8%</span>
-            <span class="text-xs text-secondary font-semibold">Uptime</span>
+            <span class="text-3xl font-headline font-bold text-gray-800 tracking-tight">99.8%</span>
+            <span class="text-xs text-emerald-600 font-semibold">Uptime</span>
           </div>
-          <div class="mt-2 pt-2 border-t border-surface-container-highest flex items-center justify-between text-xs text-on-surface-variant">
+          <div class="mt-2 pt-2 border-t border-pink-50 flex items-center justify-between text-xs text-gray-500">
             <span>Remotion + Edge-TTS:</span>
-            <span class="font-bold text-on-surface">58.4 fps</span>
+            <span class="font-bold text-gray-800">58.4 fps</span>
           </div>
         </div>
       </section>
 
       <!-- ================= 4. THE 7-GATE PRODUCTION PROTOCOL ================= -->
-      <section class="rounded-xl bg-surface-container-lowest border border-surface-container-highest p-4 shadow-sm" id="antigravity-mission-control">
+      <section class="rounded-2xl bg-white border border-pink-100 p-4 shadow-[0_4px_20px_rgba(244,63,94,0.04)]" id="antigravity-mission-control">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-mono font-semibold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-secondary text-sm">linear_scale</span>
+          <span class="text-xs font-mono font-semibold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-pink-500 text-sm">linear_scale</span>
             Quy Trình 7 Cổng Sản Xuất Tự Hành (Antigravity Protocol):
           </span>
-          <span class="text-xs font-mono text-secondary font-bold" id="gate-overall-progress">Tiến độ: 100% (Hoàn Tất Cổng 7)</span>
+          <span class="text-xs font-mono text-pink-600 font-bold" id="gate-overall-progress">Tiến độ: 100% (Hoàn Tất Cổng 7)</span>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2" id="seven-gates-container">
           <!-- Gate 1 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-1">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-1">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 01</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Ý Tưởng & Đề Tài</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">Đã Duyệt</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Ý Tưởng & Đề Tài</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">Đã Duyệt</div>
           </div>
 
           <!-- Gate 2 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-2">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-2">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 02</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Kịch Bản & Beats</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">Chuẩn 5 Hồi</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Kịch Bản & Beats</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">Chuẩn 5 Hồi</div>
           </div>
 
           <!-- Gate 3 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-3">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-3">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 03</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Dàn Asset & Master Sets</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">Khóa Media ID</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Dàn Asset & Sets</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">Khóa Media ID</div>
           </div>
 
           <!-- Gate 4 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-4">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-4">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 04</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Lồng Tiếng & Audio</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">48kHz Ducking</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Lồng Tiếng & Audio</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">48kHz Ducking</div>
           </div>
 
           <!-- Gate 5 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-5">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-5">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 05</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Storyboard & Khung Hình</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">Khớp Từng Beat</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Khung Hình Storyboard</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">Khớp Từng Beat</div>
           </div>
 
           <!-- Gate 6 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-6">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-6">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 06</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Bấm Máy & Render NLE</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">1080x1920 60fps</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Render NLE 60fps</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">1080x1920 MP4</div>
           </div>
 
           <!-- Gate 7 -->
-          <div class="p-2 rounded-lg border border-secondary/40 bg-surface-container-low flex flex-col justify-between" id="gate-card-7">
-            <div class="flex items-center justify-between text-[11px] text-secondary font-mono mb-1">
+          <div class="p-2 rounded-xl border border-pink-200 bg-pink-50/60 flex flex-col justify-between" id="gate-card-7">
+            <div class="flex items-center justify-between text-[11px] text-pink-600 font-mono mb-1">
               <span>GATE 07</span>
-              <span class="material-symbols-outlined text-sm text-secondary">check_circle</span>
+              <span class="material-symbols-outlined text-sm text-pink-500">check_circle</span>
             </div>
-            <div class="text-xs font-bold text-on-surface line-clamp-1">Xuất Bản YouTube</div>
-            <div class="text-[10px] text-secondary font-mono mt-1">Unlisted Verified</div>
+            <div class="text-xs font-bold text-gray-800 line-clamp-1">Xuất Bản YouTube</div>
+            <div class="text-[10px] text-pink-600 font-mono mt-1">Unlisted Verified</div>
           </div>
         </div>
       </section>
@@ -460,29 +526,29 @@
       <!-- ================= 5. VIDEO LIBRARY ('KHO VIDEO ĐÃ SẢN XUẤT') ================= -->
       <section class="flex flex-col gap-4">
         <!-- Filter Bar & Section Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-surface-container-highest">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-pink-100">
           <div class="flex items-center gap-2">
-            <h2 class="text-lg font-headline font-bold text-on-surface">Kho Video Đã Sản Xuất</h2>
-            <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-xs font-mono font-bold" id="badge-total-assets">1 Video</span>
+            <h2 class="text-lg font-headline font-bold text-gray-800">Kho Video Đã Sản Xuất</h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 text-xs font-mono font-bold" id="badge-total-assets">1 Video</span>
           </div>
 
           <!-- View Mode & Category Tabs -->
           <div class="flex items-center gap-2 flex-wrap">
-            <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg border border-surface-container-highest">
-              <button class="px-3 py-1 rounded-md bg-primary text-white text-xs font-medium transition-colors" id="btn-filter-all" onclick="filterByWorkshop('all')">Tất cả</button>
-              <button class="px-3 py-1 rounded-md text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors" onclick="filterByWorkshop('threads')">Threads</button>
-              <button class="px-3 py-1 rounded-md text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors" onclick="filterByWorkshop('cinematic')">3D Phim</button>
-              <button class="px-3 py-1 rounded-md text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors" onclick="filterByWorkshop('explainer')">Remotion</button>
-              <button class="px-3 py-1 rounded-md text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors" onclick="filterByWorkshop('whiteboard')">Bảng Trắng</button>
-              <button class="px-3 py-1 rounded-md text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors" onclick="filterByWorkshop('news')">Tin Tức</button>
+            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-pink-100 shadow-xs">
+              <button class="px-3 py-1 rounded-lg bg-pink-500 text-white text-xs font-bold transition-all shadow-sm" id="btn-filter-all" onclick="filterByWorkshop('all')">Tất cả</button>
+              <button class="px-3 py-1 rounded-lg text-gray-600 hover:text-pink-600 text-xs font-medium transition-colors" onclick="filterByWorkshop('threads')">Threads</button>
+              <button class="px-3 py-1 rounded-lg text-gray-600 hover:text-pink-600 text-xs font-medium transition-colors" onclick="filterByWorkshop('cinematic')">3D Phim</button>
+              <button class="px-3 py-1 rounded-lg text-gray-600 hover:text-pink-600 text-xs font-medium transition-colors" onclick="filterByWorkshop('explainer')">Remotion</button>
+              <button class="px-3 py-1 rounded-lg text-gray-600 hover:text-pink-600 text-xs font-medium transition-colors" onclick="filterByWorkshop('whiteboard')">Bảng Trắng</button>
+              <button class="px-3 py-1 rounded-lg text-gray-600 hover:text-pink-600 text-xs font-medium transition-colors" onclick="filterByWorkshop('news')">Tin Tức</button>
             </div>
 
             <!-- Grid vs Table View Switcher -->
-            <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg border border-surface-container-highest">
-              <button id="view-mode-grid" class="p-1 rounded text-on-surface-variant hover:text-on-surface" onclick="setViewMode('grid')" title="Dạng Lưới (Bento Cards)">
+            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-pink-100 shadow-xs">
+              <button id="view-mode-grid" class="p-1.5 rounded-lg text-gray-500 hover:text-pink-600" onclick="setViewMode('grid')" title="Dạng Lưới (Bento Cards)">
                 <span class="material-symbols-outlined text-[18px]">grid_view</span>
               </button>
-              <button id="view-mode-table" class="p-1 rounded text-on-surface-variant hover:text-on-surface" onclick="setViewMode('table')" title="Dạng Bảng (Dense Table)">
+              <button id="view-mode-table" class="p-1.5 rounded-lg text-gray-500 hover:text-pink-600" onclick="setViewMode('table')" title="Dạng Bảng (Dense Table)">
                 <span class="material-symbols-outlined text-[18px]">table_rows</span>
               </button>
             </div>
@@ -518,7 +584,48 @@
     </main>
   </div>
 
-  <!-- ================= 6. YOUTUBE DIRECT UPLOAD MODAL ================= -->
+  <!-- ================= 6. TASK QUEUE MODAL (Ý TƯỞNG 3: HÀNG ĐỢI ĐA NHIỆM VỤ) ================= -->
+  <div class="modal" id="task-queue-modal">
+    <div class="modal-backdrop" onclick="closeTaskQueueModal()"></div>
+    <div class="modal-content max-w-2xl w-full" style="max-height: 85vh;">
+      <div class="modal-header">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-pink-500 text-xl">checklist</span>
+          <h3 class="font-headline font-bold text-base text-gray-800">Hàng Đợi Nhiệm Vụ Đa Tác Vụ (Task Queue)</h3>
+        </div>
+        <button type="button" class="btn-close" onclick="closeTaskQueueModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body overflow-y-auto space-y-4">
+        <!-- Add multiple tasks box -->
+        <div class="p-3.5 rounded-xl border border-pink-200 bg-pink-50/50 flex flex-col gap-2">
+          <label class="text-xs font-mono font-bold text-pink-700">GIAO NHIỀU VIỆC CÙNG LÚC (MỖI DÒNG 1 VIỆC):</label>
+          <textarea id="queue-multi-tasks-input" class="w-full bg-white border border-pink-200 rounded-lg p-2.5 text-xs font-sans text-gray-800 focus:outline-none focus:border-pink-500 resize-none h-20" placeholder="Việc 1: Quét 3 repo GitHub trending mới nhất&#10;Việc 2: Săn bài viết Threads tâm sự sinh viên&#10;Việc 3: Kiểm định chất lượng KCS video vừa render..."></textarea>
+          <div class="flex justify-end">
+            <button type="button" class="px-3.5 py-1.5 rounded-lg bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1" onclick="submitMultipleTasks()">
+              <span class="material-symbols-outlined text-xs">playlist_add</span> Thêm Vào Hàng Đợi
+            </button>
+          </div>
+        </div>
+
+        <!-- Task List Container -->
+        <div class="space-y-2" id="task-queue-list">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeTaskQueueModal()">Đóng</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="sendTelegramReport()">
+          <span class="material-symbols-outlined text-xs">send</span> Báo Cáo Telegram
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 7. YOUTUBE DIRECT UPLOAD MODAL ================= -->
   <div class="modal" id="youtube-upload-modal">
     <div class="modal-backdrop" onclick="closeYouTubeUploadModal()"></div>
 
@@ -528,12 +635,12 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <div class="flex items-center gap-2.5">
-            <span class="p-1.5 rounded-lg bg-error text-white flex items-center justify-center">
+            <span class="p-1.5 rounded-xl bg-red-500 text-white flex items-center justify-center shadow-sm">
               <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">smart_display</span>
             </span>
             <div>
-              <h3 class="font-headline font-bold text-on-surface text-base">Tải Video Lên YouTube API Direct</h3>
-              <p class="text-xs font-mono text-secondary">OAuth v2 Verified • Antigravity YouTube Pipeline</p>
+              <h3 class="font-headline font-bold text-gray-800 text-base">Tải Video Lên YouTube API Direct</h3>
+              <p class="text-xs font-mono text-pink-600">OAuth v2 Verified • Antigravity YouTube Pipeline</p>
             </div>
           </div>
           <button type="button" class="btn-close" onclick="closeYouTubeUploadModal()">
@@ -548,11 +655,11 @@
           <div class="md:col-span-5 flex flex-col gap-4">
             
             <!-- Video Preview Card -->
-            <div class="rounded-lg border border-surface-container-highest p-2.5 bg-surface-container-low flex flex-col gap-2">
-              <div class="relative w-full aspect-[9/16] max-h-64 rounded bg-surface-container-highest overflow-hidden cursor-pointer" onclick="openPlayerFromYouTubeModal()">
+            <div class="rounded-xl border border-pink-100 p-2.5 bg-pink-50/40 flex flex-col gap-2">
+              <div class="relative w-full aspect-[9/16] max-h-64 rounded-lg bg-gray-900 overflow-hidden cursor-pointer" onclick="openPlayerFromYouTubeModal()">
                 <img id="yt-preview-thumb" src="" alt="Thumbnail Preview" class="w-full h-full object-cover"/>
-                <div class="absolute inset-0 bg-primary/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                  <div class="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center shadow-md">
+                <div class="absolute inset-0 bg-black/25 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                  <div class="w-10 h-10 rounded-full bg-white text-pink-600 flex items-center justify-center shadow-md">
                     <span class="material-symbols-outlined text-[24px]">play_arrow</span>
                   </div>
                 </div>
@@ -560,24 +667,24 @@
                 <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px] font-mono font-bold" id="yt-preview-duration">00:58</span>
               </div>
               <div>
-                <span class="text-[11px] font-mono text-secondary font-bold" id="yt-preview-workshop">Workshop</span>
-                <p class="text-xs font-bold text-on-surface line-clamp-1" id="yt-preview-title">Tiêu đề video</p>
+                <span class="text-[11px] font-mono text-pink-600 font-bold" id="yt-preview-workshop">Workshop</span>
+                <p class="text-xs font-bold text-gray-800 line-clamp-1" id="yt-preview-title">Tiêu đề video</p>
               </div>
             </div>
 
             <!-- Keyframe Extraction Zone -->
-            <div class="rounded-lg border-2 border-dashed border-surface-container-highest p-3 flex flex-col items-center justify-center text-center bg-surface-container-lowest gap-2 hover:border-outline transition-colors">
-              <span class="material-symbols-outlined text-outline text-[24px]">image</span>
-              <div class="text-xs font-bold text-on-surface">Thumbnail & Trích Xuất Frame</div>
+            <div class="rounded-xl border-2 border-dashed border-pink-200 p-3 flex flex-col items-center justify-center text-center bg-white gap-2 hover:border-pink-400 transition-colors">
+              <span class="material-symbols-outlined text-pink-400 text-[24px]">image</span>
+              <div class="text-xs font-bold text-gray-800">Thumbnail & Trích Xuất Frame</div>
               
-              <button type="button" id="btn-extract-frames" class="px-3 py-1.5 rounded-lg border border-surface-container-highest bg-surface-container-low text-on-surface text-xs font-semibold hover:bg-surface-container transition-colors flex items-center gap-1.5" onclick="extractFramesForCurrentVideo()">
+              <button type="button" id="btn-extract-frames" class="px-3 py-1.5 rounded-lg border border-pink-200 bg-pink-50 text-pink-700 text-xs font-semibold hover:bg-pink-100 transition-colors flex items-center gap-1.5" onclick="extractFramesForCurrentVideo()">
                 <span class="material-symbols-outlined text-[16px]">camera</span>
                 <span>📸 Trích Frame Đẹp Từ Video</span>
               </button>
 
               <!-- Frame Candidates Container -->
-              <div id="frame-candidates-wrap" class="w-full pt-2 border-t border-surface-container-highest hidden">
-                <div class="text-[10px] font-mono text-outline mb-1.5 text-left font-bold">CHỌN 1 FRAME ĐỂ LÀM THUMBNAIL:</div>
+              <div id="frame-candidates-wrap" class="w-full pt-2 border-t border-pink-100 hidden">
+                <div class="text-[10px] font-mono text-gray-500 mb-1.5 text-left font-bold">CHỌN 1 FRAME ĐỂ LÀM THUMBNAIL:</div>
                 <div id="frame-candidates-grid" class="grid grid-cols-3 gap-1.5">
                   <!-- Populated dynamically -->
                 </div>
@@ -585,12 +692,12 @@
             </div>
 
             <!-- Multi-Platform Copy Tool -->
-            <div class="rounded-lg border border-surface-container-highest p-3 bg-surface-container-low flex flex-col gap-2">
-              <div class="flex items-center justify-between text-xs font-bold text-on-surface">
+            <div class="rounded-xl border border-pink-100 p-3 bg-pink-50/50 flex flex-col gap-2">
+              <div class="flex items-center justify-between text-xs font-bold text-gray-800">
                 <span>Phân Phối Đa Nền Tảng</span>
-                <span class="text-[10px] font-mono text-secondary">TikTok / Reels / Shorts</span>
+                <span class="text-[10px] font-mono text-pink-600">TikTok / Reels / Shorts</span>
               </div>
-              <button type="button" class="w-full py-1.5 px-2 rounded-lg bg-surface-container-lowest border border-surface-container-highest text-on-surface hover:border-secondary text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors" onclick="copyMultiPlatformCaption()">
+              <button type="button" class="w-full py-1.5 px-2 rounded-lg bg-white border border-pink-200 text-gray-700 hover:border-pink-500 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs" onclick="copyMultiPlatformCaption()">
                 <span class="material-symbols-outlined text-[15px]">content_copy</span>
                 <span>📋 Copy Định Dạng TikTok / Reels</span>
               </button>
@@ -601,19 +708,19 @@
           <!-- Right Column (7 Cols): Form Controls, Channel, Schedule, SEO -->
           <div class="md:col-span-7 flex flex-col gap-3.5">
             
-            <!-- Real-time Upload Status & Progress Bar (Visible During/After Upload) -->
-            <div id="yt-status-box" class="hidden rounded-xl p-3 border bg-surface-container border-surface-container-highest transition-all">
+            <!-- Real-time Upload Status & Progress Bar -->
+            <div id="yt-status-box" class="hidden rounded-xl p-3 border bg-white border-pink-200 shadow-sm transition-all">
               <div class="flex items-center justify-between mb-1.5">
-                <div id="yt-status-title" class="flex items-center gap-2 text-xs font-bold font-mono text-on-surface">
-                  <span class="animate-spin material-symbols-outlined text-sm text-error">progress_activity</span>
+                <div id="yt-status-title" class="flex items-center gap-2 text-xs font-bold font-mono text-gray-800">
+                  <span class="animate-spin material-symbols-outlined text-sm text-red-500">progress_activity</span>
                   <span id="yt-status-title-text">Đang tải video lên YouTube...</span>
                 </div>
-                <span id="yt-status-pct" class="text-xs font-mono font-bold text-error">0%</span>
+                <span id="yt-status-pct" class="text-xs font-mono font-bold text-red-500">0%</span>
               </div>
-              <div class="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden mb-1.5">
-                <div id="yt-progress-bar" class="bg-gradient-to-r from-red-600 to-amber-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+              <div class="w-full bg-pink-100 rounded-full h-2 overflow-hidden mb-1.5">
+                <div id="yt-progress-bar" class="bg-gradient-to-r from-red-500 to-rose-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
               </div>
-              <p id="yt-status-msg" class="text-[11px] text-on-surface-variant font-mono">
+              <p id="yt-status-msg" class="text-[11px] text-gray-500 font-mono">
                 Khởi tạo kết nối Resumable Upload với máy chủ YouTube...
               </p>
             </div>
@@ -621,50 +728,50 @@
             <!-- Channel Selector & Category -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-mono text-on-surface-variant mb-1 font-bold">KÊNH YOUTUBE ĐÍCH</label>
+                <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">KÊNH YOUTUBE ĐÍCH</label>
                 <div class="relative">
-                  <select id="yt-channel" class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary appearance-none pr-8">
+                  <select id="yt-channel" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 appearance-none pr-8">
                     <option value="HanShin">Storyverse VN (Verified Shorts)</option>
                     <option value="Giai Ma Tech">Giai Ma Tech (AI & Tech)</option>
                   </select>
-                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-on-surface-variant pointer-events-none text-base">expand_more</span>
+                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-gray-400 pointer-events-none text-base">expand_more</span>
                 </div>
               </div>
 
               <div>
-                <label class="block text-xs font-mono text-on-surface-variant mb-1 font-bold">THỂ LOẠI VIDEO</label>
+                <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">THỂ LOẠI VIDEO</label>
                 <div class="relative">
-                  <select id="yt-category" class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary appearance-none pr-8">
+                  <select id="yt-category" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 appearance-none pr-8">
                     <option value="24" selected>Giải Trí (Entertainment)</option>
                     <option value="28">Khoa học & Công nghệ (Tech)</option>
                     <option value="23">Hài kịch (Comedy)</option>
                     <option value="1">Điện ảnh & Hoạt họa (Film)</option>
                   </select>
-                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-on-surface-variant pointer-events-none text-base">expand_more</span>
+                  <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-gray-400 pointer-events-none text-base">expand_more</span>
                 </div>
               </div>
             </div>
 
             <!-- Privacy Mode Selector -->
             <div>
-              <label class="block text-xs font-mono text-on-surface-variant mb-1 font-bold">CHẾ ĐỘ HIỂN THỊ (PRIVACY)</label>
+              <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">CHẾ ĐỘ HIỂN THỊ (PRIVACY)</label>
               <div class="grid grid-cols-3 gap-2" id="yt-privacy-group">
-                <label class="yt-privacy-card flex flex-col items-center justify-center p-2 rounded-lg bg-surface-container-lowest border border-surface-container-highest cursor-pointer hover:border-outline text-center transition-all">
+                <label class="yt-privacy-card flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-pink-200 cursor-pointer hover:border-pink-400 text-center transition-all">
                   <input type="radio" name="yt_privacy" value="public" class="sr-only"/>
-                  <span class="material-symbols-outlined text-base text-outline">public</span>
-                  <span class="text-xs font-semibold text-on-surface mt-0.5">Công Khai</span>
+                  <span class="material-symbols-outlined text-base text-gray-400">public</span>
+                  <span class="text-xs font-semibold text-gray-800 mt-0.5">Công Khai</span>
                 </label>
 
-                <label class="yt-privacy-card active flex flex-col items-center justify-center p-2 rounded-lg bg-surface-container-low border-2 border-secondary cursor-pointer text-center transition-all">
+                <label class="yt-privacy-card active flex flex-col items-center justify-center p-2 rounded-xl bg-pink-50 border-2 border-pink-500 cursor-pointer text-center transition-all shadow-xs">
                   <input type="radio" name="yt_privacy" value="unlisted" class="sr-only" checked/>
-                  <span class="material-symbols-outlined text-base text-secondary">link</span>
-                  <span class="text-xs font-bold text-secondary mt-0.5">Không Công Khai ✓</span>
+                  <span class="material-symbols-outlined text-base text-pink-600">link</span>
+                  <span class="text-xs font-bold text-pink-700 mt-0.5">Không Công Khai ✓</span>
                 </label>
 
-                <label class="yt-privacy-card flex flex-col items-center justify-center p-2 rounded-lg bg-surface-container-lowest border border-surface-container-highest cursor-pointer hover:border-outline text-center transition-all">
+                <label class="yt-privacy-card flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-pink-200 cursor-pointer hover:border-pink-400 text-center transition-all">
                   <input type="radio" name="yt_privacy" value="private" class="sr-only"/>
-                  <span class="material-symbols-outlined text-base text-outline">lock</span>
-                  <span class="text-xs font-semibold text-on-surface mt-0.5">Riêng Tư</span>
+                  <span class="material-symbols-outlined text-base text-gray-400">lock</span>
+                  <span class="text-xs font-semibold text-gray-800 mt-0.5">Riêng Tư</span>
                 </label>
               </div>
             </div>
@@ -672,45 +779,45 @@
             <!-- Smart Scheduled Publishing Buttons -->
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-mono text-on-surface-variant font-bold">ĐẶT LỊCH PHÁT GIỜ VÀNG (SMART SCHEDULE):</label>
-                <button type="button" class="text-[10px] font-mono text-error hover:underline" onclick="clearScheduledPublishTime()">Xóa lịch hẹn</button>
+                <label class="text-xs font-mono text-gray-600 font-bold">ĐẶT LỊCH PHÁT GIỜ VÀNG (SMART SCHEDULE):</label>
+                <button type="button" class="text-[10px] font-mono text-red-500 hover:underline" onclick="clearScheduledPublishTime()">Xóa lịch hẹn</button>
               </div>
 
               <div class="flex items-center gap-2">
-                <button type="button" class="schedule-quick-btn" id="btn-sched-lunch" onclick="selectScheduledTime('11:30')">
+                <button type="button" class="flex-1 py-1.5 px-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-gray-800 text-xs font-semibold transition-all" id="btn-sched-lunch" onclick="selectScheduledTime('11:30')">
                   ☀️ 11:30 Trưa
                 </button>
-                <button type="button" class="schedule-quick-btn" id="btn-sched-evening" onclick="selectScheduledTime('20:00')">
+                <button type="button" class="flex-1 py-1.5 px-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-gray-800 text-xs font-semibold transition-all" id="btn-sched-evening" onclick="selectScheduledTime('20:00')">
                   🌙 20:00 Tối
                 </button>
-                <button type="button" class="schedule-quick-btn" id="btn-sched-night" onclick="selectScheduledTime('22:30')">
+                <button type="button" class="flex-1 py-1.5 px-2 rounded-lg border border-pink-200 bg-white hover:bg-pink-50 text-gray-800 text-xs font-semibold transition-all" id="btn-sched-night" onclick="selectScheduledTime('22:30')">
                   🦉 22:30 Đêm
                 </button>
               </div>
 
-              <div id="yt-schedule-indicator" class="hidden mt-1.5 px-2.5 py-1 rounded bg-secondary-container text-secondary text-xs font-mono font-bold flex items-center justify-between">
+              <div id="yt-schedule-indicator" class="hidden mt-1.5 px-3 py-1.5 rounded-lg bg-pink-100 border border-pink-200 text-pink-800 text-xs font-mono font-bold flex items-center justify-between">
                 <span id="yt-schedule-text">⏰ Đã chọn: Hôm nay lúc 20:00</span>
-                <span class="text-[10px] text-secondary font-normal">(YouTube tự đổi sang Public)</span>
+                <span class="text-[10px] text-pink-600 font-normal">(YouTube tự đổi sang Public)</span>
               </div>
             </div>
 
             <!-- Video Title Input -->
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-mono text-on-surface-variant font-bold flex items-center gap-2">
+                <label class="text-xs font-mono text-gray-600 font-bold flex items-center gap-2">
                   <span>TIÊU ĐỀ VIDEO YOUTUBE:</span>
-                  <button type="button" id="btn-yt-ai-suggest" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-secondary/15 text-secondary border border-secondary/30 hover:bg-secondary/25 transition-all">
+                  <button type="button" id="btn-yt-ai-suggest" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-pink-100 text-pink-700 border border-pink-200 hover:bg-pink-200 transition-all">
                     <span class="material-symbols-outlined text-[13px]">auto_awesome</span>
-                    <span>AI Gợi Ý Tiêu Đề & SEO</span>
+                    <span>AI Gợi Ý Tiêu Đề</span>
                   </button>
                 </label>
-                <span class="text-[10px] font-mono text-outline" id="yt-title-counter">0 / 100</span>
+                <span class="text-[10px] font-mono text-gray-400" id="yt-title-counter">0 / 100</span>
               </div>
-              <input id="yt-title" class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2 text-xs font-sans text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary font-medium" type="text" maxlength="100" required/>
+              <input id="yt-title" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-sans text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 font-medium" type="text" maxlength="100" required/>
 
               <!-- Title Options List -->
               <div id="yt-title-options" class="hidden mt-1.5 space-y-1">
-                <span class="text-[10px] font-mono text-outline font-bold">Gợi ý tiêu đề viral khác:</span>
+                <span class="text-[10px] font-mono text-gray-500 font-bold">Gợi ý tiêu đề viral khác:</span>
                 <div id="yt-title-options-list" class="flex flex-col gap-1"></div>
               </div>
             </div>
@@ -718,18 +825,18 @@
             <!-- Description & Chapters -->
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-mono text-on-surface-variant font-bold">MÔ TẢ & TIMESTAMPS:</label>
-                <span class="text-[10px] font-mono text-secondary flex items-center gap-1">
+                <label class="text-xs font-mono text-gray-600 font-bold">MÔ TẢ & TIMESTAMPS:</label>
+                <span class="text-[10px] font-mono text-pink-600 flex items-center gap-1">
                   <span class="material-symbols-outlined text-xs">auto_awesome</span> AI Chapters
                 </span>
               </div>
-              <textarea id="yt-description" class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary resize-none h-20 leading-relaxed" rows="3"></textarea>
+              <textarea id="yt-description" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300 resize-none h-20 leading-relaxed" rows="3"></textarea>
             </div>
 
             <!-- Tags Input -->
             <div>
-              <label class="block text-xs font-mono text-on-surface-variant mb-1 font-bold">THẺ TỪ KHÓA (TAGS):</label>
-              <input id="yt-tags" class="w-full bg-surface-container-lowest border border-surface-container-highest rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary" type="text" placeholder="HanShin, Threads, Shorts, Teamwork, SinhVien"/>
+              <label class="block text-xs font-mono text-gray-600 mb-1 font-bold">THẺ TỪ KHÓA (TAGS):</label>
+              <input id="yt-tags" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-mono text-gray-800 focus:border-pink-500 focus:ring-1 focus:ring-pink-300" type="text" placeholder="HanShin, Threads, Shorts, Teamwork, SinhVien"/>
             </div>
 
           </div>
@@ -737,16 +844,16 @@
 
         <!-- Modal Footer Actions -->
         <div class="modal-footer">
-          <div class="flex items-center gap-2 text-xs font-mono text-outline mr-auto">
-            <span class="material-symbols-outlined text-xs text-secondary">verified</span>
-            <span>Tuân thủ bản quyền Content ID 100%</span>
+          <div class="flex items-center gap-2 text-xs font-mono text-gray-500 mr-auto">
+            <span class="material-symbols-outlined text-xs text-pink-500">verified</span>
+            <span>Content ID YouTube 100% Verified</span>
           </div>
 
           <button type="button" class="btn btn-sm btn-outline" onclick="closeYouTubeUploadModal()">
             Hủy
           </button>
           
-          <button type="submit" id="btn-yt-submit" class="px-5 py-2 rounded-lg bg-error hover:bg-red-600 text-white font-headline font-bold text-xs flex items-center gap-2 shadow-sm active:scale-[0.98] transition-all">
+          <button type="submit" id="btn-yt-submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-headline font-bold text-xs flex items-center gap-2 shadow-md shadow-red-500/25 active:scale-[0.98] transition-all">
             <span class="material-symbols-outlined text-base">cloud_upload</span>
             <span id="btn-yt-submit-text">🚀 Bắt Đầu Upload YouTube</span>
           </button>
@@ -756,14 +863,14 @@
     </div>
   </div>
 
-  <!-- ================= 7. SCOUT GITHUB TRENDING MODAL ================= -->
+  <!-- ================= 8. SCOUT GITHUB TRENDING MODAL ================= -->
   <div class="modal" id="scout-modal">
     <div class="modal-backdrop" onclick="closeScoutModal()"></div>
     <div class="modal-content max-w-3xl w-full" style="max-height: 85vh;">
       <div class="modal-header">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary text-xl">satellite_alt</span>
-          <h3 class="font-headline font-bold text-base">Radar Săn Tin: GitHub Trending Repos</h3>
+          <span class="material-symbols-outlined text-cyan-600 text-xl">satellite_alt</span>
+          <h3 class="font-headline font-bold text-base text-gray-800">Radar Săn Tin: GitHub Trending Repos</h3>
         </div>
         <button type="button" class="btn-close" onclick="closeScoutModal()">
           <span class="material-symbols-outlined">close</span>
@@ -771,9 +878,9 @@
       </div>
 
       <div class="modal-body overflow-y-auto space-y-4" id="scout-modal-body">
-        <div class="text-center py-8 text-on-surface-variant font-mono text-xs">
-          <span class="animate-spin material-symbols-outlined text-2xl mb-2 text-secondary">progress_activity</span>
-          <p>Đang quét radar GitHub Trending qua Cloudflare / Anti-Bot...</p>
+        <div class="text-center py-8 text-gray-500 font-mono text-xs">
+          <span class="animate-spin material-symbols-outlined text-2xl mb-2 text-pink-500">progress_activity</span>
+          <p>Đang quét radar GitHub Trending qua Cloudflare & Token 5,000 req/h...</p>
         </div>
       </div>
 
@@ -786,14 +893,14 @@
     </div>
   </div>
 
-  <!-- ================= 8. SHIFT BRIEFING REPORT MODAL ================= -->
+  <!-- ================= 9. SHIFT BRIEFING REPORT MODAL ================= -->
   <div class="modal" id="report-modal">
     <div class="modal-backdrop" onclick="closeShiftReportModal()"></div>
     <div class="modal-content max-w-3xl w-full" style="max-height: 85vh;">
       <div class="modal-header">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary text-xl">assignment</span>
-          <h3 class="font-headline font-bold text-base">Báo Cáo Tổng Kết Ca Trực Studio (24h)</h3>
+          <span class="material-symbols-outlined text-pink-500 text-xl">assignment</span>
+          <h3 class="font-headline font-bold text-base text-gray-800">Báo Cáo Tổng Kết Ca Trực Studio (24h)</h3>
         </div>
         <button type="button" class="btn-close" onclick="closeShiftReportModal()">
           <span class="material-symbols-outlined">close</span>
@@ -801,21 +908,21 @@
       </div>
 
       <div class="modal-body overflow-y-auto">
-        <div id="report-modal-content" class="text-xs font-mono text-on-surface whitespace-pre-wrap leading-relaxed bg-surface-container-low p-4 rounded-lg border border-surface-container-highest">
+        <div id="report-modal-content" class="text-xs font-mono text-gray-800 whitespace-pre-wrap leading-relaxed bg-pink-50/50 p-4 rounded-xl border border-pink-100">
           Đang tải báo cáo ca trực...
         </div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-sm btn-outline" onclick="closeShiftReportModal()">Đóng</button>
-        <button type="button" class="btn btn-sm btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('report-modal-content').innerText).then(()=>alert('Đã copy báo cáo!'))">
-          <span class="material-symbols-outlined text-xs">content_copy</span> Copy Báo Cáo
+        <button type="button" class="btn btn-sm btn-primary" onclick="sendTelegramReport()">
+          <span class="material-symbols-outlined text-xs">send</span> Gửi Báo Cáo Telegram
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= 9. PLAYER MODAL ================= -->
+  <!-- ================= 10. PLAYER MODAL ================= -->
   <div class="modal" id="player-modal">
     <div class="modal-backdrop" onclick="closePlayerModal()"></div>
     <div class="modal-content player-modal-content">
@@ -847,8 +954,8 @@
         </div>
         <div class="player-right">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-main);">Dòng Thời Gian Kịch Bản</h3>
-            <span class="badge badge-news" id="beats-count-badge">0 beats</span>
+            <h3 style="font-size: 14px; font-weight: 700; color: #1f1724;">Dòng Thời Gian Kịch Bản</h3>
+            <span class="badge badge-threads" id="beats-count-badge">0 beats</span>
           </div>
           <div class="beats-timeline" id="beats-timeline">
             <!-- Beat items inserted by app.js -->
@@ -858,7 +965,7 @@
     </div>
   </div>
 
-  <!-- ================= 10. CREATE VIDEO MODAL ================= -->
+  <!-- ================= 11. CREATE VIDEO MODAL ================= -->
   <div class="modal" id="create-modal">
     <div class="modal-backdrop" onclick="closeCreateModal()"></div>
     <div class="modal-content form-modal-content">
@@ -889,8 +996,8 @@
           <div class="form-group">
             <label for="create-voice">Giọng Lồng Tiếng (Edge-TTS) *</label>
             <select id="create-voice" required>
+              <option value="vi-VN-HoaiMyNeural">HoàiMy (Nữ tính, cảm xúc, ấm áp)</option>
               <option value="vi-VN-NamMinhNeural">NamMinh (Trầm ấm, thời sự)</option>
-              <option value="vi-VN-HoaiMyNeural">HoàiMy (Nữ tính, cảm xúc)</option>
             </select>
           </div>
 
@@ -907,7 +1014,7 @@
     </div>
   </div>
 
-  <!-- ================= 11. EDIT SCRIPT MODAL ================= -->
+  <!-- ================= 12. EDIT SCRIPT MODAL ================= -->
   <div class="modal" id="edit-modal">
     <div class="modal-backdrop" onclick="closeEditModal()"></div>
     <div class="modal-content form-modal-content">
@@ -938,7 +1045,7 @@
     </div>
   </div>
 
-  <!-- ================= 12. RENDER TERMINAL MODAL ================= -->
+  <!-- ================= 13. RENDER TERMINAL MODAL ================= -->
   <div class="modal" id="render-modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content console-modal-content">

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import re
 import sys
 import urllib.request
@@ -15,17 +16,35 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
 _ROOT = Path(__file__).resolve().parent.parent
 
+# Load .env for GITHUB_TOKEN
+env_path = _ROOT / ".env"
+if env_path.exists():
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
 
-def fetch_trending_repos(language: str = "", limit: int = 5) -> List[Dict[str, Any]]:
-    """Fetch current trending repositories from GitHub using public API or trending HTML."""
-    url = "https://api.github.com/search/repositories?q=stars:>200&sort=stars&order=desc&per_page=15"
-    if language:
-        url = f"https://api.github.com/search/repositories?q=stars:>200+language:{language}&sort=stars&order=desc&per_page=15"
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 
+def get_github_headers() -> Dict[str, str]:
     headers = {
-        "User-Agent": "OmniVideo-Studio-Radar/1.0",
+        "User-Agent": "OmniVideo-Studio-Radar/2.0",
         "Accept": "application/vnd.github.v3+json",
     }
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+    return headers
+
+def fetch_trending_repos(language: str = "", limit: int = 5) -> List[Dict[str, Any]]:
+    """Fetch current trending repositories from GitHub using authenticated API (5,000 req/h)."""
+    # Search for high-velocity or trending repos created/active recently
+    url = "https://api.github.com/search/repositories?q=stars:>500&sort=stars&order=desc&per_page=15"
+    if language:
+        url = f"https://api.github.com/search/repositories?q=stars:>500+language:{language}&sort=stars&order=desc&per_page=15"
+
+    headers = get_github_headers()
 
     repos = []
     try:
