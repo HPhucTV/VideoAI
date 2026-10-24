@@ -417,6 +417,147 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  // --- YOUTUBE PUBLISHER APIS ---
+  if (pathname === "/api/youtube/channels" && req.method === "GET") {
+    try {
+      const channelsDir = join(ROOT_DIR, "workshops", "workshop-cinematic", "youtube", "channels");
+      const channels: Array<{ id: string; name: string; hasToken: boolean }> = [];
+      if (existsSync(channelsDir)) {
+        const dirs = await readdir(channelsDir, { withFileTypes: true });
+        for (const d of dirs) {
+          if (d.isDirectory()) {
+            const hasToken = existsSync(join(channelsDir, d.name, "token.json"));
+            channels.push({
+              id: d.name,
+              name: d.name === "HanShin - Thread" ? "HanShin - Thread (Verified Shorts)" : d.name,
+              hasToken,
+            });
+          }
+        }
+      }
+      sendJson(res, 200, { success: true, channels });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/youtube/upload" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const { jobId, channel = "HanShin", title, description = "", tags = "", privacy = "unlisted", category = "24" } = body;
+      if (!jobId || !title) {
+        sendJson(res, 400, { success: false, error: "Thiếu jobId hoặc title" });
+        return;
+      }
+
+      // Tìm kiếm video file trên ổ đĩa
+      let videoPath = "";
+      let thumbPath = "";
+      let srtPath = "";
+
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", jobId),
+        join(OUTPUT_DIR, "cinematic", jobId),
+        join(OUTPUT_DIR, "explainer"),
+        join(OUTPUT_DIR, "whiteboard", jobId),
+        join(OUTPUT_DIR, "news"),
+      ];
+
+      for (const dir of candidateDirs) {
+        if (!existsSync(dir)) continue;
+        const candidateMp4s = [
+          join(dir, `${jobId}.mp4`),
+          join(dir, `${jobId}_master.mp4`),
+          join(dir, "master.mp4"),
+        ];
+        for (const mp4 of candidateMp4s) {
+          if (existsSync(mp4)) {
+            videoPath = mp4;
+            break;
+          }
+        }
+        if (videoPath) {
+          const candidateThumbs = [
+            join(dir, "thumb.jpg"),
+            join(dir, "thumb.png"),
+            join(dir, "thumbnail_3d.jpg"),
+            join(dir, "preview_post_perfect_avatar.jpg"),
+            join(dir, `${jobId}.jpg`),
+          ];
+          for (const th of candidateThumbs) {
+            if (existsSync(th)) {
+              thumbPath = th;
+              break;
+            }
+          }
+          const candidateSrts = [
+            join(dir, `${jobId}.srt`),
+            join(dir, "captions.srt"),
+          ];
+          for (const srt of candidateSrts) {
+            if (existsSync(srt)) {
+              srtPath = srt;
+              break;
+            }
+          }
+          break;
+        }
+      }
+
+      if (!videoPath) {
+        sendJson(res, 404, { success: false, error: `Không tìm thấy file video MP4 của job ${jobId}` });
+        return;
+      }
+
+      const pyExe = join(ROOT_DIR, "workshops", "workshop-cinematic", ".venv", "Scripts", "python.exe");
+      const actualPy = existsSync(pyExe) ? pyExe : "python";
+
+      const pyArgs = [
+        join(ROOT_DIR, "scripts", "youtube_publisher.py"),
+        "--channel", channel,
+        "--video", videoPath,
+        "--title", title,
+        "--description", description,
+        "--privacy", privacy,
+        "--category", category,
+        "--json",
+      ];
+      if (tags) {
+        pyArgs.push("--tags", tags);
+      }
+      if (thumbPath) {
+        pyArgs.push("--thumb", thumbPath);
+      }
+      if (srtPath) {
+        pyArgs.push("--srt", srtPath);
+      }
+
+      const proc = spawn(actualPy, pyArgs, { cwd: ROOT_DIR });
+      let stdout = "";
+      let stderr = "";
+
+      proc.stdout.on("data", d => (stdout += d.toString()));
+      proc.stderr.on("data", d => (stderr += d.toString()));
+
+      proc.on("close", code => {
+        if (code === 0) {
+          try {
+            const data = JSON.parse(stdout.trim());
+            sendJson(res, 200, data);
+          } catch {
+            sendJson(res, 200, { success: true, raw: stdout.trim() });
+          }
+        } else {
+          sendJson(res, 500, { success: false, error: stderr.trim() || stdout.trim() || `Exit code ${code}` });
+        }
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
   // 1. Phục vụ Media từ thư mục output/
   if (pathname.startsWith("/media/")) {
     const relPath = pathname.replace("/media/", "");

@@ -178,77 +178,82 @@
   <!-- ================= MAIN LAYOUT WITH SIDEBAR ================= -->
   <div class="flex pt-16 min-h-screen">
 
-    <!-- ================= SIDEBAR ================= -->
-    <aside class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-4 px-3 bg-surface-container-lowest docked left-0 top-16 z-30 shadow-md backdrop-blur-lg fixed overflow-y-auto border-r border-outline-variant/30">
+    <!-- ================= SIDEBAR (COLLAPSIBLE TO 72PX RAIL) ================= -->
+    <aside id="sidebarNav" class="hidden lg:flex flex-col justify-between h-[calc(100vh-4rem)] w-64 py-4 px-3 bg-surface-container-lowest docked left-0 top-16 z-30 shadow-md backdrop-blur-lg fixed overflow-y-auto border-r border-outline-variant/30 transition-all duration-300">
       <div>
-        <div class="px-3 mb-3 pb-3 border-b border-outline-variant/20 flex items-center justify-between">
-          <div>
+        <div class="px-2 mb-3 pb-3 border-b border-outline-variant/20 flex items-center justify-between">
+          <div id="sidebar-brand-text" class="truncate">
             <div class="text-sm font-headline font-bold text-primary">Phân Xưởng Sản Xuất</div>
             <p class="text-[10px] font-mono text-outline">VFX & Neural NLE Engine</p>
           </div>
-          <span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#4edea3]"></span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_#4edea3]" title="Online"></span>
+            <button id="btn-toggle-sidebar" class="p-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors border border-outline-variant/30 flex items-center justify-center shrink-0 ml-1" title="Thu gọn / Mở rộng Sidebar">
+              <span id="sidebar-toggle-icon" class="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+          </div>
         </div>
 
         <!-- Filter Tabs / Workshop Selectors -->
         <nav class="space-y-1 filter-tabs">
           <!-- All -->
-          <button class="tab-btn active w-full text-left bg-surface-container-high text-primary border-l-2 border-primary font-semibold px-3 py-2 rounded-r-lg flex items-center justify-between text-xs transition-all" data-workshop="all">
+          <button class="tab-btn active w-full text-left bg-surface-container-high text-primary border-l-2 border-primary font-semibold px-3 py-2 rounded-r-lg flex items-center justify-between text-xs transition-all" data-workshop="all" title="Tất Cả Video (5 Xưởng)">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-primary text-[18px]">space_dashboard</span>
-              <span>Tất Cả Video</span>
+              <span class="tab-text">Tất Cả Video</span>
             </div>
-            <span class="text-[10px] font-mono text-primary font-bold bg-primary-container/15 px-1.5 py-0.5 rounded">ALL</span>
+            <span class="tab-badge text-[10px] font-mono text-primary font-bold bg-primary-container/15 px-1.5 py-0.5 rounded">ALL</span>
           </button>
 
           <!-- Workshop 5: Threads -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="threads">
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="threads" title="Xưởng 5: Threads Social Drama (9:16 Shorts)">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-pink-400 text-[18px] group-hover:scale-105 transition-transform">flash_on</span>
-              <span class="truncate">Xưởng 5: Threads Social</span>
+              <span class="tab-text truncate">Xưởng 5: Threads Social</span>
             </div>
-            <span class="text-[10px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 px-1 rounded uppercase">9:16</span>
+            <span class="tab-badge text-[10px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 px-1 rounded uppercase">9:16</span>
           </button>
 
           <!-- Workshop 4: Cinematic -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="cinematic">
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="cinematic" title="Xưởng 4: Phim 3D Điện Ảnh & Donghua (16:9 4K)">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-amber-400 text-[18px] group-hover:scale-105 transition-transform">movie_filter</span>
-              <span class="truncate">Xưởng 4: Phim 3D / Donghua</span>
+              <span class="tab-text truncate">Xưởng 4: Phim 3D / Donghua</span>
             </div>
-            <span class="text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded font-bold">4K</span>
+            <span class="tab-badge text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1 rounded font-bold">4K</span>
           </button>
 
           <!-- Workshop 3: Whiteboard -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="whiteboard">
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="whiteboard" title="Xưởng 3: Bảng Trắng Vẽ Tay (Audio Drama 90 FPS)">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-cyan-400 text-[18px] group-hover:scale-105 transition-transform">history_edu</span>
-              <span class="truncate">Xưởng 3: Bảng Trắng</span>
+              <span class="tab-text truncate">Xưởng 3: Bảng Trắng</span>
             </div>
-            <span class="text-[10px] font-mono text-outline bg-surface-container px-1 rounded">60m</span>
+            <span class="tab-badge text-[10px] font-mono text-outline bg-surface-container px-1 rounded">60m</span>
           </button>
 
           <!-- Workshop 2: Explainer -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="explainer">
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="explainer" title="Xưởng 2: Remotion Code Explainer (TypeScript NLE)">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-purple-400 text-[18px] group-hover:scale-105 transition-transform">code_blocks</span>
-              <span class="truncate">Xưởng 2: Remotion Tech</span>
+              <span class="tab-text truncate">Xưởng 2: Remotion Tech</span>
             </div>
-            <span class="text-[10px] font-mono text-purple-300 bg-purple-500/20 px-1 rounded">TS</span>
+            <span class="tab-badge text-[10px] font-mono text-purple-300 bg-purple-500/20 px-1 rounded">TS</span>
           </button>
 
           <!-- Workshop 1: News -->
-          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="news">
+          <button class="tab-btn w-full text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container px-3 py-2 rounded-lg flex items-center justify-between text-xs transition-colors group" data-workshop="news" title="Xưởng 1: Tin Tức Nhanh (HyperFrames Shorts)">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-emerald-400 text-[18px] group-hover:scale-105 transition-transform">bolt</span>
-              <span class="truncate">Xưởng 1: Tin Tức Nhanh</span>
+              <span class="tab-text truncate">Xưởng 1: Tin Tức Nhanh</span>
             </div>
-            <span class="text-[10px] font-mono text-primary font-bold bg-primary/20 px-1 rounded">9:16</span>
+            <span class="tab-badge text-[10px] font-mono text-primary font-bold bg-primary/20 px-1 rounded">9:16</span>
           </button>
         </nav>
       </div>
 
-      <!-- Bottom Local Telemetry Dock -->
-      <div class="bg-surface-container-low/90 rounded-xl p-3 border border-outline-variant/30 space-y-2 mt-4">
+      <!-- Bottom Local Telemetry Dock (Full Mode) -->
+      <div id="sidebar-telemetry-full" class="bg-surface-container-low/90 rounded-xl p-3 border border-outline-variant/30 space-y-2 mt-4">
         <div class="flex items-center justify-between text-xs font-mono">
           <span class="text-on-surface-variant flex items-center gap-1.5">
             <span class="material-symbols-outlined text-xs text-primary">memory</span>
@@ -271,10 +276,16 @@
           <span class="material-symbols-outlined text-xs">arrow_forward_ios</span>
         </button>
       </div>
+
+      <!-- Bottom Compact Icon (Collapsed Mode) -->
+      <div id="sidebar-telemetry-collapsed" class="hidden flex-col items-center gap-2 p-2 mt-4 bg-surface-container-low/90 rounded-lg border border-outline-variant/30">
+        <span class="material-symbols-outlined text-primary text-base" title="Node: LocalHost:3333 - Antigravity Online">memory</span>
+        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" title="Google Antigravity 2.0 Connected"></span>
+      </div>
     </aside>
 
     <!-- ================= MAIN WORKSPACE CONTENT CANVAS ================= -->
-    <main class="flex-1 lg:ml-64 p-6 lg:p-8 space-y-8 max-w-[1720px] mx-auto w-full">
+    <main id="mainContent" class="flex-1 lg:ml-64 p-6 lg:p-8 space-y-8 max-w-[1720px] mx-auto w-full transition-all duration-300">
 
       <!-- ================= HERO SECTION: ANTIGRAVITY 2.0 MISSION CONTROL ================= -->
       <section class="rounded-2xl bg-surface-container-low border border-outline-variant/40 p-6 relative overflow-hidden backdrop-blur-xl shadow-2xl" id="antigravity-mission-control">
@@ -525,23 +536,43 @@
         </div>
       </section>
 
-      <!-- ================= SECTION: KHO VIDEO ĐÃ SẢN XUẤT ================= -->
-      <section class="space-y-4" id="workspaces">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- ================= SECTION: KHO VIDEO ĐÃ SẢN XUẤT (COMPACT & SLEEK) ================= -->
+      <section class="space-y-3" id="workspaces">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <h2 class="text-xl font-headline font-bold text-on-surface flex items-center gap-2">
+            <h2 class="text-lg font-headline font-bold text-on-surface flex items-center gap-2">
               <span class="material-symbols-outlined text-primary">video_library</span>
               Kho Video Đã Sản Xuất (5 Xưởng Công Nghệ)
             </h2>
-            <p class="text-xs font-mono text-on-surface-variant">
-              Toàn bộ sản phẩm được đồng bộ từ output/threads, output/cinematic, output/whiteboard, v.v.
+            <p class="text-[11px] font-mono text-on-surface-variant">
+              Toàn bộ sản phẩm kết xuất tự hành kèm bộ điều khiển tải nhanh YouTube API Direct
             </p>
           </div>
 
-          <button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container text-xs font-headline font-bold neon-glow-primary active:scale-[0.98] transition-transform" onclick="openCreateModal()">
-            <span class="material-symbols-outlined text-sm font-bold">add</span>
-            <span>+ Tạo Video Mới</span>
-          </button>
+          <!-- Controls: View Mode & Actions -->
+          <div class="flex items-center gap-2">
+            <!-- View Mode Switcher -->
+            <div class="flex items-center bg-surface-container-low p-1 rounded-lg border border-outline-variant/30">
+              <button id="btn-view-grid" class="p-1 rounded text-primary bg-surface-container-high transition-colors" title="Dạng Lưới Thẻ Bento Gọn">
+                <span class="material-symbols-outlined text-base">grid_view</span>
+              </button>
+              <button id="btn-view-table" class="p-1 rounded text-outline hover:text-on-surface transition-colors" title="Dạng Bảng Danh Sách Gọn Gàng">
+                <span class="material-symbols-outlined text-base">view_list</span>
+              </button>
+            </div>
+
+            <!-- Quick Filter Pills -->
+            <div class="hidden sm:flex items-center gap-1 bg-surface-container-low p-1 rounded-lg border border-outline-variant/30 text-[11px] font-mono">
+              <button class="quick-pill active px-2 py-0.5 rounded bg-primary/20 text-primary font-bold transition-colors" data-ws="all">Tất Cả</button>
+              <button class="quick-pill px-2 py-0.5 rounded text-outline hover:text-on-surface transition-colors" data-ws="threads">9:16 Shorts</button>
+              <button class="quick-pill px-2 py-0.5 rounded text-outline hover:text-on-surface transition-colors" data-ws="cinematic">16:9 Phim</button>
+            </div>
+
+            <button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container text-xs font-headline font-bold neon-glow-primary active:scale-[0.98] transition-transform" onclick="openCreateModal()">
+              <span class="material-symbols-outlined text-sm font-bold">add</span>
+              <span>Tạo Video Mới</span>
+            </button>
+          </div>
         </div>
 
         <!-- Video Grid Container (Filled dynamically by app.js) -->
@@ -550,6 +581,25 @@
             <div class="spinner mb-2"></div>
             <p>Đang tải danh sách kho video từ server...</p>
           </div>
+        </div>
+
+        <!-- Video Table View Container (Hidden by default, shown when table mode is selected) -->
+        <div class="video-table-wrap hidden" id="video-table-wrap">
+          <table class="video-table" id="video-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Thumb</th>
+                <th>Tên Video & Kịch Bản</th>
+                <th>Phân Xưởng</th>
+                <th>Thông Số Kỹ Thuật</th>
+                <th>Dung Lượng</th>
+                <th style="text-align: right; min-width: 220px;">Thao Tác Trực Tiếp</th>
+              </tr>
+            </thead>
+            <tbody id="video-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -803,6 +853,167 @@
       <div class="modal-footer flex items-center justify-between text-[11px] font-mono text-outline px-4 py-3 border-t border-outline-variant/30" id="render-modal-footer">
         <span>Quá trình render chạy 100% cục bộ trên CPU/GPU của bạn...</span>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DIRECT YOUTUBE UPLOAD ================= -->
+  <div class="modal" id="youtube-upload-modal">
+    <div class="modal-backdrop" onclick="closeYouTubeUploadModal()"></div>
+    <div class="modal-content w-full max-w-2xl bg-surface-container rounded-2xl border border-red-500/40 shadow-2xl overflow-hidden neon-glow-red flex flex-col max-h-[92vh]">
+      <!-- Modal Header -->
+      <div class="px-5 py-4 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-red-600/20 border border-red-500/50 flex items-center justify-center text-red-500">
+            <span class="material-symbols-outlined text-xl">smart_display</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-headline font-bold text-on-surface flex items-center gap-2">
+              Tải Video Lên YouTube API Direct
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30">OAuth v2 Sẵn Sàng</span>
+            </h3>
+            <p class="text-xs font-mono text-on-surface-variant">
+              Tùy chọn Công Khai / Không Công Khai / Riêng Tư & Metadata chuẩn SEO Shorts
+            </p>
+          </div>
+        </div>
+        <button class="p-1.5 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" onclick="closeYouTubeUploadModal()" title="Đóng modal">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Form Body -->
+      <form id="youtube-upload-form" class="flex flex-col flex-1 overflow-hidden">
+        <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+          <!-- Target Video Preview Box -->
+          <div class="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/40 flex items-center gap-3.5">
+            <div class="relative w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-surface-container-high border border-outline-variant/30 flex items-center justify-center">
+              <img id="yt-preview-thumb" alt="Thumbnail" class="w-full h-full object-cover hidden" src="" />
+              <div id="yt-preview-placeholder" class="text-2xl text-outline">🎬</div>
+              <span id="yt-preview-duration" class="absolute bottom-1 right-1 px-1 rounded text-[8px] font-mono bg-black/80 text-white">00:45</span>
+            </div>
+            <div class="flex-1 min-w-0 space-y-1">
+              <div class="flex items-center gap-2">
+                <span id="yt-preview-badge" class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30">9:16 Shorts</span>
+                <span id="yt-preview-filesize" class="text-[10px] font-mono text-outline">MP4 • 58.6 MB</span>
+              </div>
+              <h4 id="yt-preview-title" class="text-xs font-bold text-on-surface truncate">
+                Tiêu đề video
+              </h4>
+              <p class="text-[11px] text-outline truncate">
+                Job ID: <code id="yt-preview-jobid" class="text-secondary font-mono">job_id</code>
+              </p>
+            </div>
+          </div>
+
+          <!-- Channel Selector & Category in 2 Cols -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-mono text-on-surface-variant mb-1 flex items-center justify-between">
+                <span>Kênh YouTube Đích</span>
+                <span id="yt-channel-badge" class="text-primary text-[10px] font-mono">Đã Đăng Nhập</span>
+              </label>
+              <div class="relative">
+                <select id="yt-channel" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-red-500 focus:ring-1 focus:ring-red-500 appearance-none pr-8">
+                  <option value="HanShin">HanShin - Thread (Verified Shorts)</option>
+                  <option value="Giai Ma Tech">Giai Ma Tech (AI & Tech)</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-on-surface-variant pointer-events-none text-base">expand_more</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-on-surface-variant mb-1">Thể loại video</label>
+              <div class="relative">
+                <select id="yt-category" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-red-500 focus:ring-1 focus:ring-red-500 appearance-none pr-8">
+                  <option value="24" selected>Giải Trí (Entertainment)</option>
+                  <option value="28">Khoa học & Công nghệ (Science & Tech)</option>
+                  <option value="23">Hài kịch (Comedy)</option>
+                  <option value="1">Điện ảnh & Hoạt họa (Film & Animation)</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-on-surface-variant pointer-events-none text-base">expand_more</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Mode Selector with segmented radio cards -->
+          <div>
+            <label class="block text-xs font-mono text-on-surface-variant mb-1.5">
+              Chế Độ Hiển Thị (Privacy Settings)
+            </label>
+            <div class="grid grid-cols-3 gap-2" id="yt-privacy-group">
+              <!-- Public -->
+              <label class="yt-privacy-card flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/40 cursor-pointer hover:border-red-500/60 transition-all text-center">
+                <input type="radio" name="yt_privacy" value="public" class="sr-only" />
+                <span class="material-symbols-outlined text-lg text-outline">public</span>
+                <span class="text-xs font-semibold text-on-surface mt-1">Công Khai</span>
+                <span class="text-[9px] text-outline font-mono">Mọi người đều xem</span>
+              </label>
+
+              <!-- Unlisted (Default Recommended) -->
+              <label class="yt-privacy-card active flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-low border-2 border-red-500 cursor-pointer transition-all text-center shadow-sm">
+                <input type="radio" name="yt_privacy" value="unlisted" class="sr-only" checked />
+                <span class="material-symbols-outlined text-lg text-red-500">link</span>
+                <span class="text-xs font-bold text-red-400 mt-1">Không Công Khai ✓</span>
+                <span class="text-[9px] text-red-300 font-mono">Khuyên dùng test</span>
+              </label>
+
+              <!-- Private -->
+              <label class="yt-privacy-card flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/40 cursor-pointer hover:border-red-500/60 transition-all text-center">
+                <input type="radio" name="yt_privacy" value="private" class="sr-only" />
+                <span class="material-symbols-outlined text-lg text-outline">lock</span>
+                <span class="text-xs font-semibold text-on-surface mt-1">Riêng Tư</span>
+                <span class="text-[9px] text-outline font-mono">Chỉ bạn mới xem</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Video Title Input with Character Counter -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-mono text-on-surface-variant">Tiêu Đề Video YouTube</label>
+              <span class="text-[10px] font-mono text-outline" id="yt-title-counter">0 / 100</span>
+            </div>
+            <input id="yt-title" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-red-500 focus:ring-1 focus:ring-red-500 font-medium" type="text" maxlength="100" required />
+          </div>
+
+          <!-- Description with AI generated chapters & tags -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-mono text-on-surface-variant">Mô Tả & Timestamps</label>
+              <span class="text-[10px] font-mono text-primary flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">auto_awesome</span> AI Chapters
+              </span>
+            </div>
+            <textarea id="yt-description" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-red-500 focus:ring-1 focus:ring-red-500 resize-none h-20 leading-relaxed" rows="3"></textarea>
+          </div>
+
+          <!-- Tags input -->
+          <div>
+            <label class="block text-xs font-mono text-on-surface-variant mb-1">Thẻ Từ Khóa (Tags cách nhau bằng dấu phẩy)</label>
+            <input id="yt-tags" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-red-500 focus:ring-1 focus:ring-red-500" type="text" placeholder="HanShin, Threads, Shorts, Teamwork, SinhVien" />
+          </div>
+
+          <!-- Upload Status / Feedback -->
+          <div id="yt-status-box" class="hidden p-3 rounded-lg text-xs font-mono"></div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="px-5 py-3.5 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2 text-xs font-mono text-outline">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>YouTube Data API v3 Active</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="px-4 py-2 rounded-lg bg-surface-container text-xs font-mono text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" onclick="closeYouTubeUploadModal()">
+              Hủy
+            </button>
+            <button type="submit" id="btn-yt-submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-headline font-bold text-xs flex items-center gap-2 neon-glow-red active:scale-[0.98] transition-all">
+              <span class="material-symbols-outlined text-base">cloud_upload</span>
+              <span id="btn-yt-submit-text">🚀 Bắt Đầu Upload YouTube</span>
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 

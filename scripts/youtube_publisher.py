@@ -159,8 +159,9 @@ def upload_unlisted_video(
     thumbnail_path: Optional[Path | str] = None,
     srt_path: Optional[Path | str] = None,
     privacy_status: str = "unlisted",
+    category_id: str = "28",
 ) -> dict:
-    """Upload video to YouTube in unlisted mode with thumbnail and subtitles support."""
+    """Upload video to YouTube in unlisted or public mode with thumbnail and subtitles support."""
     if get_authenticated_service is None:
         raise RuntimeError("Google API client is not installed.")
 
@@ -170,7 +171,7 @@ def upload_unlisted_video(
             "title": str(title)[:100],
             "description": str(description)[:5000],
             "tags": list(tags)[:50],
-            "categoryId": "24",  # Entertainment
+            "categoryId": category_id,
         },
         "status": {
             "privacyStatus": privacy_status,
@@ -207,24 +208,84 @@ def upload_unlisted_video(
     url = f"https://youtu.be/{video_id}"
     logger.info("Video uploaded successfully: %s (Privacy: %s)", url, privacy_status)
 
-    # Set Thumbnail if provided
+    # Set Thumbnail if provided (with retries for processing delay)
     if thumbnail_path and set_thumbnail:
-        try:
-            set_thumbnail(youtube, video_id, Path(thumbnail_path))
-            logger.info("Custom 3D Thumbnail set successfully.")
-        except Exception as e:
-            logger.warning("Failed to set thumbnail: %s", e)
+        import time
+        for attempt in range(1, 4):
+            try:
+                set_thumbnail(youtube, video_id, Path(thumbnail_path))
+                logger.info("Custom 3D Thumbnail set successfully.")
+                break
+            except Exception as e:
+                logger.warning("Failed to set thumbnail (attempt %d/3): %s", attempt, e)
+                if attempt < 3:
+                    time.sleep(5)
 
-    # Set Subtitles if provided
+    # Set Subtitles if provided (with retries for processing delay)
     if srt_path and upload_srt_captions:
-        try:
-            upload_srt_captions(youtube, video_id, Path(srt_path))
-            logger.info("Subtitles SRT uploaded successfully.")
-        except Exception as e:
-            logger.warning("Failed to set subtitles: %s", e)
+        import time
+        for attempt in range(1, 4):
+            try:
+                upload_srt_captions(youtube, video_id, Path(srt_path))
+                logger.info("Subtitles SRT uploaded successfully.")
+                break
+            except Exception as e:
+                logger.warning("Failed to set subtitles (attempt %d/3): %s", attempt, e)
+                if attempt < 3:
+                    time.sleep(10)
 
     return {
         "video_id": video_id,
         "url": url,
         "privacy": privacy_status,
     }
+
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+    parser = argparse.ArgumentParser(description="YouTube Publisher CLI")
+    parser.add_argument("--channel", default="HanShin", help="Channel name or folder alias")
+    parser.add_argument("--video", required=True, help="Path to MP4 video file")
+    parser.add_argument("--title", default="OmniVideo", help="Video Title")
+    parser.add_argument("--description", default="", help="Video Description")
+    parser.add_argument("--tags", default="", help="Comma-separated tags")
+    parser.add_argument("--privacy", default="unlisted", choices=["public", "unlisted", "private"])
+    parser.add_argument("--thumb", default=None, help="Path to thumbnail image")
+    parser.add_argument("--srt", default=None, help="Path to SRT subtitle file")
+    parser.add_argument("--category", default="24", help="YouTube Category ID (default: 24 Entertainment)")
+    parser.add_argument("--json", action="store_true", help="Output result as JSON")
+
+    args = parser.parse_args()
+
+    tags_list = [t.strip() for t in args.tags.split(",") if t.strip()] if args.tags else []
+
+    try:
+        res = upload_unlisted_video(
+            channel_name=args.channel,
+            video_path=args.video,
+            title=args.title,
+            description=args.description,
+            tags=tags_list,
+            thumbnail_path=args.thumb,
+            srt_path=args.srt,
+            privacy_status=args.privacy,
+            category_id=args.category,
+        )
+        if args.json:
+            print(json.dumps({"success": True, **res}, ensure_ascii=False))
+        else:
+            print(f"UPLOAD_SUCCESS: {res.get('url')} (ID: {res.get('video_id')}, Privacy: {res.get('privacy')})")
+    except Exception as exc:
+        if args.json:
+            print(json.dumps({"success": False, "error": str(exc)}, ensure_ascii=False))
+        else:
+            print(f"UPLOAD_ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)
+

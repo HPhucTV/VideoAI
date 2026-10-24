@@ -58,6 +58,8 @@ async function loadVideos() {
   }
 }
 
+let currentViewMode = localStorage.getItem("omni_view_mode") || "grid";
+
 function updateStats() {
   statTotalVideos.textContent = allVideos.length;
   const totalBytes = allVideos.reduce((acc, v) => acc + (v.sizeBytes || 0), 0);
@@ -75,6 +77,9 @@ function renderGrid() {
     return matchesWorkshop && matchesSearch;
   });
 
+  const videoTableWrap = document.getElementById("video-table-wrap");
+  const videoTableBody = document.getElementById("video-table-body");
+
   if (filtered.length === 0) {
     videoGrid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim);">
@@ -83,16 +88,73 @@ function renderGrid() {
         <p style="font-size: 13px; margin-top: 6px;">Bấm nút "+ Tạo Video Mới" ở góc phải để bắt đầu sản xuất!</p>
       </div>
     `;
+    if (videoTableWrap) videoTableWrap.classList.add("hidden");
     return;
   }
+
+  if (currentViewMode === "table" && videoTableWrap && videoTableBody) {
+    videoGrid.classList.add("hidden");
+    videoTableWrap.classList.remove("hidden");
+
+    videoTableBody.innerHTML = filtered.map(v => {
+      const badgeClass = `badge-${v.workshop}`;
+      return `
+        <tr>
+          <td>
+            <div class="w-12 h-12 rounded bg-surface-container-high overflow-hidden cursor-pointer shrink-0 border border-outline-variant/30 relative" onclick="openPlayer('${v.id}')">
+              ${v.thumbUrl 
+                ? `<img src="${v.thumbUrl}" class="w-full h-full object-cover" alt="${v.title}">` 
+                : `<div class="w-full h-full flex items-center justify-center text-xs text-outline">🎬</div>`}
+              <span class="absolute bottom-0.5 right-0.5 px-0.5 rounded text-[7px] font-mono bg-black/80 text-white">${v.sizeBytes ? formatBytes(v.sizeBytes) : ''}</span>
+            </div>
+          </td>
+          <td>
+            <div class="font-bold text-on-surface hover:text-primary cursor-pointer line-clamp-1 text-xs" onclick="openPlayer('${v.id}')">${escapeHtml(v.title)}</div>
+            <div class="text-[10px] font-mono text-outline">${escapeHtml(v.id)}</div>
+          </td>
+          <td>
+            <span class="badge-tag ${badgeClass} static">${v.workshop}</span>
+          </td>
+          <td>
+            <div class="text-[11px] font-mono text-on-surface-variant">${v.canvas.width}x${v.canvas.height} • ${v.beatsCount} beats</div>
+            <div class="text-[10px] font-mono text-outline">🎙️ ${v.voice?.voiceId ? v.voice.voiceId.replace('vi-VN-', '') : 'NamMinh'}</div>
+          </td>
+          <td>
+            <span class="text-xs font-mono font-bold text-secondary">${formatBytes(v.sizeBytes)}</span>
+          </td>
+          <td style="text-align: right;">
+            <div class="inline-flex items-center gap-1.5 justify-end">
+              <button class="btn-youtube" onclick="openYouTubeUploadModal('${v.id}')" title="Upload lên YouTube">
+                <span class="material-symbols-outlined text-[13px]">cloud_upload</span>
+                <span>Upload YT</span>
+              </button>
+              <button class="btn btn-sm btn-primary" onclick="openPlayer('${v.id}')" title="Xem Video">
+                ▶
+              </button>
+              <button class="btn btn-sm btn-outline" onclick="openEditor('${v.id}')" title="Sửa Kịch Bản">
+                ✏️
+              </button>
+              <button class="btn btn-sm btn-outline" onclick="triggerRender('${v.id}')" title="Re-render">
+                ⚡
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteVideo('${v.id}')" title="Xóa">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+    return;
+  }
+
+  // Default: Compact Bento Grid View
+  if (videoTableWrap) videoTableWrap.classList.add("hidden");
+  videoGrid.classList.remove("hidden");
 
   videoGrid.innerHTML = filtered.map(v => {
     const isPortrait = v.canvas.height > v.canvas.width;
     const badgeClass = `badge-${v.workshop}`;
-    const workshopName = v.workshop === "threads" ? "Xưởng 5 (Threads)" :
-                         v.workshop === "cinematic" ? "Xưởng 4 (Phim 3D)" :
-                         v.workshop === "whiteboard" ? "Xưởng 3 (Bảng Trắng)" :
-                         v.workshop === "explainer" ? "Xưởng 2 (Explainer)" : "Xưởng 1 (Tin Tức)";
 
     return `
       <div class="video-card" data-id="${v.id}">
@@ -119,21 +181,30 @@ function renderGrid() {
           </div>
 
           <div class="card-actions">
-            <div class="btn-icon-group">
-              <button class="btn btn-sm btn-primary" onclick="openPlayer('${v.id}')" title="Xem Video">
-                ▶ Phát
-              </button>
-              <button class="btn btn-sm btn-outline" onclick="openEditor('${v.id}')" title="Sửa Kịch Bản">
-                ✏️ Sửa
-              </button>
-              <button class="btn btn-sm btn-outline" onclick="triggerRender('${v.id}')" title="Re-render">
-                ⚡ Render
+            <!-- Dedicated YouTube Direct Upload Button -->
+            <button class="btn-youtube btn-youtube-full" onclick="openYouTubeUploadModal('${v.id}')" title="Upload lên kênh YouTube (Public / Unlisted / Private)">
+              <span class="material-symbols-outlined text-[14px]">cloud_upload</span>
+              <span>Upload YouTube Direct</span>
+            </button>
+
+            <!-- Secondary Actions Row -->
+            <div class="card-actions-row">
+              <div class="btn-icon-group">
+                <button class="btn btn-sm btn-primary" onclick="openPlayer('${v.id}')" title="Xem Video">
+                  ▶ Phát
+                </button>
+                <button class="btn btn-sm btn-outline" onclick="openEditor('${v.id}')" title="Sửa Kịch Bản">
+                  ✏️ Sửa
+                </button>
+                <button class="btn btn-sm btn-outline" onclick="triggerRender('${v.id}')" title="Re-render">
+                  ⚡
+                </button>
+              </div>
+
+              <button class="btn btn-sm btn-danger" onclick="deleteVideo('${v.id}')" title="Xóa">
+                🗑️
               </button>
             </div>
-
-            <button class="btn btn-sm btn-danger" onclick="deleteVideo('${v.id}')" title="Xóa">
-              🗑️
-            </button>
           </div>
         </div>
       </div>
@@ -895,5 +966,270 @@ if (dispatchForm) {
   };
 }
 
-// Khởi chạy Antigravity Stream ngay khi tải trang
+// ── SIDEBAR COLLAPSE / EXPAND CONTROLLER ──
+function initSidebarController() {
+  const sidebar = document.getElementById("sidebarNav");
+  const toggleBtn = document.getElementById("btn-toggle-sidebar");
+  const toggleIcon = document.getElementById("sidebar-toggle-icon");
+  const mainCanvas = document.getElementById("mainContent");
+
+  if (!sidebar || !toggleBtn) return;
+
+  const savedState = localStorage.getItem("omni_sidebar_collapsed");
+  if (savedState === "1") {
+    sidebar.classList.add("collapsed");
+    if (mainCanvas) mainCanvas.classList.add("sidebar-collapsed");
+    if (toggleIcon) toggleIcon.textContent = "chevron_right";
+    toggleBtn.title = "Mở rộng Sidebar";
+  }
+
+  toggleBtn.onclick = () => {
+    const isNowCollapsed = sidebar.classList.toggle("collapsed");
+    if (mainCanvas) mainCanvas.classList.toggle("sidebar-collapsed", isNowCollapsed);
+    if (toggleIcon) toggleIcon.textContent = isNowCollapsed ? "chevron_right" : "chevron_left";
+    toggleBtn.title = isNowCollapsed ? "Mở rộng Sidebar" : "Thu gọn Sidebar";
+    localStorage.setItem("omni_sidebar_collapsed", isNowCollapsed ? "1" : "0");
+  };
+}
+
+// ── VIEW MODE CONTROLLER (GRID VS TABLE) ──
+function initViewModeController() {
+  const btnGrid = document.getElementById("btn-view-grid");
+  const btnTable = document.getElementById("btn-view-table");
+  const quickPills = document.querySelectorAll(".quick-pill");
+
+  if (btnGrid && btnTable) {
+    btnGrid.onclick = () => setViewMode("grid");
+    btnTable.onclick = () => setViewMode("table");
+  }
+
+  // Restore active icon styling
+  if (btnGrid && btnTable) {
+    if (currentViewMode === "grid") {
+      btnGrid.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
+      btnTable.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
+    } else {
+      btnTable.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
+      btnGrid.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
+    }
+  }
+
+  quickPills.forEach(pill => {
+    pill.onclick = () => {
+      quickPills.forEach(p => {
+        p.classList.remove("active", "bg-primary/20", "text-primary", "font-bold");
+        p.classList.add("text-outline");
+      });
+      pill.classList.add("active", "bg-primary/20", "text-primary", "font-bold");
+      pill.classList.remove("text-outline");
+      filterByWorkshop(pill.dataset.ws);
+    };
+  });
+}
+
+function setViewMode(mode) {
+  currentViewMode = mode;
+  localStorage.setItem("omni_view_mode", mode);
+  const btnGrid = document.getElementById("btn-view-grid");
+  const btnTable = document.getElementById("btn-view-table");
+
+  if (btnGrid && btnTable) {
+    if (mode === "grid") {
+      btnGrid.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
+      btnTable.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
+    } else {
+      btnTable.className = "p-1 rounded text-primary bg-surface-container-high transition-colors";
+      btnGrid.className = "p-1 rounded text-outline hover:text-on-surface transition-colors";
+    }
+  }
+
+  renderGrid();
+}
+
+// ── YOUTUBE DIRECT UPLOAD MODAL LOGIC ──
+let currentYouTubeJob = null;
+
+async function openYouTubeUploadModal(jobId) {
+  const video = allVideos.find(v => v.id === jobId);
+  if (!video) return;
+  currentYouTubeJob = video;
+
+  const ytModal = document.getElementById("youtube-upload-modal");
+  const ytThumb = document.getElementById("yt-preview-thumb");
+  const ytPlaceholder = document.getElementById("yt-preview-placeholder");
+  const ytDuration = document.getElementById("yt-preview-duration");
+  const ytBadge = document.getElementById("yt-preview-badge");
+  const ytFilesize = document.getElementById("yt-preview-filesize");
+  const ytTitle = document.getElementById("yt-title");
+  const ytPreviewTitle = document.getElementById("yt-preview-title");
+  const ytPreviewJobId = document.getElementById("yt-preview-jobid");
+  const ytDescription = document.getElementById("yt-description");
+  const ytTags = document.getElementById("yt-tags");
+  const ytStatusBox = document.getElementById("yt-status-box");
+  const ytTitleCounter = document.getElementById("yt-title-counter");
+
+  ytStatusBox.classList.add("hidden");
+  ytStatusBox.innerHTML = "";
+
+  if (video.thumbUrl) {
+    ytThumb.src = video.thumbUrl;
+    ytThumb.classList.remove("hidden");
+    ytPlaceholder.classList.add("hidden");
+  } else {
+    ytThumb.classList.add("hidden");
+    ytPlaceholder.classList.remove("hidden");
+  }
+
+  ytPreviewTitle.textContent = video.title;
+  ytPreviewJobId.textContent = video.id;
+  ytFilesize.textContent = `MP4 • ${formatBytes(video.sizeBytes)}`;
+  ytBadge.textContent = `${video.workshop.toUpperCase()} • ${video.canvas.width > video.canvas.height ? '16:9 Cinema' : '9:16 Shorts'}`;
+
+  // Pre-fill Title with SEO tags
+  let defaultTitle = video.title;
+  if (!defaultTitle.toLowerCase().includes("#shorts") && video.canvas.height > video.canvas.width) {
+    defaultTitle = `${defaultTitle} #Shorts #OmniVideo`;
+  }
+  ytTitle.value = defaultTitle.slice(0, 100);
+  ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+
+  ytTitle.oninput = () => {
+    ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+  };
+
+  // Pre-fill Description & Chapters
+  let desc = `${video.title}\n\n`;
+  desc += `Sản xuất tự hành bởi OmniVideo Studio (Phân xưởng ${video.workshop.toUpperCase()})\n\n`;
+  if (video.beats && video.beats.length > 0) {
+    desc += "TIMESTAMPS & PHÂN ĐOẠN:\n00:00 - Mở đầu & Hook\n";
+    let curSec = 2;
+    video.beats.slice(1, 8).forEach((b, i) => {
+      const mins = Math.floor(curSec / 60);
+      const secs = curSec % 60;
+      const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const beatName = b.visual?.headline || b.rawText?.slice(0, 30) || `Nhịp ${i + 2}`;
+      desc += `${timeStr} - ${beatName}\n`;
+      curSec += 4;
+    });
+    desc += "\n";
+  }
+  desc += "#OmniVideo #Antigravity #AI #VideoAI #Shorts #Remotion";
+  ytDescription.value = desc;
+
+  // Pre-fill Tags
+  const defaultTags = ["OmniVideo", "Antigravity", "AI Video", video.workshop, "Storyverse", "Shorts"];
+  ytTags.value = defaultTags.join(", ");
+
+  // Load available channels
+  try {
+    const res = await fetch("/api/youtube/channels");
+    const data = await res.json();
+    if (data.success && data.channels && data.channels.length > 0) {
+      const select = document.getElementById("yt-channel");
+      select.innerHTML = data.channels.map(c => 
+        `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)} ${c.hasToken ? '✓' : '(Cần token)'}</option>`
+      ).join("");
+    }
+  } catch (err) {
+    console.warn("Không thể tải danh sách kênh YouTube:", err);
+  }
+
+  // Setup Privacy Option cards click
+  const privacyCards = document.querySelectorAll(".yt-privacy-card");
+  privacyCards.forEach(card => {
+    card.onclick = () => {
+      privacyCards.forEach(c => {
+        c.classList.remove("active", "border-2", "border-red-500", "bg-surface-container-low");
+        c.classList.add("bg-surface-container-lowest", "border-outline-variant/40");
+      });
+      card.classList.add("active", "border-2", "border-red-500", "bg-surface-container-low");
+      card.classList.remove("bg-surface-container-lowest", "border-outline-variant/40");
+      const radio = card.querySelector("input[type=radio]");
+      if (radio) radio.checked = true;
+    };
+  });
+
+  ytModal.classList.add("active");
+}
+
+function closeYouTubeUploadModal() {
+  const ytModal = document.getElementById("youtube-upload-modal");
+  if (ytModal) ytModal.classList.remove("active");
+}
+
+// Handle YouTube Upload Form Submission
+const youtubeUploadForm = document.getElementById("youtube-upload-form");
+if (youtubeUploadForm) {
+  youtubeUploadForm.onsubmit = async (e) => {
+    e.preventDefault();
+    if (!currentYouTubeJob) return;
+
+    const btnSubmit = document.getElementById("btn-yt-submit");
+    const btnText = document.getElementById("btn-yt-submit-text");
+    const statusBox = document.getElementById("yt-status-box");
+
+    const channel = document.getElementById("yt-channel").value;
+    const category = document.getElementById("yt-category").value;
+    const title = document.getElementById("yt-title").value.trim();
+    const description = document.getElementById("yt-description").value.trim();
+    const tags = document.getElementById("yt-tags").value.trim();
+    const privacy = document.querySelector('input[name="yt_privacy"]:checked')?.value || "unlisted";
+
+    btnSubmit.disabled = true;
+    btnText.innerHTML = `<span>Đang upload lên YouTube...</span>`;
+    statusBox.classList.remove("hidden");
+    statusBox.className = "p-3 rounded-lg text-xs font-mono bg-secondary/10 border border-secondary/30 text-secondary flex items-center gap-2";
+    statusBox.innerHTML = `<span class="animate-spin material-symbols-outlined text-sm">progress_activity</span> <span>Đang khởi tạo phiên upload video vào kênh YouTube <strong>${escapeHtml(channel)}</strong> (${privacy.toUpperCase()})...</span>`;
+
+    try {
+      const res = await fetch("/api/youtube/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobId: currentYouTubeJob.id,
+          channel,
+          category,
+          title,
+          description,
+          tags,
+          privacy,
+        }),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        statusBox.className = "p-3 rounded-lg text-xs font-mono bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 space-y-2";
+        statusBox.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-emerald-400">
+            <span class="material-symbols-outlined text-base">check_circle</span>
+            <span>UPLOAD YOUTUBE THÀNH CÔNG!</span>
+          </div>
+          <div>Link video: <a href="${result.url}" target="_blank" class="underline font-bold text-white hover:text-primary">${result.url}</a></div>
+          <div class="text-[11px] text-emerald-400/80">Chế độ: <strong>${result.privacy?.toUpperCase() || privacy.toUpperCase()}</strong> • Video ID: <code>${result.video_id || ''}</code></div>
+          <div class="pt-1 flex items-center gap-2">
+            <a href="${result.url}" target="_blank" class="px-3 py-1 rounded bg-emerald-500 text-black font-bold text-xs inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">open_in_new</span> Xem trên YouTube
+            </a>
+            <button type="button" class="px-3 py-1 rounded bg-surface-container border border-outline-variant/30 text-xs text-white" onclick="navigator.clipboard.writeText('${result.url}').then(()=>alert('Đã sao chép link YouTube!'))">
+              Sao chép Link
+            </button>
+          </div>
+        `;
+      } else {
+        statusBox.className = "p-3 rounded-lg text-xs font-mono bg-rose-500/15 border border-rose-500/40 text-rose-300";
+        statusBox.innerHTML = `❌ <strong>Lỗi Upload:</strong> ${escapeHtml(result.error || "Không thể tải lên YouTube")}`;
+      }
+    } catch (err) {
+      statusBox.className = "p-3 rounded-lg text-xs font-mono bg-rose-500/15 border border-rose-500/40 text-rose-300";
+      statusBox.innerHTML = `❌ <strong>Lỗi kết nối:</strong> ${escapeHtml(err.message)}`;
+    } finally {
+      btnSubmit.disabled = false;
+      btnText.innerHTML = `🚀 Bắt Đầu Upload YouTube`;
+    }
+  };
+}
+
+// Khởi chạy Antigravity Stream & Sidebar/ViewMode ngay khi tải trang
+initSidebarController();
+initViewModeController();
 initAntigravityBridge();
