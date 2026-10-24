@@ -19,6 +19,7 @@ import subprocess
 import sys
 import time
 import unicodedata
+_WIN_FLAGS = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -233,6 +234,51 @@ def normalize_slang(text: str) -> str:
     return unicodedata.normalize("NFC", normalized)
 
 
+def get_voice_profile_for_speaker(
+    role: str = "commenter",
+    index: int = 0,
+    text: str = "",
+    default_male: str = "vi-VN-NamMinhNeural",
+    default_female: str = "vi-VN-HoaiMyNeural",
+) -> dict:
+    """
+    Tự động phân vai giọng đọc (Voice Casting) đa dạng cho từng nhân vật & bình luận:
+    - Tránh việc toàn bộ video chỉ dùng 1 giọng đọc đều đều gây buồn ngủ.
+    - Luân phiên Nam - Nữ và điều biến cao độ (Pitch Modulation) theo độ tuổi / tính cách.
+    """
+    t_lower = text.lower()
+    
+    # Nếu nội dung thể hiện vai phụ huynh, ông chú, trưởng bối
+    if any(k in t_lower for k in ["chú", "bác", "bố", "phụ huynh", "mẹ", "thầy", "cô"]):
+        if any(k in t_lower for k in ["mẹ", "cô"]):
+            return {"voice": default_female, "rate": "+18%", "pitch": "-2Hz"}
+        return {"voice": default_male, "rate": "+16%", "pitch": "-5Hz"}
+
+    # Luân phiên giọng đọc theo thứ tự bình luận (comment index)
+    profiles = [
+        {"voice": default_female, "rate": "+24%", "pitch": "+1Hz"},  # Nữ trẻ trung
+        {"voice": default_male, "rate": "+26%", "pitch": "+0Hz"},    # Nam năng động
+        {"voice": default_female, "rate": "+25%", "pitch": "+2Hz"},  # Nữ lanh lợi
+        {"voice": default_male, "rate": "+22%", "pitch": "-3Hz"},    # Nam trầm hài hước
+        {"voice": default_female, "rate": "+26%", "pitch": "-1Hz"},  # Nữ điềm tĩnh
+        {"voice": default_male, "rate": "+28%", "pitch": "+2Hz"},    # Nam phấn khích
+    ]
+    return profiles[index % len(profiles)]
+
+
+def smart_insert_comedic_pauses(text: str) -> str:
+    """
+    Tự động chuyển đổi các dấu ba chấm (...) và dấu ngắt kịch tính thành thẻ [pause:0.35]
+    để tạo khoảng lặng chết tiệt (Awkward Silence), nâng tầm điểm rơi gây cười (comedic timing).
+    """
+    if "[pause:" in text:
+        return text
+
+    # Chuyển đổi '...' hoặc '…' ở giữa câu thành nhịp ngắt 0.35s
+    res = re.sub(r"\s*(\.{3,}|…)\s*", " [pause:0.35] ", text)
+    return res.strip()
+
+
 def detect_emotion(text: str) -> dict:
     """
     Tự động nhận diện ngữ cảnh và cảm xúc câu thoại để:
@@ -445,7 +491,7 @@ def get_audio_duration(audio_path: str | Path) -> float:
         "-of", "default=noprint_wrappers=1:nokey=1",
         str(audio_path),
     ]
-    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True, creationflags=_WIN_FLAGS)
     return round(float(res.stdout.strip()), 2)
 
 
@@ -485,7 +531,7 @@ def add_audio_tail_padding(audio_path: Path, pad_dur: float = 0.35) -> Path:
         "-c:a", "libmp3lame" if audio_path.suffix.lower() == ".mp3" else "pcm_s16le",
         str(temp_pad.resolve())
     ]
-    subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, creationflags=_WIN_FLAGS)
     if temp_pad.exists():
         temp_pad.replace(audio_path)
     return audio_path
@@ -499,6 +545,7 @@ def synthesize_speech(
     pitch: str = "+0Hz",
     apply_slang_norm: bool = True,
     auto_emotion: bool = False,
+    auto_pause: bool = True,
     tail_padding: float = 0.35,
 ) -> float:
     """
@@ -517,6 +564,10 @@ def synthesize_speech(
         emo = detect_emotion(text)
         rate = emo.get("rate", rate)
         pitch = emo.get("pitch", pitch)
+
+    # Tự động chèn nhịp dừng hài hước nếu gặp dấu ba chấm kịch tính
+    if auto_pause:
+        text = smart_insert_comedic_pauses(text)
 
     tag_pattern = r"(\[sfx:[^\]]+\]|\[pause:[0-9.]+\])"
     if not re.search(tag_pattern, text):
@@ -547,7 +598,7 @@ def synthesize_speech(
                 "-c:a", "pcm_s16le",
                 str(chunk_file)
             ]
-            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, creationflags=_WIN_FLAGS)
             audio_chunks.append(chunk_file)
 
         elif token.startswith("[sfx:") and token.endswith("]"):
@@ -576,7 +627,7 @@ def synthesize_speech(
                     "-c:a", "pcm_s16le",
                     str(chunk_file)
                 ]
-            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, creationflags=_WIN_FLAGS)
             audio_chunks.append(chunk_file)
 
         else:
@@ -590,7 +641,7 @@ def synthesize_speech(
                 "-c:a", "pcm_s16le",
                 str(chunk_file)
             ]
-            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, creationflags=_WIN_FLAGS)
             audio_chunks.append(chunk_file)
 
     if audio_chunks:
@@ -609,7 +660,7 @@ def synthesize_speech(
             "-c:a", "libmp3lame" if out_path.suffix.lower() == ".mp3" else "pcm_s16le",
             str(out_path)
         ]
-        subprocess.run(cmd_concat, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        subprocess.run(cmd_concat, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, creationflags=_WIN_FLAGS)
         if tail_padding > 0:
             add_audio_tail_padding(out_path, tail_padding)
 

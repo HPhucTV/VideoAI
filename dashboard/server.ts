@@ -4,6 +4,7 @@ import { readFile, writeFile, unlink, readdir, mkdir, rm } from "node:fs/promise
 import { join, extname, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
+function safeSpawn(cmd: string, args: any[], opts: any = {}) { return spawn(cmd, args, { windowsHide: true, ...opts }); }
 import {
   getActiveConversationId,
   getAntigravitySession,
@@ -627,7 +628,7 @@ const server = createServer(async (req, res) => {
         pyArgs.push("--srt", srtPath);
       }
 
-      const proc = spawn(actualPy, pyArgs, { cwd: ROOT_DIR });
+      const proc = safeSpawn(actualPy, pyArgs, { cwd: ROOT_DIR });
       let stdout = "";
       let stderr = "";
 
@@ -746,7 +747,7 @@ const server = createServer(async (req, res) => {
         const outName = `frame_candidate_${i + 1}.jpg`;
         const outPath = join(jDir, outName);
         await new Promise((resolve) => {
-          const p = spawn("ffmpeg", ["-ss", times[i], "-i", mp4Path, "-vframes", "1", "-q:v", "2", outPath, "-y"]);
+          const p = safeSpawn("ffmpeg", ["-ss", times[i], "-i", mp4Path, "-vframes", "1", "-q:v", "2", outPath, "-y"]);
           p.on("close", resolve);
         });
         if (existsSync(outPath)) {
@@ -805,7 +806,7 @@ const server = createServer(async (req, res) => {
   if (pathname === "/api/commander/report" && req.method === "GET") {
     try {
       const pyArgs = [join(ROOT_DIR, "core", "shift_reporter.py")];
-      const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", pyArgs, { cwd: ROOT_DIR });
       let stdout = "";
       proc.stdout.on("data", d => (stdout += d.toString()));
       proc.on("close", () => {
@@ -820,7 +821,7 @@ const server = createServer(async (req, res) => {
   if (pathname === "/api/commander/scout-github" && req.method === "GET") {
     try {
       const pyArgs = [join(ROOT_DIR, "scripts", "scout_github_trending.py"), "--limit", "6", "--json"];
-      const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", pyArgs, { cwd: ROOT_DIR });
       let stdout = "";
       proc.stdout.on("data", d => (stdout += d.toString()));
       proc.on("close", () => {
@@ -840,7 +841,7 @@ const server = createServer(async (req, res) => {
   // Voice Briefing API (Ý tưởng 2: Báo cáo giọng nói 30s)
   if (pathname === "/api/commander/voice-briefing" && req.method === "GET") {
     try {
-      const proc = spawn("python", [join(ROOT_DIR, "core", "voice_briefing_generator.py")], { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", [join(ROOT_DIR, "core", "voice_briefing_generator.py")], { cwd: ROOT_DIR });
       let stdout = "";
       proc.stdout.on("data", d => (stdout += d.toString()));
       proc.on("close", () => {
@@ -884,7 +885,7 @@ else:
 print(r.get("success", False))
       `;
 
-      const proc = spawn("python", ["-c", pyCode], { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", ["-c", pyCode], { cwd: ROOT_DIR });
       let out = "";
       proc.stdout.on("data", d => (out += d.toString()));
       proc.on("close", () => {
@@ -948,7 +949,7 @@ print(r.get("success", False))
       ];
       let jDir = candidateDirs.find(d => existsSync(d)) || join(OUTPUT_DIR, "threads", jobId);
       const pyArgs = [join(ROOT_DIR, "core", "quality_gatekeeper.py"), jDir];
-      const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", pyArgs, { cwd: ROOT_DIR });
       let stdout = "";
       proc.stdout.on("data", d => (stdout += d.toString()));
       proc.on("close", () => {
@@ -968,7 +969,7 @@ print(r.get("success", False))
   // Voice Briefing API (Ý tưởng 2: Báo cáo giọng nói 30s)
   if (pathname === "/api/commander/voice-briefing" && req.method === "GET") {
     try {
-      const proc = spawn("python", [join(ROOT_DIR, "core", "voice_briefing_generator.py")], { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", [join(ROOT_DIR, "core", "voice_briefing_generator.py")], { cwd: ROOT_DIR });
       let stdout = "";
       proc.stdout.on("data", d => (stdout += d.toString()));
       proc.on("close", () => {
@@ -1012,7 +1013,7 @@ else:
 print(r.get("success", False))
       `;
 
-      const proc = spawn("python", ["-c", pyCode], { cwd: ROOT_DIR });
+      const proc = safeSpawn("python", ["-c", pyCode], { cwd: ROOT_DIR });
       let out = "";
       proc.stdout.on("data", d => (out += d.toString()));
       proc.on("close", () => {
@@ -1082,7 +1083,7 @@ print(r.get("success", False))
         const threadUrl = urlMatch ? urlMatch[0] : cleanCmd;
 
         const pyArgs = [join(ROOT_DIR, "core", "threads_crawler.py"), threadUrl];
-        const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+        const proc = safeSpawn("python", pyArgs, { cwd: ROOT_DIR });
         let stdout = "";
         let stderr = "";
         proc.stdout.on("data", d => (stdout += d.toString()));
@@ -1129,7 +1130,7 @@ print(r.get("success", False))
       // Trường hợp 2: Nhận diện GitHub
       if (lower.includes("github.com") || lower.includes("repo") || lower.includes("trending")) {
         const pyArgs = [join(ROOT_DIR, "scripts", "scout_github_trending.py"), "--limit", "4", "--json"];
-        const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+        const proc = safeSpawn("python", pyArgs, { cwd: ROOT_DIR });
         let stdout = "";
         proc.stdout.on("data", d => (stdout += d.toString()));
         proc.on("close", () => {
@@ -1167,7 +1168,7 @@ print(r.get("success", False))
   // Khởi động render video Threads sau khi cào
   if (pathname === "/api/commander/produce-threads" && req.method === "POST") {
     try {
-      const proc = spawn("python", [join(ROOT_DIR, "scripts", "produce_crawled_threads.py")], {
+      const proc = safeSpawn("python", [join(ROOT_DIR, "scripts", "produce_crawled_threads.py")], {
         cwd: ROOT_DIR,
         detached: true,
         stdio: "ignore"
@@ -1421,7 +1422,7 @@ print(r.get("success", False))
       if (workshop === "explainer") {
         sendEvent("log", { text: "[2/3] Chuyển đổi kịch bản sang Remotion Props & Tạo giọng đọc TTS..." });
 
-        const adapter = spawn("node", [
+        const adapter = safeSpawn("node", [
           "--experimental-strip-types",
           "workshops/workshop-explainer/src/job-adapter.ts",
           "--job",
@@ -1453,7 +1454,7 @@ print(r.get("success", False))
           await mkdir(outDir, { recursive: true });
           const outVideo = join(outDir, `${id}.mp4`);
 
-          const remotionRender = spawn("npx.cmd", [
+          const remotionRender = safeSpawn("npx.cmd", [
             "remotion",
             "render",
             "src/index.ts",
@@ -1495,7 +1496,7 @@ print(r.get("success", False))
         const pyExe = join(ROOT_DIR, "workshops", "workshop-whiteboard", ".venv", "Scripts", "python.exe");
         const actualPy = existsSync(pyExe) ? pyExe : "python";
 
-        const wbAdapter = spawn(actualPy, [
+        const wbAdapter = safeSpawn(actualPy, [
           "workshops/workshop-whiteboard/scripts/export_video.py",
           id,
         ], { cwd: ROOT_DIR });

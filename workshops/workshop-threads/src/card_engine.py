@@ -18,6 +18,7 @@ from __future__ import annotations
 import html
 import os
 import subprocess
+_WIN_FLAGS = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -546,7 +547,7 @@ def render_card(
         f"--screenshot={str(out_path)}",
         f"file:///{temp_html.as_posix()}",
     ]
-    subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, creationflags=_WIN_FLAGS)
     temp_html.unlink(missing_ok=True)
 
     return out_path

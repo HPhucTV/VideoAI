@@ -1,5 +1,6 @@
 import sys
 import subprocess
+_WIN_FLAGS = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 import json
 import re
 import urllib.request
@@ -49,7 +50,7 @@ def crawl_threads_post(url: str) -> dict:
         "--no-sandbox",
         clean_url
     ]
-    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=35)
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=35, creationflags=_WIN_FLAGS)
     html = res.stdout.decode("utf-8", errors="ignore")
 
     # 1. Extract og:description (post text)
