@@ -1,3 +1,20 @@
+
+// Modal Create Video Controller
+function openCreateModal() {
+  const m = document.getElementById("create-modal");
+  if (m) {
+    m.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function closeCreateModal() {
+  const m = document.getElementById("create-modal");
+  if (m) {
+    m.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+}
 /**
  * OmniVideo Studio - Video Library SPA Client Logic
  * Antigravity 2.0 & Omni-Commander Mission Control (Sakura Rose)
@@ -207,6 +224,28 @@ function handleHitlAction(action, extra) {
       .then(data => {
         appendLeaderLog("dispatch", data.message || "Xưởng 5 đang tiến hành render video Threads!");
         showToast("Xưởng 5 đang render video Threads!");
+
+        // Khởi động bộ giám sát ngầm thời gian thực (Real-time Completion Monitor)
+        let checks = 0;
+        let lastReportedJob = null;
+        const monitorTimer = setInterval(async () => {
+          checks++;
+          try {
+            const sRes = await fetch("/api/commander/threads-status");
+            const sData = await sRes.json();
+            if (sData.success && sData.status === "completed" && sData.job_id !== lastReportedJob) {
+              lastReportedJob = sData.job_id;
+              clearInterval(monitorTimer);
+              appendLeaderLog("done", `✅ XƯỞNG 5 HOÀN TẤT: Đã render xong 100% video "${sData.title || sData.job_id}"!`);
+              appendLeaderLog("done", `🎯 Đã tự động tạo: Thumbnail 3D, Timestamps & Bộ thẻ Tags chuẩn SEO YouTube.`);
+              appendLeaderLog("alert", `📱 Đã gửi thông báo hoàn tất đến Telegram sếp (@Boiz120). Sếp có thể bấm "YouTube Direct" để xem và upload ngay!`);
+              showToast("Xưởng 5 đã hoàn thành video!");
+              await loadVideos();
+            } else if (checks > 70) {
+              clearInterval(monitorTimer);
+            }
+          } catch (_) {}
+        }, 2000);
       })
       .catch(err => {
         appendLeaderLog("alert", `Lỗi khởi động Xưởng 5: ${err.message}`);

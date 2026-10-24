@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import html
 import os
+import sys
 import subprocess
 _WIN_FLAGS = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 from pathlib import Path

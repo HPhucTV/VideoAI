@@ -317,7 +317,7 @@ async function scanVideoLibrary() {
           }
           videos.push({
             id: vId,
-            title: vId.replace(/job_thread_/g, "Threads: ").replace(/job-/g, "Job: ").replace(/_/g, " "),
+            title: (publishingKit && publishingKit.title) ? publishingKit.title : vId.replace(/job_thread_/g, "Threads: ").replace(/job-/g, "Job: ").replace(/_/g, " "),
             workshop: ws,
             archetype: ws === "threads" ? "social_drama" : "cinematic_3d",
             targetPlatform: ws === "threads" ? "tiktok" : "youtube_long",
@@ -1165,6 +1165,21 @@ print(r.get("success", False))
     return;
   }
 
+  // Theo dõi trạng thái tiến độ render Xưởng 5 (Threads)
+  if (pathname === "/api/commander/threads-status" && req.method === "GET") {
+    const statusFile = join(OUTPUT_DIR, "threads", "latest_status.json");
+    if (existsSync(statusFile)) {
+      try {
+        const raw = await readFile(statusFile, "utf-8");
+        const data = JSON.parse(raw);
+        sendJson(res, 200, { success: true, ...data });
+        return;
+      } catch (e: any) {}
+    }
+    sendJson(res, 200, { success: false, status: "idle" });
+    return;
+  }
+
   // Khởi động render video Threads sau khi cào
   if (pathname === "/api/commander/produce-threads" && req.method === "POST") {
     try {
@@ -1198,6 +1213,10 @@ print(r.get("success", False))
       // Tìm video trong thư viện
       const videos = await scanVideoLibrary();
       const video = videos.find(v => v.id === jobId);
+      if (video && video.publishingKit) {
+        sendJson(res, 200, { success: true, publishingKit: video.publishingKit });
+        return;
+      }
       const rawTitle = video ? video.title : jobId;
       const ws = video ? video.workshop : "threads";
 
