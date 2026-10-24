@@ -160,10 +160,27 @@ def upload_unlisted_video(
     srt_path: Optional[Path | str] = None,
     privacy_status: str = "unlisted",
     category_id: str = "28",
+    status_file: Optional[Path | str] = None,
 ) -> dict:
-    """Upload video to YouTube in unlisted or public mode with thumbnail and subtitles support."""
+    """Upload video to YouTube in unlisted or public mode with thumbnail, subtitles and status progress support."""
     if get_authenticated_service is None:
         raise RuntimeError("Google API client is not installed.")
+
+    status_path = Path(status_file) if status_file else None
+
+    def _update_status(data: dict):
+        if status_path:
+            try:
+                status_path.parent.mkdir(parents=True, exist_ok=True)
+                status_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+            except Exception as e:
+                logger.warning("Failed to write status file: %s", e)
+
+    _update_status({
+        "status": "authenticating",
+        "progress": 5,
+        "message": f"Đang xác thực OAuth kênh YouTube '{channel_name}'...",
+    })
 
     youtube = get_authenticated_service(channel_name)
     body = {
@@ -184,7 +201,7 @@ def upload_unlisted_video(
             str(video_path),
             mimetype="video/mp4",
             resumable=True,
-            chunksize=10 * 1024 * 1024,
+            chunksize=5 * 1024 * 1024,
         )
     except Exception as e:
         logger.warning(
@@ -198,15 +215,35 @@ def upload_unlisted_video(
 
     request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
 
+    _update_status({
+        "status": "uploading",
+        "progress": 10,
+        "message": "Đang bắt đầu truyền các khối dữ liệu video...",
+    })
+
     response = None
     while response is None:
         status, response = request.next_chunk()
         if status:
+            pct = int(status.progress() * 85) + 10  # Scale chunk progress from 10% to 95%
             logger.info("Upload progress: %d%%", int(status.progress() * 100))
+            _update_status({
+                "status": "uploading",
+                "progress": pct,
+                "message": f"Đang tải dữ liệu video lên YouTube: {int(status.progress() * 100)}% ({pct}% quy trình)...",
+            })
 
     video_id = response.get("id", "")
     url = f"https://youtu.be/{video_id}"
     logger.info("Video uploaded successfully: %s (Privacy: %s)", url, privacy_status)
+
+    _update_status({
+        "status": "processing",
+        "progress": 96,
+        "video_id": video_id,
+        "url": url,
+        "message": "Video đã lên YouTube! Đang đồng bộ Thumbnail 3D...",
+    })
 
     # Set Thumbnail if provided (with retries for processing delay)
     if thumbnail_path and set_thumbnail:
@@ -234,6 +271,16 @@ def upload_unlisted_video(
                 if attempt < 3:
                     time.sleep(10)
 
+    result_payload = {
+        "status": "completed",
+        "progress": 100,
+        "video_id": video_id,
+        "url": url,
+        "privacy": privacy_status,
+        "message": "Upload YouTube thành công!",
+    }
+    _update_status(result_payload)
+
     return {
         "video_id": video_id,
         "url": url,
@@ -260,6 +307,7 @@ if __name__ == "__main__":
     parser.add_argument("--thumb", default=None, help="Path to thumbnail image")
     parser.add_argument("--srt", default=None, help="Path to SRT subtitle file")
     parser.add_argument("--category", default="24", help="YouTube Category ID (default: 24 Entertainment)")
+    parser.add_argument("--status-file", default=None, help="Path to write real-time upload progress JSON")
     parser.add_argument("--json", action="store_true", help="Output result as JSON")
 
     args = parser.parse_args()
@@ -277,6 +325,7 @@ if __name__ == "__main__":
             srt_path=args.srt,
             privacy_status=args.privacy,
             category_id=args.category,
+            status_file=args.status_file,
         )
         if args.json:
             print(json.dumps({"success": True, **res}, ensure_ascii=False))

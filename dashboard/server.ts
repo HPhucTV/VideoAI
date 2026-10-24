@@ -534,6 +534,13 @@ const server = createServer(async (req, res) => {
         return;
       }
 
+      const statusFilePath = join(dirname(videoPath), "upload_status.json");
+      await writeFile(statusFilePath, JSON.stringify({
+        status: "starting",
+        progress: 2,
+        message: "Đang khởi tạo tiến trình upload lên YouTube...",
+      }), "utf-8");
+
       const pyExe = join(ROOT_DIR, "workshops", "workshop-cinematic", ".venv", "Scripts", "python.exe");
       const actualPy = existsSync(pyExe) ? pyExe : "python";
 
@@ -545,6 +552,7 @@ const server = createServer(async (req, res) => {
         "--description", description,
         "--privacy", privacy,
         "--category", category,
+        "--status-file", statusFilePath,
         "--json",
       ];
       if (tags) {
@@ -564,7 +572,7 @@ const server = createServer(async (req, res) => {
       proc.stdout.on("data", d => (stdout += d.toString()));
       proc.stderr.on("data", d => (stderr += d.toString()));
 
-      proc.on("close", code => {
+      proc.on("close", async code => {
         if (code === 0) {
           try {
             const data = JSON.parse(stdout.trim());
@@ -573,9 +581,54 @@ const server = createServer(async (req, res) => {
             sendJson(res, 200, { success: true, raw: stdout.trim() });
           }
         } else {
-          sendJson(res, 500, { success: false, error: stderr.trim() || stdout.trim() || `Exit code ${code}` });
+          const errMsg = stderr.trim() || stdout.trim() || `Exit code ${code}`;
+          await writeFile(statusFilePath, JSON.stringify({
+            status: "error",
+            progress: 0,
+            error: errMsg,
+            message: `Lỗi: ${errMsg}`,
+          }), "utf-8").catch(() => {});
+          sendJson(res, 500, { success: false, error: errMsg });
         }
       });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/youtube/upload-status" && req.method === "GET") {
+    try {
+      const urlObj = new URL(req.url!, `http://${req.headers.host}`);
+      const jobId = urlObj.searchParams.get("jobId");
+      if (!jobId) {
+        sendJson(res, 400, { success: false, error: "Thiếu jobId" });
+        return;
+      }
+
+      const candidateDirs = [
+        join(OUTPUT_DIR, "threads", jobId),
+        join(OUTPUT_DIR, "cinematic", jobId),
+        join(OUTPUT_DIR, "explainer"),
+        join(OUTPUT_DIR, "whiteboard", jobId),
+        join(OUTPUT_DIR, "news"),
+      ];
+
+      let found = false;
+      for (const dir of candidateDirs) {
+        const sPath = join(dir, "upload_status.json");
+        if (existsSync(sPath)) {
+          const content = await readFile(sPath, "utf-8");
+          const data = JSON.parse(content);
+          sendJson(res, 200, { success: true, ...data });
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        sendJson(res, 200, { success: true, status: "idle", progress: 0, message: "Chưa có tiến trình upload" });
+      }
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }

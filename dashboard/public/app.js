@@ -1096,7 +1096,14 @@ async function openYouTubeUploadModal(jobId) {
   const ytTitleCounter = document.getElementById("yt-title-counter");
 
   ytStatusBox.classList.add("hidden");
-  ytStatusBox.innerHTML = "";
+  const ytProgressBar = document.getElementById("yt-progress-bar");
+  const ytStatusPct = document.getElementById("yt-status-pct");
+  const ytStatusTitleText = document.getElementById("yt-status-title-text");
+  const ytStatusMsg = document.getElementById("yt-status-msg");
+  if (ytProgressBar) ytProgressBar.style.width = "0%";
+  if (ytStatusPct) ytStatusPct.textContent = "0%";
+  if (ytStatusTitleText) ytStatusTitleText.textContent = "Đang tải video lên YouTube...";
+  if (ytStatusMsg) ytStatusMsg.textContent = "Khởi tạo kết nối Resumable Upload...";
 
   if (video.thumbUrl) {
     ytThumb.src = video.thumbUrl;
@@ -1252,6 +1259,10 @@ if (youtubeUploadForm) {
     const btnSubmit = document.getElementById("btn-yt-submit");
     const btnText = document.getElementById("btn-yt-submit-text");
     const statusBox = document.getElementById("yt-status-box");
+    const progressBar = document.getElementById("yt-progress-bar");
+    const statusPct = document.getElementById("yt-status-pct");
+    const statusTitleText = document.getElementById("yt-status-title-text");
+    const statusMsg = document.getElementById("yt-status-msg");
 
     const channel = document.getElementById("yt-channel").value;
     const category = document.getElementById("yt-category").value;
@@ -1261,10 +1272,41 @@ if (youtubeUploadForm) {
     const privacy = document.querySelector('input[name="yt_privacy"]:checked')?.value || "unlisted";
 
     btnSubmit.disabled = true;
-    btnText.innerHTML = `<span>Đang upload lên YouTube...</span>`;
+    btnText.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs inline-block mr-1">progress_activity</span><span>Đang truyền file lên YouTube...</span>`;
+    
+    // Hiện khung tiến trình ở đỉnh Modal
     statusBox.classList.remove("hidden");
-    statusBox.className = "p-3 rounded-lg text-xs font-mono bg-secondary/10 border border-secondary/30 text-secondary flex items-center gap-2";
-    statusBox.innerHTML = `<span class="animate-spin material-symbols-outlined text-sm">progress_activity</span> <span>Đang khởi tạo phiên upload video vào kênh YouTube <strong>${escapeHtml(channel)}</strong> (${privacy.toUpperCase()})...</span>`;
+    statusBox.className = "rounded-xl p-3.5 border bg-surface-container/90 backdrop-blur border-red-500/30 transition-all";
+    if (progressBar) progressBar.style.width = "5%";
+    if (statusPct) statusPct.textContent = "5%";
+    if (statusTitleText) statusTitleText.textContent = `Đang kết nối kênh: ${channel} (${privacy.toUpperCase()})`;
+    if (statusMsg) statusMsg.textContent = "Đang khởi tạo phiên Resumable Upload...";
+
+    // Polling timer cập nhật % upload thực tế từ backend
+    const jobId = currentYouTubeJob.id;
+    let pollInterval = setInterval(async () => {
+      try {
+        const sRes = await fetch(`/api/youtube/upload-status?jobId=${encodeURIComponent(jobId)}`);
+        const sData = await sRes.json();
+        if (sData.success) {
+          if (typeof sData.progress === "number" && progressBar && statusPct) {
+            progressBar.style.width = `${Math.min(100, Math.max(5, sData.progress))}%`;
+            statusPct.textContent = `${Math.min(100, Math.max(5, sData.progress))}%`;
+          }
+          if (sData.message && statusMsg) {
+            statusMsg.textContent = sData.message;
+          }
+          if (sData.progress) {
+            btnText.innerHTML = `<span class="animate-spin material-symbols-outlined text-xs inline-block mr-1">progress_activity</span><span>Đang upload: ${sData.progress}%</span>`;
+          }
+          if (sData.status === "completed" || sData.status === "error") {
+            clearInterval(pollInterval);
+          }
+        }
+      } catch (pollErr) {
+        // bỏ qua lỗi polling mạng nhẹ
+      }
+    }, 800);
 
     try {
       const res = await fetch("/api/youtube/upload", {
@@ -1281,33 +1323,55 @@ if (youtubeUploadForm) {
         }),
       });
 
+      clearInterval(pollInterval);
       const result = await res.json();
+
       if (result.success) {
-        statusBox.className = "p-3 rounded-lg text-xs font-mono bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 space-y-2";
+        if (progressBar) progressBar.style.width = "100%";
+        if (statusPct) statusPct.textContent = "100%";
+        statusBox.className = "rounded-xl p-4 border bg-emerald-950/40 border-emerald-500/50 text-emerald-200 space-y-2.5 transition-all";
         statusBox.innerHTML = `
           <div class="flex items-center gap-2 font-bold text-emerald-400">
-            <span class="material-symbols-outlined text-base">check_circle</span>
-            <span>UPLOAD YOUTUBE THÀNH CÔNG!</span>
+            <span class="material-symbols-outlined text-lg">check_circle</span>
+            <span class="text-sm">UPLOAD YOUTUBE HOÀN TẤT 100%!</span>
           </div>
-          <div>Link video: <a href="${result.url}" target="_blank" class="underline font-bold text-white hover:text-primary">${result.url}</a></div>
-          <div class="text-[11px] text-emerald-400/80">Chế độ: <strong>${result.privacy?.toUpperCase() || privacy.toUpperCase()}</strong> • Video ID: <code>${result.video_id || ''}</code></div>
+          <div class="text-xs font-mono">
+            Link video: <a href="${result.url}" target="_blank" class="underline font-bold text-white hover:text-emerald-300">${result.url}</a>
+          </div>
+          <div class="text-[11px] font-mono text-emerald-400/80">
+            Chế độ: <strong>${result.privacy?.toUpperCase() || privacy.toUpperCase()}</strong> • Video ID: <code>${result.video_id || ''}</code>
+          </div>
           <div class="pt-1 flex items-center gap-2">
-            <a href="${result.url}" target="_blank" class="px-3 py-1 rounded bg-emerald-500 text-black font-bold text-xs inline-flex items-center gap-1">
+            <a href="${result.url}" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs inline-flex items-center gap-1.5 hover:bg-emerald-400 transition-colors">
               <span class="material-symbols-outlined text-xs">open_in_new</span> Xem trên YouTube
             </a>
-            <button type="button" class="px-3 py-1 rounded bg-surface-container border border-outline-variant/30 text-xs text-white" onclick="navigator.clipboard.writeText('${result.url}').then(()=>alert('Đã sao chép link YouTube!'))">
+            <button type="button" class="px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30 text-xs text-white hover:bg-surface-container-high transition-colors" onclick="navigator.clipboard.writeText('${result.url}').then(()=>alert('Đã sao chép link YouTube!'))">
               Sao chép Link
             </button>
           </div>
         `;
       } else {
-        statusBox.className = "p-3 rounded-lg text-xs font-mono bg-rose-500/15 border border-rose-500/40 text-rose-300";
-        statusBox.innerHTML = `❌ <strong>Lỗi Upload:</strong> ${escapeHtml(result.error || "Không thể tải lên YouTube")}`;
+        statusBox.className = "rounded-xl p-3.5 border bg-rose-950/40 border-rose-500/50 text-rose-300 transition-all";
+        statusBox.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-rose-400 mb-1">
+            <span class="material-symbols-outlined text-base">error</span>
+            <span>LỖI UPLOAD YOUTUBE</span>
+          </div>
+          <p class="text-xs font-mono">${escapeHtml(result.error || "Không thể tải lên YouTube")}</p>
+        `;
       }
     } catch (err) {
-      statusBox.className = "p-3 rounded-lg text-xs font-mono bg-rose-500/15 border border-rose-500/40 text-rose-300";
-      statusBox.innerHTML = `❌ <strong>Lỗi kết nối:</strong> ${escapeHtml(err.message)}`;
+      clearInterval(pollInterval);
+      statusBox.className = "rounded-xl p-3.5 border bg-rose-950/40 border-rose-500/50 text-rose-300 transition-all";
+      statusBox.innerHTML = `
+        <div class="flex items-center gap-2 font-bold text-rose-400 mb-1">
+          <span class="material-symbols-outlined text-base">wifi_off</span>
+          <span>LỖI KẾT NỐI MẠNG</span>
+        </div>
+        <p class="text-xs font-mono">${escapeHtml(err.message)}</p>
+      `;
     } finally {
+      clearInterval(pollInterval);
       btnSubmit.disabled = false;
       btnText.innerHTML = `🚀 Bắt Đầu Upload YouTube`;
     }
