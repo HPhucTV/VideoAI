@@ -1049,6 +1049,33 @@ function setViewMode(mode) {
 // ── YOUTUBE DIRECT UPLOAD MODAL LOGIC ──
 let currentYouTubeJob = null;
 
+function renderTitleOptions(options) {
+  const ytTitleOptions = document.getElementById("yt-title-options");
+  const ytTitleOptionsList = document.getElementById("yt-title-options-list");
+  const ytTitle = document.getElementById("yt-title");
+  const ytTitleCounter = document.getElementById("yt-title-counter");
+  if (!ytTitleOptions || !ytTitleOptionsList || !Array.isArray(options) || options.length === 0) return;
+
+  ytTitleOptionsList.innerHTML = options.map((opt, i) => `
+    <button type="button" class="text-left text-xs px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface hover:text-primary transition-all flex items-start gap-2 group w-full" data-title="${escapeHtml(opt)}">
+      <span class="text-[10px] font-bold text-primary/70 group-hover:text-primary mt-0.5">#${i + 1}</span>
+      <span class="flex-1 line-clamp-2">${escapeHtml(opt)}</span>
+    </button>
+  `).join("");
+
+  ytTitleOptionsList.querySelectorAll("button").forEach(btn => {
+    btn.onclick = () => {
+      const selected = btn.getAttribute("data-title");
+      if (selected && ytTitle) {
+        ytTitle.value = selected.slice(0, 100);
+        if (ytTitleCounter) ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+      }
+    };
+  });
+
+  ytTitleOptions.classList.remove("hidden");
+}
+
 async function openYouTubeUploadModal(jobId) {
   const video = allVideos.find(v => v.id === jobId);
   if (!video) return;
@@ -1085,40 +1112,98 @@ async function openYouTubeUploadModal(jobId) {
   ytFilesize.textContent = `MP4 • ${formatBytes(video.sizeBytes)}`;
   ytBadge.textContent = `${video.workshop.toUpperCase()} • ${video.canvas.width > video.canvas.height ? '16:9 Cinema' : '9:16 Shorts'}`;
 
-  // Pre-fill Title with SEO tags
-  let defaultTitle = video.title;
-  if (!defaultTitle.toLowerCase().includes("#shorts") && video.canvas.height > video.canvas.width) {
-    defaultTitle = `${defaultTitle} #Shorts #OmniVideo`;
-  }
-  ytTitle.value = defaultTitle.slice(0, 100);
-  ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+  const ytTitleOptions = document.getElementById("yt-title-options");
+  const ytTitleOptionsList = document.getElementById("yt-title-options-list");
+  const btnYtAiSuggest = document.getElementById("btn-yt-ai-suggest");
+
+  if (ytTitleOptions) ytTitleOptions.classList.add("hidden");
+  if (ytTitleOptionsList) ytTitleOptionsList.innerHTML = "";
 
   ytTitle.oninput = () => {
     ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
   };
 
-  // Pre-fill Description & Chapters
-  let desc = `${video.title}\n\n`;
-  desc += `Sản xuất tự hành bởi OmniVideo Studio (Phân xưởng ${video.workshop.toUpperCase()})\n\n`;
-  if (video.beats && video.beats.length > 0) {
-    desc += "TIMESTAMPS & PHÂN ĐOẠN:\n00:00 - Mở đầu & Hook\n";
-    let curSec = 2;
-    video.beats.slice(1, 8).forEach((b, i) => {
-      const mins = Math.floor(curSec / 60);
-      const secs = curSec % 60;
-      const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      const beatName = b.visual?.headline || b.rawText?.slice(0, 30) || `Nhịp ${i + 2}`;
-      desc += `${timeStr} - ${beatName}\n`;
-      curSec += 4;
-    });
-    desc += "\n";
-  }
-  desc += "#OmniVideo #Antigravity #AI #VideoAI #Shorts #Remotion";
-  ytDescription.value = desc;
+  // 1. Kiểm tra xem Antigravity đã lưu sẵn Publishing Kit cho video này chưa
+  if (video.publishingKit) {
+    const pk = video.publishingKit;
+    if (pk.title) {
+      ytTitle.value = pk.title.slice(0, 100);
+      ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+    }
+    if (pk.description || pk.youtube_description) {
+      ytDescription.value = pk.description || pk.youtube_description;
+    }
+    if (pk.tags) {
+      ytTags.value = Array.isArray(pk.tags) ? pk.tags.join(", ") : pk.tags;
+    }
+    if (pk.title_options && Array.isArray(pk.title_options) && ytTitleOptions && ytTitleOptionsList) {
+      renderTitleOptions(pk.title_options);
+    }
+  } else {
+    // Pre-fill Title with SEO tags mặc định
+    let defaultTitle = video.title;
+    if (!defaultTitle.toLowerCase().includes("#shorts") && video.canvas.height > video.canvas.width) {
+      defaultTitle = `${defaultTitle} #Shorts #OmniVideo`;
+    }
+    ytTitle.value = defaultTitle.slice(0, 100);
+    ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
 
-  // Pre-fill Tags
-  const defaultTags = ["OmniVideo", "Antigravity", "AI Video", video.workshop, "Storyverse", "Shorts"];
-  ytTags.value = defaultTags.join(", ");
+    // Pre-fill Description & Chapters mặc định
+    let desc = `${video.title}\n\n`;
+    desc += `Sản xuất tự hành bởi OmniVideo Studio (Phân xưởng ${video.workshop.toUpperCase()})\n\n`;
+    if (video.beats && video.beats.length > 0) {
+      desc += "TIMESTAMPS & PHÂN ĐOẠN:\n00:00 - Mở đầu & Hook\n";
+      let curSec = 2;
+      video.beats.slice(1, 8).forEach((b, i) => {
+        const mins = Math.floor(curSec / 60);
+        const secs = curSec % 60;
+        const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        const beatName = b.visual?.headline || b.rawText?.slice(0, 30) || `Nhịp ${i + 2}`;
+        desc += `${timeStr} - ${beatName}\n`;
+        curSec += 4;
+      });
+      desc += "\n";
+    }
+    desc += "#OmniVideo #Antigravity #AI #VideoAI #Shorts #Remotion";
+    ytDescription.value = desc;
+
+    // Pre-fill Tags mặc định
+    const defaultTags = ["OmniVideo", "Antigravity", "AI Video", video.workshop, "Storyverse", "Shorts"];
+    ytTags.value = defaultTags.join(", ");
+  }
+
+  // Nút AI Gợi ý Tiêu Đề & SEO
+  if (btnYtAiSuggest) {
+    btnYtAiSuggest.onclick = async () => {
+      btnYtAiSuggest.disabled = true;
+      btnYtAiSuggest.innerHTML = `<span class="animate-spin material-symbols-outlined text-[13px]">progress_activity</span> <span>Đang suy nghĩ...</span>`;
+
+      try {
+        const res = await fetch("/api/youtube/suggest-seo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobId: video.id }),
+        });
+        const data = await res.json();
+        if (data.success && data.publishingKit) {
+          const pk = data.publishingKit;
+          video.publishingKit = pk;
+          ytTitle.value = pk.title.slice(0, 100);
+          ytTitleCounter.textContent = `${ytTitle.value.length} / 100`;
+          ytDescription.value = pk.description;
+          ytTags.value = Array.isArray(pk.tags) ? pk.tags.join(", ") : pk.tags;
+          if (pk.title_options) {
+            renderTitleOptions(pk.title_options);
+          }
+        }
+      } catch (err) {
+        console.warn("Lỗi khi AI gợi ý SEO:", err);
+      } finally {
+        btnYtAiSuggest.disabled = false;
+        btnYtAiSuggest.innerHTML = `<span class="material-symbols-outlined text-[13px]">auto_awesome</span> <span>AI Gợi Ý Tiêu Đề & SEO</span>`;
+      }
+    };
+  }
 
   // Load available channels
   try {

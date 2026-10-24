@@ -180,6 +180,14 @@ async function scanVideoLibrary() {
         mtime = vstat.mtime;
       }
 
+      const possibleKit = join(OUTPUT_DIR, workshop, id, "publishing_kit.json");
+      let publishingKit = job.publishingKit || null;
+      if (!publishingKit && existsSync(possibleKit)) {
+        try {
+          publishingKit = JSON.parse(await readFile(possibleKit, "utf-8"));
+        } catch (_) {}
+      }
+
       videos.push({
         id,
         title: job.title || id,
@@ -191,6 +199,7 @@ async function scanVideoLibrary() {
         beatsCount: job.beats?.length || 0,
         beats: job.beats || [],
         metadata: job.metadata || {},
+        publishingKit,
         hasVideo: Boolean(videoFile),
         videoUrl: videoFile ? `/media/${workshop}/${encodeURIComponent(basename(videoFile))}` : null,
         thumbUrl: thumbFile ? `/media/${workshop}/${encodeURIComponent(basename(thumbFile))}` : null,
@@ -232,10 +241,24 @@ async function scanVideoLibrary() {
           const vstat = statSync(vPath);
           const relVideoUrl = `/media/${ws}/${item.isDirectory() ? encodeURIComponent(item.name) + "/" + encodeURIComponent(basename(vPath)) : encodeURIComponent(basename(vPath))}`;
           let relThumbUrl: string | null = null;
+          let publishingKit: any = null;
           if (item.isDirectory()) {
             const possibleThumb = ["thumb.jpg", "thumb.png", "thumbnail.jpg"].find(t => existsSync(join(wsDir, item.name, t)));
             if (possibleThumb) {
               relThumbUrl = `/media/${ws}/${encodeURIComponent(item.name)}/${possibleThumb}`;
+            }
+
+            const possibleKits = [
+              join(wsDir, item.name, "publishing_kit.json"),
+              join(wsDir, item.name, `${item.name}_publishing_kit.json`),
+            ];
+            for (const pk of possibleKits) {
+              if (existsSync(pk)) {
+                try {
+                  publishingKit = JSON.parse(await readFile(pk, "utf-8"));
+                  break;
+                } catch (_) {}
+              }
             }
           }
           videos.push({
@@ -249,6 +272,7 @@ async function scanVideoLibrary() {
             beatsCount: ws === "threads" ? 6 : 12,
             beats: [],
             metadata: { engine: ws === "threads" ? "Chroma Key & Headless Chrome" : "FlowKit & Imagen/Veo" },
+            publishingKit,
             hasVideo: true,
             videoUrl: relVideoUrl,
             thumbUrl: relThumbUrl,
@@ -552,6 +576,66 @@ const server = createServer(async (req, res) => {
           sendJson(res, 500, { success: false, error: stderr.trim() || stdout.trim() || `Exit code ${code}` });
         }
       });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  if (pathname === "/api/youtube/suggest-seo" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const { jobId } = body;
+      if (!jobId) {
+        sendJson(res, 400, { success: false, error: "Thiếu jobId" });
+        return;
+      }
+
+      // Tìm video trong thư viện
+      const videos = await scanVideoLibrary();
+      const video = videos.find(v => v.id === jobId);
+      const rawTitle = video ? video.title : jobId;
+      const ws = video ? video.workshop : "threads";
+
+      // Tạo gợi ý thông minh dựa trên thể loại
+      let kit: any = null;
+      if (ws === "threads") {
+        const cleanTitle = rawTitle.replace(/^Threads:\s*/i, "").trim();
+        kit = {
+          title: `🔥 KHI BẠN THÂN ${cleanTitle.toUpperCase()}... CÁI KẾT XỈU NGANG! 🤡 #Shorts #Threads`,
+          title_options: [
+            `🔥 KHI BẠN THÂN ${cleanTitle.toUpperCase()}... CÁI KẾT XỈU NGANG! 🤡 #Shorts #Threads`,
+            `Drama Bạn Thân: ${cleanTitle} - Đúng là 'bạn thân ai nấy lo' 💔 #Shorts #DramaVN`,
+            `Tâm Sự Threads: ${cleanTitle} #Shorts #HanShin #HaiHuoc #GiaiTri`
+          ],
+          description: `Ủa bạn thân mà làm vậy coi được hả trời?! Câu chuyện ${cleanTitle} được tái hiện sinh động bằng AI & Remotion NLE.\n\nTheo dõi kênh @HanShin-g8i để cập nhật drama Threads viral mỗi ngày!\n\n00:00 - Tình bạn diệu kỳ & Mở đầu\n00:10 - Tình huống trớ trêu\n00:25 - Cú twist bất ngờ\n00:38 - Cái kết cười xỉu\n\n#HanShin #Threads #Shorts #BanThan #HaiHuoc #DramaVN #MinecraftParkour`,
+          tags: ["HanShin", "Threads", "Shorts", "Ban Than", "Drama VN", "Hai Huoc", "Giai Tri", "Minecraft Parkour", "Gen Z", "TikTok Viral"],
+          category: "24",
+          privacy: "unlisted"
+        };
+      } else {
+        const cleanTitle = rawTitle.replace(/^Job:\s*/i, "").trim();
+        kit = {
+          title: `${cleanTitle} | Toàn Cảnh & Phân Tích Chuyên Sâu 4K`,
+          title_options: [
+            `${cleanTitle} | Toàn Cảnh & Phân Tích Chuyên Sâu 4K`,
+            `Bí Mật Đằng Sau ${cleanTitle} Mà Bạn Chưa Từng Biết!`,
+            `Giải Mã ${cleanTitle}: Bản Điện Ảnh Hoạt Họa 3D Chuẩn Quốc Tế`
+          ],
+          description: `Tập phim điện ảnh 3D phân tích chuyên sâu về ${cleanTitle}.\n\n00:00 - Giới thiệu tổng quan\n01:30 - Phân tích bối cảnh cốt lõi\n03:45 - Cao trào & Giải pháp đột phá\n06:00 - Kết luận & Định hướng tương lai\n\n#OmniVideo #Phim3D #DoHoa4K #Tech #KienThuc #GiaiMaTech`,
+          tags: ["OmniVideo", "Phim 3D", "Cong Nghe", "AI", "Do Hoa 4K", "Veo2", "Giai Ma Tech"],
+          category: "28",
+          privacy: "unlisted"
+        };
+      }
+
+      // Lưu file publishing_kit.json vào thư mục của job nếu có
+      const jobDir = join(OUTPUT_DIR, ws, jobId);
+      if (existsSync(jobDir)) {
+        await writeFile(join(jobDir, "publishing_kit.json"), JSON.stringify(kit, null, 2), "utf-8");
+      }
+
+      sendJson(res, 200, { success: true, publishingKit: kit });
     } catch (err: any) {
       sendJson(res, 500, { success: false, error: err.message });
     }

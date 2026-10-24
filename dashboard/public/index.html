@@ -967,13 +967,25 @@
             </div>
           </div>
 
-          <!-- Video Title Input with Character Counter -->
+          <!-- Video Title Input with Character Counter & AI Suggestion Button -->
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label class="text-xs font-mono text-on-surface-variant">Tiêu Đề Video YouTube</label>
+              <label class="text-xs font-mono text-on-surface-variant flex items-center gap-2">
+                <span>Tiêu Đề Video YouTube</span>
+                <button type="button" id="btn-yt-ai-suggest" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 transition-all active:scale-95" title="AI tự động phân tích kịch bản và tạo tiêu đề + SEO tối ưu">
+                  <span class="material-symbols-outlined text-[13px]">auto_awesome</span>
+                  <span>AI Gợi Ý Tiêu Đề & SEO</span>
+                </button>
+              </label>
               <span class="text-[10px] font-mono text-outline" id="yt-title-counter">0 / 100</span>
             </div>
             <input id="yt-title" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2 text-xs font-mono text-on-surface focus:border-red-500 focus:ring-1 focus:ring-red-500 font-medium" type="text" maxlength="100" required />
+
+            <!-- Title Options Container (Filled when available) -->
+            <div id="yt-title-options" class="hidden mt-2 space-y-1">
+              <span class="text-[10px] font-mono text-outline">Gợi ý tiêu đề viral khác (click để áp dụng):</span>
+              <div id="yt-title-options-list" class="flex flex-col gap-1"></div>
+            </div>
           </div>
 
           <!-- Description with AI generated chapters & tags -->
