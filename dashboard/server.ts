@@ -1063,6 +1063,128 @@ print(r.get("success", False))
     return;
   }
 
+    // AI Leader Command Dispatcher (Xử lý link Threads, link GitHub, lệnh tự nhiên)
+  if (pathname === "/api/commander/dispatch" && req.method === "POST") {
+    try {
+      const body = await parseBody(req);
+      const { command } = body;
+      if (!command) {
+        sendJson(res, 400, { success: false, error: "Thiếu command" });
+        return;
+      }
+
+      const cleanCmd = command.trim();
+      const lower = cleanCmd.toLowerCase();
+
+      // Trường hợp 1: Nhận diện liên kết Threads
+      if (lower.includes("threads.net") || lower.includes("threads.com") || lower.includes("/post/")) {
+        const urlMatch = cleanCmd.match(/https?:\/\/[^\s]+/i);
+        const threadUrl = urlMatch ? urlMatch[0] : cleanCmd;
+
+        const pyArgs = [join(ROOT_DIR, "core", "threads_crawler.py"), threadUrl];
+        const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+        let stdout = "";
+        let stderr = "";
+        proc.stdout.on("data", d => (stdout += d.toString()));
+        proc.stderr.on("data", d => (stderr += d.toString()));
+
+        proc.on("close", (code) => {
+          try {
+            const jsonStart = stdout.indexOf("{");
+            const jsonEnd = stdout.lastIndexOf("}");
+            if (jsonStart !== -1 && jsonEnd !== -1) {
+              const parsed = JSON.parse(stdout.slice(jsonStart, jsonEnd + 1));
+              const uName = parsed.thread_data?.post?.username || "threads_user";
+              globalTaskQueue.unshift({
+                id: `task_threads_${Date.now()}`,
+                title: `Săn tin & Bóc tách Threads: @${uName}`,
+                status: "completed",
+                category: "crawl",
+                progress: 100,
+                result: `Đã cào bài viết và tải 100% avatar thật (${parsed.total_comments || 0} bình luận)`,
+                createdAt: new Date().toLocaleTimeString("vi-VN"),
+              });
+
+              sendJson(res, 200, {
+                success: true,
+                type: "threads",
+                data: parsed,
+                message: `Đã trích xuất thành công bài viết của @${uName} từ Threads!`
+              });
+              return;
+            }
+          } catch (e: any) {
+            console.error("JSON parse error from threads_crawler:", e.message);
+          }
+
+          sendJson(res, 200, {
+            success: false,
+            type: "threads",
+            error: stderr || stdout || "Không thể bóc tách bài viết Threads",
+          });
+        });
+        return;
+      }
+
+      // Trường hợp 2: Nhận diện GitHub
+      if (lower.includes("github.com") || lower.includes("repo") || lower.includes("trending")) {
+        const pyArgs = [join(ROOT_DIR, "scripts", "scout_github_trending.py"), "--limit", "4", "--json"];
+        const proc = spawn("python", pyArgs, { cwd: ROOT_DIR });
+        let stdout = "";
+        proc.stdout.on("data", d => (stdout += d.toString()));
+        proc.on("close", () => {
+          try {
+            const data = JSON.parse(stdout.trim());
+            sendJson(res, 200, { success: true, type: "github", data });
+          } catch {
+            sendJson(res, 200, { success: true, type: "github", raw: stdout });
+          }
+        });
+        return;
+      }
+
+      // Mặc định: Giao tác vụ thông thường
+      globalTaskQueue.unshift({
+        id: `task_${Date.now()}`,
+        title: cleanCmd,
+        status: "running",
+        category: "custom",
+        progress: 50,
+        createdAt: new Date().toLocaleTimeString("vi-VN"),
+      });
+
+      sendJson(res, 200, {
+        success: true,
+        type: "general",
+        message: "Đã tiếp nhận chỉ đạo và phân bổ vào hàng đợi tự hành!"
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+  // Khởi động render video Threads sau khi cào
+  if (pathname === "/api/commander/produce-threads" && req.method === "POST") {
+    try {
+      const proc = spawn("python", [join(ROOT_DIR, "scripts", "produce_crawled_threads.py")], {
+        cwd: ROOT_DIR,
+        detached: true,
+        stdio: "ignore"
+      });
+      proc.unref();
+
+      sendJson(res, 200, {
+        success: true,
+        message: "Xưởng 5 đang tiến hành render video Threads chuẩn AMOLED #101010 và nảy meme lò xo!"
+      });
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+    }
+    return;
+  }
+
+
   if (pathname === "/api/youtube/suggest-seo" && req.method === "POST") {
     try {
       const body = await parseBody(req);

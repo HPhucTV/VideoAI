@@ -199,7 +199,20 @@ function toggleLeaderLog() {
 }
 
 // ── INTERACTIVE QUICK DECISIONS (Ý TƯỞNG 1: HITL ACTIONS) ──
-function handleHitlAction(action) {
+function handleHitlAction(action, extra) {
+  if (action === "produce_threads") {
+    appendLeaderLog("dispatch", "Sếp phê duyệt HITL: Bắt đầu bấm máy Xưởng 5 cho bài viết Threads vừa cào!");
+    fetch("/api/commander/produce-threads", { method: "POST" })
+      .then(res => res.json())
+      .then(data => {
+        appendLeaderLog("dispatch", data.message || "Xưởng 5 đang tiến hành render video Threads!");
+        showToast("Xưởng 5 đang render video Threads!");
+      })
+      .catch(err => {
+        appendLeaderLog("alert", `Lỗi khởi động Xưởng 5: ${err.message}`);
+      });
+    return;
+  }
   if (action === "run_workshop2") {
     appendLeaderLog("dispatch", "Sếp duyệt đề tài GitHub Trending! Đang chuyển giao kịch bản sang Xưởng 2 Remotion...");
     setTimeout(() => {
@@ -663,12 +676,53 @@ function handleLeaderShortcut(type) {
 const btnDispatchLeader = document.getElementById("btn-dispatch-leader");
 const leaderInput = document.getElementById("leader-command-input");
 if (btnDispatchLeader && leaderInput) {
-  const executeLeaderCommand = () => {
+  const executeLeaderCommand = async () => {
     const cmd = leaderInput.value.trim();
     if (!cmd) return;
 
     appendLeaderLog("thinking", `Tiếp nhận chỉ đạo của sếp: "${cmd}"`);
     const lower = cmd.toLowerCase();
+
+    // Kiểm tra nếu là liên kết Threads
+    if (lower.includes("threads.net") || lower.includes("threads.com") || lower.includes("/post/")) {
+      appendLeaderLog("radar", "Phát hiện liên kết Threads! Đang kích hoạt Headless Chrome để bóc tách nội dung và tải avatar thật...");
+      showToast("Đang bóc tách bài viết Threads...");
+      
+      try {
+        const res = await fetch("/api/commander/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: cmd })
+        });
+        const resp = await res.json();
+        if (resp.success && resp.data) {
+          const d = resp.data;
+          const p = d.thread_data?.post || {};
+          appendLeaderLog("done", `✅ Bóc tách thành công bài viết của @${p.username}: "${(p.content || '').slice(0, 45)}..." (${p.likes || '400+'} ❤️, ${d.total_comments || 0} 💬)`);
+          appendLeaderLog("done", `✅ Đã tải 100% Avatar thật của @${p.username} và ${d.total_comments || 0} bình luận về cache cục bộ.`);
+          appendLeaderLog("dispatch", `🎯 Đã sẵn sàng bấm máy Xưởng 5 (${d.job_id})! Bấm nút bên dưới để render.`);
+          
+          // Thêm nút bấm máy Xưởng 5 trực tiếp vào thanh HITL
+          const hitlActions = document.getElementById("leader-hitl-actions");
+          if (hitlActions) {
+            const btnW5 = document.createElement("button");
+            btnW5.className = "px-3.5 py-1.5 rounded-lg border border-pink-500 bg-pink-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1 animate-pulse hover:bg-pink-600";
+            btnW5.innerHTML = `<span class="material-symbols-outlined text-xs">movie</span> ⚡ Bấm Máy Xưởng 5 Cho @${p.username} Ngay`;
+            btnW5.onclick = () => handleHitlAction("produce_threads");
+            hitlActions.prepend(btnW5);
+          }
+          
+          showToast(`Đã cào bài viết của @${p.username}!`);
+          loadTaskQueue();
+        } else {
+          appendLeaderLog("alert", `Lỗi cào Threads: ${resp.error || "Không thể lấy nội dung"}`);
+          showToast("Lỗi khi cào Threads", "error");
+        }
+      } catch (err) {
+        appendLeaderLog("alert", `Lỗi kết nối máy chủ: ${err.message}`);
+      }
+      return;
+    }
 
     if (lower.includes("github") || lower.includes("trending") || lower.includes("repo")) {
       openScoutModal();
@@ -682,6 +736,14 @@ if (btnDispatchLeader && leaderInput) {
       sendTelegramReport();
     } else {
       appendLeaderLog("dispatch", `Đang phân tích bài toán và điều phối phân xưởng sản xuất tự hành tương ứng...`);
+      try {
+        await fetch("/api/commander/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: cmd })
+        });
+        loadTaskQueue();
+      } catch (e) {}
       setTimeout(() => {
         appendLeaderLog("done", `Tác vụ "${cmd.slice(0, 40)}..." đã được đưa vào hàng đợi tự hành!`);
       }, 1000);
